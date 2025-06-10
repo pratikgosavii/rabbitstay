@@ -641,8 +641,8 @@
                         </div>
                         <!-- end col -->
                         {% comment %} <div class="col-xl-5"> {% endcomment %}
-                            <div class="card">
-                                <div class="card-header align-items-center d-flex">
+                            {% comment %} <div class="card"> {% endcomment %}
+                                {% comment %} <div class="card-header align-items-center d-flex">
                                     <h4 class="card-title mb-0 flex-grow-1">Bookings List</h4>
                                     <div class="flex-shrink-0">
                                         <div class="dropdown">
@@ -659,13 +659,13 @@
                                         </div>
                                     </div>
 
-                                </div><!-- end card header -->
+                                </div><!-- end card header --> {% endcomment %}
 
-                                <div class="card-body px-0 pt-2">
-                                        <div class="table-responsive px-3" data-simplebar style="max-height: 395px;">
-                                            <table class="table align-middle table-nowrap">
-                                                <tbody>
-                                                    <tr>
+                                {% comment %} <div class="card-body px-0 pt-2"> {% endcomment %}
+                                        {% comment %} <div class="table-responsive px-3" data-simplebar style="max-height: 395px;"> {% endcomment %}
+                                            {% comment %} <table class="table align-middle table-nowrap"> {% endcomment %}
+                                                {% comment %} <tbody> {% endcomment %}
+                                                    {% comment %} <tr>
                                                         <td style="width: 50px;">
                                                             <div class="avatar-md me-4">
                                                                 <img src="https://cheetah.cherishx.com/uploads/1669111480_original.jpg?format=avif&width=640" class="img-fluid" alt="">
@@ -696,9 +696,9 @@
                                                                 <span class="text-muted mt-1">145 Booked</span>
                                                             </div>
                                                         </td>
-                                                    </tr>
+                                                    </tr> {% endcomment %}
 <tr>
-                                                        <td style="width: 50px;">
+                                                        {% comment %} <td style="width: 50px;">
                                                             <div class="avatar-md me-4">
                                                                 <img src="https://cheetah.cherishx.com/uploads/1715946193_original.jpg?format=avif&width=640" class="img-fluid" alt="">
 {#                                                                <img src="{% static 'images/product/img-1.png'%}" class="img-fluid" alt="">#}
@@ -825,9 +825,9 @@
                                                     <tr>
                                                         <td style="width: 50px;">
                                                             <div class="avatar-md me-4">
-                                                                <img src="https://cheetah.cherishx.com/uploads/1687941004_original.jpg?format=avif&width=384&height=384" class="img-fluid" alt="">
+                                                                <img src="https://cheetah.cherishx.com/uploads/1687941004_original.jpg?format=avif&width=384&height=384" class="img-fluid" alt=""> {% endcomment %}
 {#                                                                <img src="{% static 'images/product/img-1.png'%}" class="img-fluid" alt="">#}
-                                                            </div>
+                                                            {% comment %} </div>
                                                         </td>
                                                         <td>
                                                             <div>
@@ -859,7 +859,7 @@
                                 <!-- end card body -->
                             </div>
                             <!-- end card -->
-                        </div>
+                        </div> {% endcomment %}
                         <!-- end col -->
 
                         <div class="col-xl-4">
@@ -1100,7 +1100,7 @@
 {#                                        </ul>#}
 {#                                    </div>#}
 
-                                    <div class="px-3">
+                                    {% comment %} <div class="px-3">
                                         <div class="row">
                                             <div class="col">
                                                 <div class="position-relative">
@@ -1112,7 +1112,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> {% endcomment %}
                             </div>
                             <!-- end card -->
                         </div>
