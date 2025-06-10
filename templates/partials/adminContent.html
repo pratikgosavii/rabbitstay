@@ -25,7 +25,7 @@
                                 <div class="card-body">
                                     <div class="d-flex align-items-center">
                                         <div class="flex-grow-1">
-                                            <span class="text-muted mb-3 lh-1 d-block text-truncate">Total Sales</span>
+                                            <span class="text-muted mb-3 lh-1 d-block text-truncate">Total Booking</span>
                                             <h4 class="mb-3">
                                                 $<span class="counter-value" data-target="354.5">0</span>k
                                             </h4>
@@ -50,12 +50,12 @@
                                 <div class="card-body">
                                     <div class="d-flex align-items-center">
                                         <div class="flex-grow-1">
-                                            <span class="text-muted mb-3 lh-1 d-block text-truncate">Total Items</span>
+                                            <span class="text-muted mb-3 lh-1 d-block text-truncate">Demo</span>
                                             <h4 class="mb-3">
                                                 <span class="counter-value" data-target="1256">0</span>
                                             </h4>
                                             <div class="text-nowrap">
-                                                <span class="badge bg-soft-danger text-danger">-29 Trades</span>
+                                                <span class="badge bg-soft-danger text-danger">-Temp</span>
                                                 <span class="ms-1 text-muted font-size-13">Since last week</span>
                                             </div>
                                         </div>
@@ -74,7 +74,7 @@
                                 <div class="card-body">
                                     <div class="d-flex align-items-center">
                                         <div class="flex-grow-1">
-                                            <span class="text-muted mb-3 lh-1 d-block text-truncate">Average Sales</span>
+                                            <span class="text-muted mb-3 lh-1 d-block text-truncate">Demo</span>
                                             <h4 class="mb-3">
                                                 $<span class="counter-value" data-target="7.54">0</span>M
                                             </h4>
@@ -98,7 +98,7 @@
                                 <div class="card-body">
                                     <div class="d-flex align-items-center">
                                         <div class="flex-grow-1">
-                                            <span class="text-muted mb-3 lh-1 d-block text-truncate">Orders</span>
+                                            <span class="text-muted mb-3 lh-1 d-block text-truncate">Demo</span>
                                             <h4 class="mb-3">
                                                 <span class="counter-value" data-target="{{ current_week_order_count }}">0</span>%
                                             </h4>
@@ -150,7 +150,7 @@
                                         </div>
                                         <div class="col-xl-4">
                                             <div class="p-4">
-                                                <div class="mt-0">
+                                                {% comment %} <div class="mt-0">
                                                     <div class="d-flex align-items-center">
                                                         <div class="avatar-sm m-auto">
                                                             <span class="avatar-title rounded-circle bg-light text-dark font-size-13">
@@ -233,9 +233,9 @@
                                                             <span class="badge rounded-pill badge-soft-danger font-size-12 fw-medium">-0.3%</span>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div> {% endcomment %}
                                                 <div class="mt-4 pt-2">
-                                                    <a href="" class="btn btn-primary w-100" style="background-color: #0088CC;">See All Appointment <i
+                                                    <a href="" class="btn btn-primary w-100" style="background-color: #0088CC;">See All Hotel Booking <i
                                                             class="mdi mdi-arrow-right ms-1"></i></a>
                                                 </div>
 
@@ -255,7 +255,7 @@
                                 <!-- card body -->
                                 <div class="card-body">
                                     <div class="d-flex flex-wrap align-items-center mb-4">
-                                        <h5 class="card-title me-2">Appointment by Locations</h5>
+                                        <h5 class="card-title me-2">Bookings by Locations</h5>
                                         <div class="ms-auto">
                                             <div class="dropdown">
                                                 <a class="dropdown-toggle text-reset" href="#" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -308,12 +308,12 @@
                         <div class="col-xl-3">
                             <div class="card">
                                 <div class="card-header align-items-center d-flex">
-                                    <h4 class="card-title mb-0 flex-grow-1">Active Vendors List</h4>
+                                    <h4 class="card-title mb-0 flex-grow-1">Active Hotel Vendors List</h4>
                                     <div class="flex-shrink-0">
                                         <div class="dropdown">
                                             <a class=" dropdown-toggle" href="#" id="dropdownMenuButton2"
                                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <span class="text-muted">All Vendors<i class="mdi mdi-chevron-down ms-1"></i></span>
+                                                <span class="text-muted">All Hotel Vendors<i class="mdi mdi-chevron-down ms-1"></i></span>
                                             </a>
 
                                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton2">
@@ -640,10 +640,10 @@
                             <!-- end card -->
                         </div>
                         <!-- end col -->
-                        <div class="col-xl-5">
+                        {% comment %} <div class="col-xl-5"> {% endcomment %}
                             <div class="card">
                                 <div class="card-header align-items-center d-flex">
-                                    <h4 class="card-title mb-0 flex-grow-1">Appointment List</h4>
+                                    <h4 class="card-title mb-0 flex-grow-1">Bookings List</h4>
                                     <div class="flex-shrink-0">
                                         <div class="dropdown">
                                             <a class=" dropdown-toggle" href="#" id="dropdownMenuButton2"
