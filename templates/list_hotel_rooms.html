@@ -1,0 +1,119 @@
+{% extends "partials/adminBase.html" %}
+{% load static %}
+
+{% block title %}Rooms List{% endblock title %}
+
+{% block extra_css %}
+    <link href="{% static 'libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.css' %}" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: gainsboro;
+            color: #0088CC !important;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #0088CC !important;
+            color: #ffffff;
+            border-radius: 8px 8px 0 0;
+            padding: 20px;
+        }
+
+        .table thead {
+            background-color: gray;
+            color: white;
+        }
+
+        .table tbody tr {
+            background-color: white;
+            color: black;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f0d28c;
+            color: #0088CC !important;
+        }
+
+        .action-icons {
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+    </style>
+{% endblock extra_css %}
+
+{% block content %}
+<div class="main-content">
+    <div class="page-content">
+        <div class="container-fluid">
+            <div class="row mb-3">
+                <div class="col-12">
+                    <h4 class="mb-0">List Rooms</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Hotel</th>
+                                            <th>Room Type</th>
+                                            <th>Package</th>
+                                            <th>Price/Night</th>
+                                            <th>Refundable</th>
+                                            <th>Meals</th>
+                                            <th>Capacity</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for room in data %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ room.hotel.name }}</td>
+                                                <td>{{ room.room_type }}</td>
+                                                <td>{{ room.get_title_display }}</td>
+                                                <td>₹{{ room.price_per_night }}</td>
+                                                <td>{{ room.refundable|yesno:"Yes,No" }}</td>
+                                                <td>{{ room.meals_included|yesno:"Yes,No" }}</td>
+                                                <td>{{ room.capacity }}</td>
+                                                <td>
+                                                    <a href="{% url 'update_hotel_rooms' room.id %}"><i class="bi bi-pencil-square text-primary action-icons" title="Edit"></i></a>
+                                                    <a href="{% url 'delete_hotel_rooms' room.id %}"><i class="bi bi-trash text-danger action-icons" title="Delete"></i></a>
+                                                </td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="9" class="text-center">No rooms found.</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block footer %}
+        {% include 'partials/footer.html' %}
+    {% endblock footer %}
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock extra_js %}

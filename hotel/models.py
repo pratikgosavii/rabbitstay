@@ -31,3 +31,45 @@ class HotelImage(models.Model):
 
     def __str__(self):
         return f"{self.hotel.name} Image"
+
+
+
+class hotel_rooms(models.Model):
+
+    ROOM_TYPE_CHOICES = [
+        ('standard', 'Standard Room'),
+        ('deluxe', 'Deluxe Room'),
+        ('suite', 'Suite'),
+        # Add more as needed
+    ]
+    
+
+    ROOM_PACKAGE_CHOICES = [
+        ('room_only', 'Room Only'),
+        ('breakfast', 'Breakfast Included'),
+        ('breakfast_lunch', 'Breakfast + Lunch'),
+        ('breakfast_dinner', 'Breakfast + Dinner'),
+        ('all_meals', 'Breakfast + Lunch + Dinner'),
+    ]
+
+    hotel = models.ForeignKey("hotel.hotel", on_delete=models.CASCADE, related_name="rooms")
+    room_type = models.ForeignKey("masters.room_type", on_delete=models.CASCADE, related_name="rooms")
+   
+
+    title = models.CharField(
+        max_length=50,
+        choices=ROOM_PACKAGE_CHOICES,
+        default='room_only'
+    )
+
+    description = models.TextField(blank=True)
+    price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
+    refundable = models.BooleanField(default=True)
+    meals_included = models.BooleanField(default=False)
+    bed_type = models.CharField(max_length=100, blank=True)  # e.g., "1 Queen Bed + 1 Double Bed"
+    capacity = models.CharField(max_length=100, blank=True)  # e.g., "2 Adults, 1 Child"
+    view = models.CharField(max_length=100, blank=True)  # e.g., "Beach View"
+    room_amenities = models.ManyToManyField('masters.room_amenity', blank=True)  # Optional: for extra features
+
+    def __str__(self):
+        return f"{self.get_room_type_display()} - {self.title} - ₹{self.price_per_night}"

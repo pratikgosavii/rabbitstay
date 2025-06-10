@@ -116,6 +116,18 @@ class amenity_Form(forms.ModelForm):
 
         }
         
+class room_amenity_Form(forms.ModelForm):
+    class Meta:
+        model = room_amenity
+        fields = '__all__'
+        widgets = {
+           
+            'name': forms.TextInput(attrs={
+                'class': 'form-control', 'id': 'name'
+            })
+
+        }
+        
 class room_type_Form(forms.ModelForm):
     class Meta:
         model = room_type

@@ -6,6 +6,11 @@ class amenity_serializer(serializers.ModelSerializer):
         model = amenity
         fields = '__all__'
 
+class room_amenity_serializer(serializers.ModelSerializer):
+    class Meta:
+        model = room_amenity
+        fields = '__all__'
+
 class room_type_serializer(serializers.ModelSerializer):
     class Meta:
         model = room_type

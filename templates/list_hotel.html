@@ -92,7 +92,7 @@
                                         </thead>
                                         <tbody>
                                             {% for hotel in data %}
-                                            <tr>
+                                            <tr class="hotel-row" data-hotel-id="{{ hotel.id }}">
                                                 <td>{{ forloop.counter }}</td>
                                                 <td>{{ hotel.name }}</td>
                                                 <td>{{ hotel.city }}</td>
@@ -114,7 +114,22 @@
                                                     <a href="{% url 'delete_hotel' hotel.id %}"><i class="bi bi-trash text-danger" title="Delete"></i></a>
                                                 </td>
                                             </tr>
+
+                                            {% for room in hotel.rooms.all %}
+                                            <tr class="room-row hotel-{{ hotel.id }}" style="display: none;">
+                                                <td colspan="11">
+                                                    <strong>Room:</strong> {{ room.get_room_type_display }} - {{ room.get_title_display }} <br>
+                                                    <strong>Price:</strong> ₹{{ room.price_per_night }} |
+                                                    <strong>Refundable:</strong> {{ room.refundable|yesno:"Yes,No" }} |
+                                                    <strong>Meals Included:</strong> {{ room.meals_included|yesno:"Yes,No" }} <br>
+                                                    <strong>Bed:</strong> {{ room.bed_type }} |
+                                                    <strong>Capacity:</strong> {{ room.capacity }} |
+                                                    <strong>View:</strong> {{ room.view }}
+                                                </td>
+                                            </tr>
                                             {% endfor %}
+                                            {% endfor %}
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -148,4 +163,31 @@
 <script src="{% static 'libs/admin-resources/jquery.vectormap/maps/jquery-jvectormap-world-mill-en.js' %}"></script>
 <script src="{% static 'js/pages/allchart.js' %}"></script>
 <script src="{% static 'js/pages/dashboard.init.js' %}"></script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Attach click listener on all hotel rows
+  document.querySelectorAll(".hotel-row").forEach(hotelRow => {
+    hotelRow.style.cursor = "pointer"; // show pointer on hover
+
+    hotelRow.addEventListener("click", () => {
+      const hotelId = hotelRow.getAttribute("data-hotel-id");
+      const roomRows = document.querySelectorAll(`.room-row.hotel-${hotelId}`);
+
+      roomRows.forEach(roomRow => {
+        // Toggle display of room rows
+        if (roomRow.style.display === "none" || roomRow.style.display === "") {
+          roomRow.style.display = "table-row";
+        } else {
+          roomRow.style.display = "none";
+        }
+      });
+    });
+  });
+});
+</script>
+
+
+
 {% endblock extra_js %}

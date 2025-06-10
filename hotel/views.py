@@ -94,14 +94,101 @@ def delete_hotel(request, hotel_id):
     return HttpResponseRedirect(reverse('list_hotel'))
 
 
+from django.db.models import Prefetch
+
 @login_required(login_url='login_admin')
 def list_hotel(request):
 
-    data = hotel.objects.all()
+    data = hotel.objects.prefetch_related(
+        Prefetch('rooms', queryset=hotel_rooms.objects.select_related('room_type').prefetch_related('room_amenities'))
+    )
     context = {
         'data': data
     }
     return render(request, 'list_hotel.html', context)
+
+
+
+
+
+@login_required(login_url='login_admin')
+def add_hotel_rooms(request):
+
+    if request.method == 'POST':
+
+        form = hotel_rooms_Form(request.POST, request.FILES)
+        
+        if form.is_valid():
+            hotel_rooms = form.save(commit=False)
+            hotel_rooms.user = request.user  # Assign the user here
+            hotel_rooms.save()
+            form.save_m2m()  # Save the many-to-many relationships
+            
+            return redirect('list_hotel_rooms')
+        
+        else:
+            print(form.errors)
+            context = {
+                'form': form
+            }
+            return render(request, 'add_hotel_rooms.html', context)
+        
+    else:
+
+        form = hotel_rooms_Form()
+
+        return render(request, 'add_hotel_rooms.html', {'form': form})
+
+        
+
+@login_required(login_url='login_admin')
+def update_hotel_rooms(request, hotel_rooms_id):
+
+    if request.method == 'POST':
+
+        instance = hotel_rooms.objects.get(id=hotel_rooms_id)
+
+        forms = hotel_rooms_Form(request.POST, request.FILES, instance=instance)
+
+        if forms.is_valid():
+            forms.save()
+            return redirect('list_hotel_rooms')
+        
+        else:
+            print(forms.errors)
+            context = {
+                    'form': forms
+                }
+            return render(request, 'add_hotel_rooms.html', context)
+        
+    else:
+
+        instance = hotel_rooms.objects.get(id=hotel_rooms_id)
+        forms = hotel_rooms_Form(instance=instance)
+
+        context = {
+            'form': forms
+        }
+        return render(request, 'add_hotel_rooms.html', context)
+
+        
+
+@login_required(login_url='login_admin')
+def delete_hotel_rooms(request, hotel_rooms_id):
+
+    hotel_rooms.objects.get(id=hotel_rooms_id).delete()
+
+    return HttpResponseRedirect(reverse('list_hotel_rooms'))
+
+
+@login_required(login_url='login_admin')
+def list_hotel_rooms(request):
+
+    data = hotel_rooms.objects.all()
+    context = {
+        'data': data
+    }
+    return render(request, 'list_hotel_rooms.html', context)
 
 
 

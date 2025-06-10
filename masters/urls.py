@@ -56,6 +56,12 @@ urlpatterns = [
     path('list-amenity/', list_amenity, name='list_amenity'),  # create or fetch list of admins
     path('delete-amenity/<amenity_id>', delete_amenity, name='delete_amenity'),  # create or fetch list of admins
     path('get-amenity/', get_amenity.as_view() , name='get_amenity '), 
+
+    path('add-room_amenity/', add_room_amenity, name='add_room_amenity'),  # create or fetch list of admins
+    path('update-room_amenity/<room_amenity_id>', update_room_amenity, name='update_room_amenity'),  # create or fetch list of admins
+    path('list-room_amenity/', list_room_amenity, name='list_room_amenity'),  # create or fetch list of admins
+    path('delete-room_amenity/<room_amenity_id>', delete_room_amenity, name='delete_room_amenity'),  # create or fetch list of admins
+    path('get-room_amenity/', get_room_amenity.as_view() , name='get_room_amenity '), 
     
     path('add-room-type/', add_room_type, name='add_room_type'),  # create or fetch list of admins
     path('update-room-type/<room_type_id>', update_room_type, name='update_room_type'),  # create or fetch list of admins

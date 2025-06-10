@@ -526,6 +526,86 @@ class get_amenity(ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = '__all__'  # enables filtering on all fields
 
+def add_room_amenity(request):
+    
+    if request.method == "POST":
+
+        forms = room_amenity_Form(request.POST, request.FILES)
+
+        if forms.is_valid():
+            forms.save()
+            return redirect('list_room_amenity')
+        else:
+            print(forms.errors)
+            context = {
+                'form': forms
+            }
+            return render(request, 'add_room_amenity.html', context)
+
+
+    else:
+
+        # create first row using admin then editing only
+
+        
+
+        return render(request, 'add_room_amenity.html', { 'form' : room_amenity_Form()})
+
+def update_room_amenity(request, room_amenity_id):
+    
+    instance = room_amenity.objects.get(id = room_amenity_id)
+
+    if request.method == "POST":
+
+        forms = room_amenity_Form(request.POST, request.FILES, instance=instance)
+
+        if forms.is_valid():
+            forms.save()
+            return redirect('list_room_amenity')
+        else:
+            print(forms.errors)
+            context = {
+                'form': forms
+            }
+            return render(request, 'add_room_amenity.html', context)
+    
+    else:
+
+        # create first row using admin then editing only
+
+        forms = room_amenity_Form(instance=instance)
+        
+        context = {
+                'form': forms
+            }
+
+        return render(request, 'add_room_amenity.html', forms)
+
+
+def list_room_amenity(request):
+
+    data = room_amenity.objects.all()
+
+    return render(request, 'list_room_amenity.html', {'data' : data})
+
+
+def delete_room_amenity(request, room_amenity_id):
+
+    data = room_amenity.objects.get(id = room_amenity_id).delete()
+
+    return redirect('list_room_amenity')
+
+
+from django.views import View
+
+
+
+class get_room_amenity(ListAPIView):
+    queryset = room_amenity.objects.all()
+    serializer_class = room_amenity_serializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = '__all__'  # enables filtering on all fields
+
 def add_room_type(request):
     
     if request.method == "POST":
