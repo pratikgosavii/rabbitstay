@@ -90,7 +90,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                            <h4 class="mb-sm-0 font-size-18">List Event</h4>
+                            <h4 class="mb-sm-0 font-size-18">List Amenity</h4>
                         </div>
                     </div>
                 </div>
@@ -105,31 +105,23 @@
                                                 class="table table-bordered table-striped"
                                         >
                                             <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Name</th> 
-                                                    <th>Description</th>
-                                                    <th>Start Date</th>
-                                                    <th>Image</th>
-                                                    <th>Created Date</th>
-                                                    <th>Action</th>
-                                                </tr>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>Action</th>
+                                            </tr>
                                             </thead>
                                             <tbody id="tableBody">
                                                 {% if data %}
-                                                    {% for i in data %}
-                                                        <tr>
-                                                            <td>{{ forloop.counter }}</td>
-                                                            <td>{{ i.name }}</td>
-                                                            <td>{{ i.description }}</td>
-                                                            <td>{{ i.start_date }}%</td>
-                                                            <td>{{ i.date_created }}</td>
-                                                            <td><img width="60" src="{{ i.image.url }}"></td>
-                                                           
+                                            {% for i in data %}
+                                                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{ i.name }}</td>
+                                                  
                                                     <td>
                                                         <!-- remove Button -->
-                                                        <a href="{% url 'update_event' i.id %}" ><i class="bi bi-pencil-square text-primary action-icons edit"  title="Edit"></i>  </a>
-                                                        <a href="{% url 'delete_event' i.id %}" > <i class="bi bi-trash text-danger action-icons delete" title="Delete"></i> </a>
+                                                        <a href="{% url 'update_amenity' i.id %}" ><i class="bi bi-pencil-square text-primary action-icons edit"  title="Edit"></i>  </a>
+                                                        <a href="{% url 'delete_amenity' i.id %}" > <i class="bi bi-trash text-danger action-icons delete" title="Delete"></i> </a>
 
 
                                                     </td>

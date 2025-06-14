@@ -136,10 +136,13 @@
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     
-                    <div class="mb-4">
-                        <label class="form-label">User:</label>
-                        {{ form.user }}
-                    </div>
+                    {% if request.user.is_superuser %}
+                        <div class="mb-4">
+                            <label class="form-label">User:</label>
+                            {{ form.user }}
+                        </div>
+                    {% endif %}
+
 
                     <div class="mb-4">
                         <label class="form-label">Hotel Name:</label>

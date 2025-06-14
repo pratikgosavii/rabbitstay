@@ -124,7 +124,11 @@
                                                     <strong>Meals Included:</strong> {{ room.meals_included|yesno:"Yes,No" }} <br>
                                                     <strong>Bed:</strong> {{ room.bed_type }} |
                                                     <strong>Capacity:</strong> {{ room.capacity }} |
-                                                    <strong>View:</strong> {{ room.view }}
+                                                    <strong>View:</strong> {{ room.view }} 
+                                                    <a href="{% url 'update_hotel_rooms' room.id %}" class="text-primary ms-1" title="Edit Room">
+            <i class="bi bi-pencil-square"></i>
+        </a>
+
                                                 </td>
                                             </tr>
                                             {% endfor %}

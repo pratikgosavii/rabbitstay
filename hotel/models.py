@@ -5,7 +5,7 @@ from django.db import models
 
 class hotel(models.Model):
 
-    user = models.OneToOneField("users.User", on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=255)
     amenities = models.ManyToManyField("masters.amenity", blank=True)
     address = models.TextField()

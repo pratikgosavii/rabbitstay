@@ -37,6 +37,19 @@
                         <li>
                             <a href="javascript: void(0);" class="has-arrow">
                                 <i data-feather="layers"></i>
+                                <span data-key="t-authentication">City</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                <li><a href="{% url 'add_city' %}">Add City</a></li>
+                                <li><a href="{% url 'list_city' %}">List City</a></li>
+                            </ul>
+                          
+                           
+                        </li>
+                        
+                        <li>
+                            <a href="javascript: void(0);" class="has-arrow">
+                                <i data-feather="layers"></i>
                                 <span data-key="t-authentication">Amenity</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
@@ -106,7 +119,7 @@
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
                                 <li><a href="">All Bookings</a></li>
-                                <li><a href="">All Open Bookings</a></li>
+                                <li><a href="">All Future Bookings</a></li>
                             </ul>
                             
                         </li>
