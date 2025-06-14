@@ -26,7 +26,7 @@ class hotel_Form(forms.ModelForm):
             'user': forms.Select(attrs={'class': 'form-control'}),
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
-            'city': forms.TextInput(attrs={'class': 'form-control'}),
+            'city': forms.Select(attrs={'class': 'form-control'}),
             'star_rating': forms.NumberInput(attrs={'class': 'form-control'}),
             'price_per_night': forms.NumberInput(attrs={'class': 'form-control'}),
             'overall_rating': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),

@@ -9,7 +9,7 @@ class hotel(models.Model):
     name = models.CharField(max_length=255)
     amenities = models.ManyToManyField("masters.amenity", blank=True)
     address = models.TextField()
-    city = models.CharField(max_length=100)
+    city = models.ForeignKey("masters.city", on_delete=models.CASCADE, null=True, blank=True)
     star_rating = models.IntegerField()
     price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
     includes_taxes = models.BooleanField(default=True)
