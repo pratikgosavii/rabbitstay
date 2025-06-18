@@ -24,8 +24,6 @@ class User(AbstractUser):
     firebase_uid = models.CharField(max_length=128, unique=True, null=True, blank=True)
     
     is_customer = models.BooleanField(default=False)
-    is_doctor = models.BooleanField(default=False)
-    is_daycare = models.BooleanField(default=False)
     is_service_provider = models.BooleanField(default=False)
 
     mobile = models.CharField(max_length=15, unique=True)

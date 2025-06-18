@@ -12,11 +12,11 @@ class CustomUserAdmin(UserAdmin):
     list_display = (
         'mobile', 'first_name', 'last_name', 'email',
         'is_staff', 'is_active',
-        'is_customer', 'is_doctor', 'is_daycare', 'is_service_provider'
+        'is_customer', 'is_service_provider'
     )
     list_filter = (
         'is_staff', 'is_active',
-        'is_customer', 'is_doctor', 'is_service_provider'
+        'is_customer', 
     )
 
     fieldsets = (
@@ -30,7 +30,7 @@ class CustomUserAdmin(UserAdmin):
             'fields': ('is_staff', 'is_active', 'is_superuser')
         }),
         ('Roles', {
-            'fields': ('is_customer', 'is_doctor', 'is_daycare', 'is_service_provider')
+            'fields': ('is_customer', 'is_service_provider', )
         }),
         ('Groups & Permissions', {
             'fields': ('groups', 'user_permissions')

@@ -9,6 +9,7 @@
                     <!-- Left Menu Start -->
                     <ul class="metismenu list-unstyled" id="side-menu">
 
+                        {% if request.user.is_superuser %}
 
                         <li>
                             <a href="{% url 'dashboard' %}">
@@ -87,6 +88,7 @@
                         </li>
 
 
+
                         <li>
                             <a href="javascript: void(0);" class="has-arrow">
                                 <i data-feather="layers"></i>
@@ -98,6 +100,21 @@
                             </ul>
                            
                         </li>
+
+                        {% endif %}
+
+                        {% if request.user.is_service_provider %}
+
+                        <li>
+                            <a href="{% url 'view_hotel' %}">
+                                <i data-feather="layers"></i>
+                                <span data-key="t-authentication">My Hotel</span>
+                            </a>
+                        </li>
+
+
+                        {% endif %}
+
 
                         <li>
                             <a href="javascript: void(0);" class="has-arrow">
@@ -125,7 +142,7 @@
                         </li>
 
 
-                     
+                        {% if request.user.is_superuser %}
 
                         <li>
                             <li>
@@ -154,6 +171,7 @@
                             </ul>
                         </li>
 
+                        {% endif %}
                         
                         <li>
                             <a href="javascript: void(0);" class="has-arrow">

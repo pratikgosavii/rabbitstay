@@ -80,10 +80,8 @@
                                                 <th>#</th>
                                                 <th>Name</th>
                                                 <th>City</th>
-                                                <th>Price/Night</th>
                                                 <th>Star Rating</th>
-                                                <th>Includes Taxes</th>
-                                                <th>Free Breakfast</th>
+                                                <th>Ammenities</th>
                                                 <th>Featured</th>
                                                 <th>Created At</th>
                                                 <th>Image</th>
@@ -96,10 +94,14 @@
                                                 <td>{{ forloop.counter }}</td>
                                                 <td>{{ hotel.name }}</td>
                                                 <td>{{ hotel.city }}</td>
-                                                <td>{{ hotel.price_per_night }}</td>
                                                 <td>{{ hotel.star_rating }}</td>
-                                                <td>{{ hotel.includes_taxes|yesno:"Yes,No" }}</td>
-                                                <td>{{ hotel.free_breakfast|yesno:"Yes,No" }}</td>
+                                                <td>
+                                                    {% for amenity in hotel.amenities.all %}
+                                                        {{ amenity.name }}{% if not forloop.last %}, {% endif %}
+                                                    {% empty %}
+                                                        No amenities
+                                                    {% endfor %}
+                                                </td>
                                                 <td>{{ hotel.is_featured|yesno:"Yes,No" }}</td>
                                                 <td>{{ hotel.created_at }}</td>
                                                 <td>

@@ -82,7 +82,7 @@
     <div class="logo">
         <img src="{% static 'images/rabitlogo.png' %}" alt="Logo"/>
     </div>
-    <h4 class="text-center mb-4">Admin Login</h4>
+    <h4 class="text-center mb-4">Vendor Login</h4>
     <form action="" method="POST">
         {% csrf_token %}
         <div class="mb-3">
@@ -118,12 +118,17 @@
         <button type="submit" class="btn btn-purple w-100">Login</button>
     </form>
 
-   
+    <div class="register-link">
+        <p>
+            New here? <a href="{% url 'register_vendor' %}">Register as a Hotel Vendor</a>
+        </p>
+    </div>
 
 
     <div class="register-link">
-        <p>Are you an Vendor? <a href="{% url 'login_vendor' %}">Login here</a></p>
+        <p>Are you an Admin? <a href="{% url 'login_admin' %}">Login here</a></p>
     </div>
+
 
 </div>
 

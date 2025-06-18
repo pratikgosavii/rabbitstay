@@ -148,6 +148,39 @@
                             {{ form.room_amenities }}
                         </div>
 
+                        <div class="mb-4">
+                            <label class="form-label">Room Image:</label>
+                            {{ form.main_image }}
+                            <div id="imagesPreview"></div>
+                        </div>
+
+                           <div class="mb-4">
+                        <label class="form-label">Select Room Gallery Images:</label>
+                        <input type="file" class="form-control" id="image-upload" name="image" accept="image/*" multiple><br><br>
+
+                        <!-- Preview area -->
+                        <div id="preview" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
+
+                    </div>
+
+
+                         <h4>Gallery:</h4>
+<div style="display: flex; gap: 10px; flex-wrap: wrap;">
+    {% for img in existing_images %}
+        <div style="position: relative;">
+            <img src="{{ img.image.url }}" width="100" height="100" style="object-fit: cover;" />
+            
+            <!-- Delete form/button -->
+          
+               <a href="{% url 'delete_hotel_room_image' img.id %}"> <button type="button" style="background: red; color: white; border: none;">✕</button> </a>
+            
+        </div>
+    {% empty %}
+        <p>No images uploaded.</p>
+    {% endfor %}
+</div>
+
+
                         <div class="text-center">
                             <input type="submit" class="btn btn-primary custom-button" value="Submit" />
                         </div>
@@ -181,6 +214,38 @@
     });
   });
 </script>
+
+
+
+<script>
+document.getElementById('image-upload').addEventListener('change', function (event) {
+    const preview = document.getElementById('preview');
+    preview.innerHTML = ''; // Clear old previews
+
+    const files = event.target.files;
+
+    Array.from(files).forEach(file => {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.width = '100px';
+            img.style.height = '100px';
+            img.style.objectFit = 'cover';
+            img.style.border = '1px solid #ccc';
+            img.style.borderRadius = '8px';
+            preview.appendChild(img);
+        };
+
+        reader.readAsDataURL(file);
+    });
+});
+</script>
+
+
+
+
 
 
 {% endblock extra_js %}

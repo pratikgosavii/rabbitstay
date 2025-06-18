@@ -5,15 +5,12 @@ from django.db import models
 
 class hotel(models.Model):
 
-    user = models.ForeignKey("users.User", on_delete=models.CASCADE, null=True, blank=True)
+    user = models.OneToOneField("users.User", on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=255)
     amenities = models.ManyToManyField("masters.amenity", blank=True)
     address = models.TextField()
     city = models.ForeignKey("masters.city", on_delete=models.CASCADE, null=True, blank=True)
     star_rating = models.IntegerField()
-    price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
-    includes_taxes = models.BooleanField(default=True)
-    free_breakfast = models.BooleanField(default=False)
     overall_rating = models.DecimalField(max_digits=2, decimal_places=1, null=True, blank=True)
     main_image = models.ImageField(upload_to='hotels/', null=True, blank=True)
     is_featured = models.BooleanField(default=False)
@@ -27,7 +24,6 @@ class hotel(models.Model):
 class HotelImage(models.Model):
     hotel = models.ForeignKey(hotel, related_name='images', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='hotel_gallery/')
-    is_primary = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.hotel.name} Image"
@@ -54,6 +50,7 @@ class hotel_rooms(models.Model):
 
     hotel = models.ForeignKey("hotel.hotel", on_delete=models.CASCADE, related_name="rooms")
     room_type = models.ForeignKey("masters.room_type", on_delete=models.CASCADE, related_name="rooms")
+    main_image = models.ImageField(upload_to='hotels/', null=True, blank=True)
    
 
     title = models.CharField(
@@ -73,3 +70,12 @@ class hotel_rooms(models.Model):
 
     def __str__(self):
         return f"{self.get_room_type_display()} - {self.title} - ₹{self.price_per_night}"
+
+
+
+class hotel_roomsImage(models.Model):
+    hotel_rooms = models.ForeignKey(hotel_rooms, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='hotel_rooms_gallery/')
+
+    def __str__(self):
+        return f"{self.hotel.name} Image"

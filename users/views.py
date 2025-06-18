@@ -254,29 +254,125 @@ class ResetPasswordView(APIView):
 
 
 
-def  login_admin(request):
+def login_admin(request):
 
     forms = LoginForm()
     if request.method == 'POST':
         forms = LoginForm(request.POST)
         if forms.is_valid():
-            mobile = forms.cleaned_data['mobile']
+            email = forms.cleaned_data['email']
             password = forms.cleaned_data['password']
-            print(mobile)
+            print(email)
             print(password)
-            user = authenticate(mobile=mobile, password=password)
-            if user:
-                login(request, user)
 
-                if user.is_superuser:
-                    print('---------------------------------')
-                    print('---------------------------------')
-                    print('---------------------------------')
-                return redirect('dashboard')
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                return render(request, 'adminLogin.html', {'error': 'Invalid email or password'})
+            
+            if user:
+                if user.check_password(password):
+                    if user.is_superuser:
+                        login(request, user)
+                        return redirect('dashboard')
+                    else:
+                        messages.error(request, 'You are not superuser')
+                        context = {'form': forms}
+                        return render(request, 'adminLogin.html', context)
+                else:
+                    return render(request, 'adminLogin.html', {'error': 'Invalid email or password'})
+
             else:
                 messages.error(request, 'wrong username password')
     context = {'form': forms}
     return render(request, 'adminLogin.html', context)
+
+import firebase_admin
+from firebase_admin import auth
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.contrib.auth import get_user_model
+import json
+
+
+
+
+def register_vendor(request):
+
+    if request.method == 'POST':
+
+        print('----------------------')
+
+
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        mobile = request.POST.get('mobile')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if not all([first_name, last_name, email, mobile, password, confirm_password]):
+            return render(request, 'vendor_register.html', {'error': 'All fields are required.'})
+
+        if password != confirm_password:
+            return render(request, 'vendor_register.html', {'error': 'Passwords do not match.'})
+
+        if User.objects.filter(email=email).exists():
+            return render(request, 'vendor_register.html', {'error': 'Email already registered.'})
+
+        if User.objects.filter(mobile=mobile).exists():
+            return render(request, 'vendor_register.html', {'error': 'Mobile number already registered.'})
+
+        print(request.POST)
+        # Create the user
+        user = User.objects.create_user(
+            email=email,
+            mobile=mobile,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            is_service_provider=True
+        )
+
+        login(request, user)
+        return redirect('vendor_dashboard')
+
+    return render(request, 'vendor_register.html')
+        
+
+def login_vendor(request):
+    form = LoginForm()
+
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                messages.error(request, 'Invalid email or password')
+                return render(request, 'vendorLogin.html', {'form': form})
+
+            if user.check_password(password):
+                if user.is_service_provider:
+                    login(request, user)
+
+                    print('------------------')
+
+                    print(request.user)
+
+
+                    
+                    return redirect('dashboard')
+                else:
+                    messages.error(request, 'Access denied: not a service provider')
+            else:
+                messages.error(request, 'Invalid email or password')
+
+    return render(request, 'vendorLogin.html', {'form': form})
 
 
 # def resgister_page(request):
@@ -320,3 +416,18 @@ def provider_user_list(request):
     data = User.objects.all()
 
     return render(request, 'user_list.html', { 'data' : data})
+
+
+
+
+def user_booking_history(request, user_id):
+
+    data = User.objects.all()
+
+    return render(request, 'user_booking_history.html', { 'data' : data})
+
+def hotel_booking_history(request, user_id):
+
+    data = User.objects.all()
+
+    return render(request, 'hotel_booking_history.html', { 'data' : data})
