@@ -33,6 +33,12 @@ urlpatterns = [
     
     path('delete-hotel-room-image/<int:image_id>/', delete_hotel_room_image, name='delete_hotel_room_image'),
     
+    path('list-hotel-bookings/', list_hotel_bookings, name='list_hotel_bookings'),
+    path('update-hotel-bookings/<booking_id>', update_hotel_bookings, name='update_hotel_bookings'),
+
+    path('list-hotel-earning/', list_hotel_earning, name='list_hotel_earning'),
+
+
 
 ]  + router.urls
 

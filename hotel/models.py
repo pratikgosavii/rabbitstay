@@ -13,6 +13,8 @@ class hotel(models.Model):
     star_rating = models.IntegerField()
     overall_rating = models.DecimalField(max_digits=2, decimal_places=1, null=True, blank=True)
     main_image = models.ImageField(upload_to='hotels/', null=True, blank=True)
+    profit_margin = models.DecimalField(max_digits=5, decimal_places=2)
+
     is_featured = models.BooleanField(default=False)
     description = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
@@ -69,7 +71,7 @@ class hotel_rooms(models.Model):
     room_amenities = models.ManyToManyField('masters.room_amenity', blank=True)  # Optional: for extra features
 
     def __str__(self):
-        return f"{self.get_room_type_display()} - {self.title} - ₹{self.price_per_night}"
+        return f" {self.title} - ₹{self.price_per_night}"
 
 
 

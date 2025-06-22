@@ -38,7 +38,8 @@ def add_hotel(request):
     if request.method == 'POST':
 
         form = hotel_Form(request.POST, request.FILES)
-        
+        if not request.user.is_superuser:
+            form.fields.pop('profit_margin')
         if form.is_valid():
             hotel = form.save(commit=False)
             if not request.user.is_superuser:
@@ -107,7 +108,8 @@ def update_hotel(request, hotel_id):
         instance = hotel.objects.get(id=hotel_id)
 
         forms = hotel_Form(request.POST, request.FILES, instance=instance)
-       
+        if not request.user.is_superuser:
+            forms.fields.pop('profit_margin')
         
         if forms.is_valid():
             hotels = forms.save(commit=False)
@@ -275,3 +277,87 @@ def list_hotel_rooms(request):
     return render(request, 'list_hotel_rooms.html', context)
 
 
+from customer.models import *
+
+@login_required(login_url='login_admin')
+def list_hotel_bookings(request):
+    if request.user.is_superuser:
+        data = HotelBooking.objects.all()
+        
+    else:
+        data = HotelBooking.objects.filter(hotel__user = request.user)
+
+    context = {
+        'data': data
+    }
+    return render(request, 'list_hotel_bookings.html', context)
+
+
+from customer.forms import *
+
+@login_required(login_url='login_admin')
+def update_hotel_bookings(request, booking_id):
+
+    if request.user.is_superuser:
+        
+        instance = HotelBooking.objects.get(id = booking_id)
+
+    else:
+
+        instance = HotelBooking.objects.get(hotel__user = request.user, id = booking_id)
+
+    if request.method == 'POST':
+
+        print('--------------------')
+
+        form = HotelBookingStatusForm(request.POST, instance=instance)
+
+        print('--------------------')
+
+        if form.is_valid():
+            form.save()
+            print('--------------------')
+
+
+            return redirect('list_hotel_bookings')
+        
+        else:
+
+            print('------12--------------')
+
+
+            print(form.errors)
+            context = {
+            
+                'form' : form
+            }
+            return render(request, 'update_hotel_bookings.html', context)
+
+    
+    else:
+
+
+        form = HotelBookingStatusForm(instance = instance)
+
+        context = {
+        
+            'form' : form
+        }
+        return render(request, 'update_hotel_bookings.html', context)
+
+
+
+
+
+@login_required(login_url='login_admin')
+def list_hotel_earning(request):
+    if request.user.is_superuser:
+        data = HotelBooking.objects.all()
+        
+    else:
+        data = HotelBooking.objects.filter(hotel__user = request.user)
+
+    context = {
+        'data': data
+    }
+    return render(request, 'list_hotel_earning.html', context)

@@ -142,10 +142,17 @@
 }
 
 .form-container {
-    background-color: #ffffff;
+    background-color: var(--bs-blue);
     padding: 8px 10px !important;
 
 }
+
+
+.card{
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+}
+
 
     
     </style>
@@ -248,6 +255,16 @@
                                 {% else %}
                                     <p class="text-center p-3">No Image</p>
                                 {% endif %}
+
+                                 <div style="margin:21px;">
+                                        <strong>Room Amenities:</strong><br>
+                                        {% for amenity in room.room_amenities.all %}
+                                            <span class="badge bg-info text-dark" style="padding: 5px; background-color: var(--bs-blue) !important; color: white !important; font-weight: 600;">{{ amenity.name }}</span>
+                                        {% empty %}
+                                            <span class="text-muted">No amenities</span>
+                                        {% endfor %}
+                                    </div>
+
                             </div>
                             {% comment %} {% if room.images.all %}
                                 <div class="image-gallery-container mb-2">
@@ -275,14 +292,7 @@
                                     <p><strong>Meals Included:</strong> {{ room.meals_included|yesno:"Yes,No" }}</p>
                                     <p><strong>View:</strong> {{ room.view }}</p>
 
-                                    <div>
-                                        <strong>Room Amenities:</strong><br>
-                                        {% for amenity in room.room_amenities.all %}
-                                            <span class="badge bg-info text-dark">{{ amenity.name }}</span>
-                                        {% empty %}
-                                            <span class="text-muted">No amenities</span>
-                                        {% endfor %}
-                                    </div>
+                                   
 
                                     <div class="mt-3">
                                         <a href="{% url 'update_hotel_rooms' room.id %}" class="btn btn-sm btn-warning">Edit</a>

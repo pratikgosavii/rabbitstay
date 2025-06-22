@@ -3,61 +3,52 @@
 
 {% block title %}Add Hotel{% endblock title %}
 
-
 {% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="{% static 'libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.css' %}" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    body {
+        background-color: #f0d28c;
+        padding-bottom: 20px;
+    }
 
+    .form-container {
+        background-color: #ffffff;
+        padding: 40px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
+    .form-heading {
+        text-align: left;
+        margin-bottom: 20px;
+        font-weight: bold;
+        font-size: 2rem;
+        color: #0088CC!important ;
+    }
 
-    <!-- plugin css -->
-    <link href="{% static 'libs/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.css' %}" rel="stylesheet"
-          type="text/css"/>
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-    />
-    <style>
-        body {
-            background-color: #f0d28c;
-            padding-bottom: 20px;
-        }
+    .description-box {
+        height: 150px;
+        resize: none;
+    }
 
-        .form-container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+    .image-preview {
+        max-height: 100px;
+        margin-top: 10px;
+    }
 
-        .form-heading {
-            text-align: left;
-            margin-bottom: 20px;
-            font-weight: bold;
-            font-size: 2rem;
-            color: #0088CC!important ;
-        }
+    .btn-primary {
+        background-color: #0088CC!important ;
+        border-color: #0088CC!important ;
+    }
 
-        .description-box {
-            height: 150px;
-            resize: none;
-        }
+    .custom-button {
+        width: 150px;
+    }
 
-        .image-preview {
-            max-height: 100px;
-            margin-top: 10px;
-        }
-
-        .btn-primary {
-            background-color: #0088CC!important ;
-            border-color: #0088CC!important ;
-        }
-
-        .custom-button {
-            width: 150px;
-        }
-
-         .select2-container--default .select2-selection--multiple {
+    .select2-container--default .select2-selection--multiple {
         border: 1px solid #ced4da;
         border-radius: 0.375rem;
         padding: 0.375rem 0.75rem;
@@ -79,11 +70,8 @@
         margin-left: 4px;
     }
 
-  
-
-    .select2-selection__choice__display{
+    .select2-selection__choice__display {
         margin-left: 9px !important;
-
     }
 
     .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
@@ -109,19 +97,16 @@
         padding: 0 7px;
     }
 
-    
-    </style>
+    .text-danger {
+        font-size: 0.9rem;
+    }
+</style>
 {% endblock extra_css %}
 
-
 {% block content %}
-
-
 <div class="main-content">
     <div class="page-content">
-
-         <div class="container-fluid">
-            <!-- start page title -->
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
@@ -130,106 +115,138 @@
                 </div>
             </div>
 
+            <div class="container">
+                <div class="form-container">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
 
-        <div class="container">
-            <div class="form-container">
-                <form method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    
-                    {% if request.user.is_superuser %}
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        {% if request.user.is_superuser %}
+                            <div class="mb-4">
+                                <label class="form-label">User:</label>
+                                {{ form.user }}
+                                {% if form.user.errors %}
+                                    <div class="text-danger">{{ form.user.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
                         <div class="mb-4">
-                            <label class="form-label">User:</label>
-                            {{ form.user }}
+                            <label class="form-label">Hotel Name:</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger">{{ form.name.errors.0 }}</div>
+                            {% endif %}
                         </div>
-                    {% endif %}
 
+                        <div class="mb-4">
+                            <label class="form-label">Address:</label>
+                            {{ form.address }}
+                            {% if form.address.errors %}
+                                <div class="text-danger">{{ form.address.errors.0 }}</div>
+                            {% endif %}
+                        </div>
 
-                    <div class="mb-4">
-                        <label class="form-label">Hotel Name:</label>
-                        {{ form.name }}
-                    </div>
+                        <div class="mb-4">
+                            <label class="form-label">City:</label>
+                            {{ form.city }}
+                            {% if form.city.errors %}
+                                <div class="text-danger">{{ form.city.errors.0 }}</div>
+                            {% endif %}
+                        </div>
 
-                    <div class="mb-4">
-                        <label class="form-label">Address:</label>
-                        {{ form.address }}
-                    </div>
+                        <div class="mb-4">
+                            <label class="form-label">Star Rating:</label>
+                            {{ form.star_rating }}
+                            {% if form.star_rating.errors %}
+                                <div class="text-danger">{{ form.star_rating.errors.0 }}</div>
+                            {% endif %}
+                        </div>
 
-                    <div class="mb-4">
-                        <label class="form-label">City:</label>
-                        {{ form.city }}
-                    </div>
+                        <div class="mb-4">
+                            <label class="form-label">Amenities:</label>
+                            {{ form.amenities }}
+                            {% if form.amenities.errors %}
+                                <div class="text-danger">{{ form.amenities.errors.0 }}</div>
+                            {% endif %}
+                        </div>
 
-                    <div class="mb-4">
-                        <label class="form-label">Star Rating:</label>
-                        {{ form.star_rating }}
-                    </div>
+                        <div class="mb-4">
+                            <label class="form-label">Description:</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                        </div>
 
-                    <div class="mb-4">
-                        <label class="form-label">Amenities:</label>
-                        {{ form.amenities }}
-                    </div>
+                        <div class="mb-4">
+                            <label class="form-label">Hotel Image:</label>
+                            {{ form.main_image }}
+                            {% if form.main_image.errors %}
+                                <div class="text-danger">{{ form.main_image.errors.0 }}</div>
+                            {% endif %}
+                            <div id="imagesPreview"></div>
+                        </div>
 
-                  
+                        {% if request.user.is_superuser %}
+                           
+                        <div class="mb-4">
+                                <label class="form-label">Profit Margin:</label>
+                                {{ form.profit_margin }}
+                                {% if form.profit_margin.errors %}
+                                    <div class="text-danger">{{ form.profit_margin.errors.0 }}</div>
+                                {% endif %}
+                            </div>
 
-                    <div class="mb-4">
-                        <label class="form-label">Description:</label>
-                        {{ form.description }}
-                    </div>
+                            <div class="mb-4">
+                                <label class="form-label">Featured:</label>
+                                {{ form.is_featured }}
+                                {% if form.is_featured.errors %}
+                                    <div class="text-danger">{{ form.is_featured.errors.0 }}</div>
+                                {% endif %}
+                            </div>
 
-                    <div class="mb-4">
-                        <label class="form-label">Hotel Image:</label>
-                        {{ form.main_image }}
-                        <div id="imagesPreview"></div>
-                    </div>
+                            <div class="mb-4">
+                                <label class="form-label">Active:</label>
+                                {{ form.is_active }}
+                                {% if form.is_active.errors %}
+                                    <div class="text-danger">{{ form.is_active.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
 
-                    
-                    {% if request.user.is_superuser %}
+                        <div class="mb-4">
+                            <label class="form-label">Select Hotel Gallery Images:</label>
+                            <input type="file" class="form-control" id="image-upload" name="image" accept="image/*" multiple><br><br>
+                            <div id="preview" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
+                        </div>
 
-                     <div class="mb-4">
-                        <label class="form-label">Featured:</label>
-                        {{ form.is_featured }}
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="form-label">Active:</label>
-                        {{ form.is_active }}
-                    </div>
+                        <h4>Gallery:</h4>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            {% for img in existing_images %}
+                                <div style="position: relative;">
+                                    <img src="{{ img.image.url }}" width="100" height="100" style="object-fit: cover;" />
+                                    <a href="{% url 'delete_hotel_image' img.id %}">
+                                        <button type="button" style="background: red; color: white; border: none;">✕</button>
+                                    </a>
+                                </div>
+                            {% empty %}
+                                <p>No images uploaded.</p>
+                            {% endfor %}
+                        </div>
 
-                    {% endif %}
-
-                    <div class="mb-4">
-                        <label class="form-label">Select Hotel Gallery Images:</label>
-                        <input type="file" class="form-control" id="image-upload" name="image" accept="image/*" multiple><br><br>
-
-                        <!-- Preview area -->
-                        <div id="preview" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
-
-                    </div>
-
-
-               
-                    <h4>Gallery:</h4>
-<div style="display: flex; gap: 10px; flex-wrap: wrap;">
-    {% for img in existing_images %}
-        <div style="position: relative;">
-            <img src="{{ img.image.url }}" width="100" height="100" style="object-fit: cover;" />
-            
-            <!-- Delete form/button -->
-          
-               <a href="{% url 'delete_hotel_image' img.id %}"> <button type="button" style="background: red; color: white; border: none;">✕</button> </a>
-            
-        </div>
-    {% empty %}
-        <p>No images uploaded.</p>
-    {% endfor %}
-</div>
-
-
-
-                    <div class="text-center">
-                        <input type="submit" class="btn btn-primary custom-button" value="Submit" />
-                    </div>
-                </form>
+                        <div class="text-center">
+                            <input type="submit" class="btn btn-primary custom-button" value="Submit" />
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -237,65 +254,53 @@
 {% endblock content %}
 
 {% block extra_js %}
-    <script>
-        document.getElementById("id_image").addEventListener("change", function () {
-            const file = this.files[0];
-            const previewContainer = document.getElementById("imagesPreview");
-            previewContainer.innerHTML = "";
-            if (file && file.type.startsWith("image/")) {
-                const reader = new FileReader();
-                reader.onload = function (event) {
-                    const img = document.createElement("img");
-                    img.src = event.target.result;
-                    img.style.width = "100px";
-                    img.style.borderRadius = "5px";
-                    previewContainer.appendChild(img);
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    </script>
+<script>
+    document.getElementById("id_image").addEventListener("change", function () {
+        const file = this.files[0];
+        const previewContainer = document.getElementById("imagesPreview");
+        previewContainer.innerHTML = "";
+        if (file && file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const img = document.createElement("img");
+                img.src = event.target.result;
+                img.style.width = "100px";
+                img.style.borderRadius = "5px";
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    document.getElementById('image-upload').addEventListener('change', function (event) {
+        const preview = document.getElementById('preview');
+        preview.innerHTML = '';
+        const files = event.target.files;
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.width = '100px';
+                img.style.height = '100px';
+                img.style.objectFit = 'cover';
+                img.style.border = '1px solid #ccc';
+                img.style.borderRadius = '8px';
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-  $(document).ready(function() {
-    $('#id_amenities').select2({
-      placeholder: "Select amenities",
-      allowClear: true
+    $(document).ready(function () {
+        $('#id_amenities').select2({
+            placeholder: "Select amenities",
+            allowClear: true
+        });
     });
-  });
 </script>
-
-
-<script>
-document.getElementById('image-upload').addEventListener('change', function (event) {
-    const preview = document.getElementById('preview');
-    preview.innerHTML = ''; // Clear old previews
-
-    const files = event.target.files;
-
-    Array.from(files).forEach(file => {
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            img.style.width = '100px';
-            img.style.height = '100px';
-            img.style.objectFit = 'cover';
-            img.style.border = '1px solid #ccc';
-            img.style.borderRadius = '8px';
-            preview.appendChild(img);
-        };
-
-        reader.readAsDataURL(file);
-    });
-});
-</script>
-
-
-
-
-
 {% endblock extra_js %}

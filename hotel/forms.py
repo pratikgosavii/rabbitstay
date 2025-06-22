@@ -24,6 +24,7 @@ class hotel_Form(forms.ModelForm):
             'city': forms.Select(attrs={'class': 'form-control'}),
             'star_rating': forms.NumberInput(attrs={'class': 'form-control'}),
             'overall_rating': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),
+            'profit_margin': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'description': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'main_image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
