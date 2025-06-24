@@ -383,15 +383,17 @@ from xhtml2pdf import pisa
 import io
 
 def render_pdf_view(request, booking_id):
-    booking = get_object_or_404(HotelBooking, id=booking_id)
-    html_string = render_to_string('from_owner_to_hotel_invoice.html', {'booking': booking})
+    # booking = get_object_or_404(HotelBooking, id=booking_id)
+    # html_string = render_to_string('from_owner_to_hotel_invoice.html', {'booking': booking})
 
-    result = io.BytesIO()
-    pdf_status = pisa.CreatePDF(src=html_string, dest=result, encoding='UTF-8')
+    # result = io.BytesIO()
+    # pdf_status = pisa.CreatePDF(src=html_string, dest=result, encoding='UTF-8')
 
-    if pdf_status.err:
-        return HttpResponse('PDF generation failed', status=500)
+    # if pdf_status.err:
+    #     return HttpResponse('PDF generation failed', status=500)
 
-    response = HttpResponse(result.getvalue(), content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename="invoice_{booking_id}.pdf"'
-    return response
+    # response = HttpResponse(result.getvalue(), content_type='application/pdf')
+    # response['Content-Disposition'] = f'inline; filename="invoice_{booking_id}.pdf"'
+    # return response
+
+    pass
