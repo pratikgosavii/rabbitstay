@@ -37,6 +37,7 @@ urlpatterns = [
     path('update-hotel-bookings/<booking_id>', update_hotel_bookings, name='update_hotel_bookings'),
 
     path('list-hotel-earning/', list_hotel_earning, name='list_hotel_earning'),
+    path('hotel-invoice/<booking_id>', render_pdf_view, name='render_pdf_view'),
 
 
 

@@ -499,7 +499,7 @@ def update_amenity(request, amenity_id):
                 'form': forms
             }
 
-        return render(request, 'add_amenity.html', forms)
+        return render(request, 'add_amenity.html', context)
 
 
 def list_amenity(request):
@@ -579,7 +579,7 @@ def update_room_amenity(request, room_amenity_id):
                 'form': forms
             }
 
-        return render(request, 'add_room_amenity.html', forms)
+        return render(request, 'add_room_amenity.html', context)
 
 
 def list_room_amenity(request):
@@ -659,7 +659,7 @@ def update_room_type(request, room_type_id):
                 'form': forms
             }
 
-        return render(request, 'add_room_type.html', forms)
+        return render(request, 'add_room_type.html', context)
 
 
 def list_room_type(request):

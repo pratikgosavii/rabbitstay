@@ -1,57 +1,112 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Invoice - RD17499064830899449</title>
-    <style>
-        body { font-family: Arial, sans-serif; font-size: 14px; margin: 30px; }
-        .section { margin-bottom: 20px; }
-        .heading { font-weight: bold; margin-bottom: 5px; }
-        .invoice-box { border: 1px solid #ddd; padding: 20px; border-radius: 5px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        .total { font-weight: bold; background-color: #f0f0f0; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Hotelier Voucher</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { font-size: 14px; padding: 30px; }
+    .section-title { font-weight: bold; margin-top: 30px; margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+    .voucher-box { border: 1px solid #ccc; padding: 20px; border-radius: 8px; }
+    .label { font-weight: 600; }
+    .btn-primary { font-weight: bold; }
+    .table td, .table th { vertical-align: middle; }
+  </style>
 </head>
 <body>
-    <div class="invoice-box">
-        <div class="section">
-            <div class="heading">Invoice Details</div>
-            <p><strong>Invoice No:</strong> RD17499064830899449</p>
-            <p><strong>Date:</strong> June 14, 2025 - 6:49 PM</p>
-            <p><strong>Customer:</strong> Mohan Arjun</p>
-            <p><strong>Pickup Address:</strong> Hanumanji Colony, Bowenpally, Secunderabad, Telangana</p>
-            <p><strong>Drop Address:</strong> Friends Colony, Old Bowenpally, Secunderabad</p>
-        </div>
 
-        <div class="section">
-            <div class="heading">Bill Summary</div>
-            <table>
-                <tr><th>Description</th><th>Amount</th></tr>
-                <tr><td>Ride Charge</td><td>₹25.91</td></tr>
-                <tr><td>Booking Fees & Convenience Charges</td><td>₹9.09</td></tr>
-                <tr class="total"><td>Total</td><td>₹35.00</td></tr>
-            </table>
-        </div>
-
-        <div class="section">
-            <div class="heading">Tax Breakdown</div>
-            <table>
-                <tr><th>Tax Type</th><th>Rate</th><th>Amount</th></tr>
-                <tr><td>CGST</td><td>2.5%</td><td>₹0.62</td></tr>
-                <tr><td>SGST</td><td>2.5%</td><td>₹0.62</td></tr>
-                <tr><td>IGST</td><td>0%</td><td>₹0.00</td></tr>
-            </table>
-        </div>
-
-        <div class="section">
-            <p><strong>Payment Method:</strong> QR Pay</p>
-            <p><strong>Vehicle:</strong> AP15BK3939</p>
-            <p><strong>Captain:</strong> M Shankar</p>
-        </div>
-
-        <div class="section">
-            <p><em>This is a system-generated invoice. No signature required.</em></p>
-        </div>
+<div class="voucher-box">
+  <div class="d-flex justify-content-between">
+    <img src="https://imgak.mmtcdn.com/pwa_v3/pwa_hotel_assets/header/logo@2x.png" height="40">
+    <div class="text-end">
+      <strong>{{ booking.hotel.name }}</strong><br>
+      {{ booking.hotel.address|default:"Hotel Address" }}<br>
+      {{ booking.hotel.city|default:"City" }}, {{ booking.hotel.state|default:"State" }}, IN
     </div>
+  </div>
+
+  <hr>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <div class="label">PRIMARY GUEST DETAILS</div>
+      <div><strong>👤 {{ booking.first_name }} {{ booking.last_name }}</strong></div>
+      <div>Check-in: <strong>{{ booking.check_in }}</strong></div>
+      <div>Check-out: <strong>{{ booking.check_out }}</strong></div>
+      <div>Total Guests: <strong>{{ booking.guest_count }}</strong></div>
+    </div>
+    <div class="col-md-6 text-end">
+      <div>Booking ID: <strong>{{ booking.id }}</strong></div>
+      <div>Booked on: <strong>{{ booking.created_at }}</strong></div>
+      <div>Status: <strong class="text-success">{{ booking.status|title }}</strong></div>
+      <div>Payment: <strong>Paid Online</strong></div>
+      <div>Booked via: <strong>HotelApp</strong></div>
+      <div>Contact: <strong>{{ booking.phone_number }}</strong></div>
+    </div>
+  </div>
+
+  <div class="text-center">
+    <a href="#" class="btn btn-primary">CONFIRM BOOKING & GET PAYMENT</a>
+  </div>
+
+  <div class="section-title">Room Details</div>
+  <p>
+    <strong>1 x {{ booking.room.name }}</strong><br>
+    {{ booking.guest_count }} Guests | Room Only<br>
+    <strong>Inclusions:</strong> {{ booking.special_request|default:"Standard Room" }}<br>
+    <strong>Cancellation Policy:</strong> This is a non-refundable, non-amendable tariff. Cancellations/no-shows will be charged 100%.
+  </p>
+
+  <div class="section-title">Payment</div>
+  <div class="row">
+    <div class="col-md-6">
+      <div>Property Gross Charges: ₹ <strong>{{ booking.base_amount }}</strong></div>
+    </div>
+    <div class="col-md-6 text-end">
+      <div>Payable to Property: ₹ <strong>{{ booking.hotel_earning }}</strong></div>
+    </div>
+  </div>
+
+  <div class="section-title">Room Wise Payment Breakup (in ₹)</div>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Room Charges</th>
+        <th>Extra Adult/Child</th>
+        <th>Taxes</th>
+        <th>Gross Charges</th>
+        <th>Commission</th>
+        <th>Net Rate</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ booking.check_in }}</td>
+        <td>{{ booking.base_amount }}</td>
+        <td>0.0</td>
+        <td>{{ booking.gst_amount }}</td>
+        <td>{{ booking.total_amount }}</td>
+        <td>{{ booking.commission_amount }}</td>
+        <td>{{ booking.hotel_earning }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">Final Calculation</div>
+  <table class="table table-sm table-bordered">
+    <tbody>
+      <tr><td>1. Room Charges</td><td>₹ {{ booking.base_amount }}</td></tr>
+      <tr><td>2. Extra Adult/Child Charges</td><td>₹ 0.00</td></tr>
+      <tr><td>3. Property Taxes</td><td>₹ {{ booking.gst_amount }}</td></tr>
+      <tr><td>4. Service Charges</td><td>₹ 0.00</td></tr>
+      <tr class="table-light"><td><strong>(A) Property Gross Charges</strong></td><td><strong>₹ {{ booking.total_amount }}</strong></td></tr>
+      <tr><td>5. Commission (10%)</td><td>₹ {{ booking.commission_amount }}</td></tr>
+      <tr><td>6. GST on Commission (18%)</td><td>₹ {{ booking.commission_gst }}</td></tr>
+      <tr class="table-light"><td><strong>(B) Commission Charges</strong></td><td><strong>₹ {{ booking.commission_amount|floatformat:2|add:booking.commission_gst|floatformat:2 }}</strong></td></tr>
+    </tbody>
+  </table>
+</div>
+
 </body>
 </html>

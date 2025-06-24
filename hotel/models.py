@@ -71,7 +71,7 @@ class hotel_rooms(models.Model):
     room_amenities = models.ManyToManyField('masters.room_amenity', blank=True)  # Optional: for extra features
 
     def __str__(self):
-        return f" {self.title} - ₹{self.price_per_night}"
+        return f" {self.room_type} - ₹{self.price_per_night}"
 
 
 

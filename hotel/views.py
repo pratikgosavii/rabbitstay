@@ -281,16 +281,21 @@ from customer.models import *
 
 @login_required(login_url='login_admin')
 def list_hotel_bookings(request):
-    if request.user.is_superuser:
-        data = HotelBooking.objects.all()
-        
-    else:
-        data = HotelBooking.objects.filter(hotel__user = request.user)
+    queryset = HotelBooking.objects.all() if request.user.is_superuser else HotelBooking.objects.filter(hotel__user=request.user)
+
+    filterset = HotelBookingFilter(request.GET, queryset=queryset, request = request)
+    filtered_bookings = filterset.qs
+
+    total_earning = filtered_bookings.aggregate(total=Sum('hotel_earning'))['total'] or 0
 
     context = {
-        'data': data
+        'data': filtered_bookings,
+        'filterset': filterset,
+        'total_earning': total_earning,
     }
     return render(request, 'list_hotel_bookings.html', context)
+
+
 
 
 from customer.forms import *
@@ -348,16 +353,45 @@ def update_hotel_bookings(request, booking_id):
 
 
 
+from django.db.models import Sum
+
+from .filter import *
 
 @login_required(login_url='login_admin')
 def list_hotel_earning(request):
-    if request.user.is_superuser:
-        data = HotelBooking.objects.all()
-        
-    else:
-        data = HotelBooking.objects.filter(hotel__user = request.user)
+    
+    queryset = HotelBooking.objects.all() if request.user.is_superuser else HotelBooking.objects.filter(hotel__user=request.user)
+
+    filterset = HotelBookingFilter(request.GET, queryset=queryset, request = request)
+    filtered_bookings = filterset.qs
+
+    total_earning = filtered_bookings.aggregate(total=Sum('hotel_earning'))['total'] or 0
 
     context = {
-        'data': data
+        'data': filtered_bookings,
+        'filterset': filterset,
+        'total_earning': total_earning,
     }
     return render(request, 'list_hotel_earning.html', context)
+
+
+
+from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+from xhtml2pdf import pisa
+import io
+
+def render_pdf_view(request, booking_id):
+    booking = get_object_or_404(HotelBooking, id=booking_id)
+    html_string = render_to_string('from_owner_to_hotel_invoice.html', {'booking': booking})
+
+    result = io.BytesIO()
+    pdf_status = pisa.CreatePDF(src=html_string, dest=result, encoding='UTF-8')
+
+    if pdf_status.err:
+        return HttpResponse('PDF generation failed', status=500)
+
+    response = HttpResponse(result.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="invoice_{booking_id}.pdf"'
+    return response

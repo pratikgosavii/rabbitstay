@@ -407,27 +407,37 @@ def logout_page(request):
 
 def customer_user_list(request):
 
-    data = User.objects.all()
+    data = User.objects.filter(is_customer = True)
 
     return render(request, 'user_list.html', { 'data' : data})
+
 
 def provider_user_list(request):
 
-    data = User.objects.all()
+    data = User.objects.filter(is_service_provider = True)
 
     return render(request, 'user_list.html', { 'data' : data})
 
 
+from customer.models import *
+from hotel.models import *
 
 
 def user_booking_history(request, user_id):
 
-    data = User.objects.all()
+    data = HotelBooking.objects.filter(user__id = user_id)
 
-    return render(request, 'user_booking_history.html', { 'data' : data})
+    user_instance = User.objects.get(id = user_id)
+
+
+    return render(request, 'user_booking_history.html', { 'data' : data, 'user_instance' : user_instance})
+
+
 
 def hotel_booking_history(request, user_id):
 
-    data = User.objects.all()
+    data = HotelBooking.objects.filter(hotel__user__id = user_id)
 
-    return render(request, 'hotel_booking_history.html', { 'data' : data})
+    hotel_instance = hotel.objects.get(user__id = user_id)
+
+    return render(request, 'hotel_booking_history.html', { 'data' : data, 'hotel_instance' : hotel_instance})

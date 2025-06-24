@@ -37,7 +37,14 @@ class HotelBooking(models.Model):
     tax_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text="Service Tax or Other")
     gst_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text="GST component")
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text="Final price to user")
-    tax_percent = models.DecimalField(max_digits=5, decimal_places=2, default=5.00)
+
+    commission_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    commission_gst = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    
+    tds_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text="1% TDS on subtotal")
+    tcs_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text="1% TCS on subtotal")
+
+    hotel_earning = models.DecimalField(max_digits=10, decimal_places=2, default=5.00)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -46,17 +53,39 @@ class HotelBooking(models.Model):
             nights = (self.check_out - self.check_in).days or 1
             base = self.room.price_per_night * nights
 
-            tax_percent_decimal = self.tax_percent / Decimal('100')  # e.g. 5% as 0.05
-            gst_percent = Decimal('0.18')  # fixed GST 18%
-
-            tax = base * tax_percent_decimal
+            # Determine GST Rate
+            gst_percent = Decimal('0.12') if base <= 7500 else Decimal('0.18')
             gst = base * gst_percent
-            total = base + tax + gst
+            subtotal = base + gst
 
+            # Commission and its GST
+            commission_percent = Decimal('0.10')
+            commission = base * commission_percent
+            commission_gst_percent = Decimal('0.18')
+            commission_gst = commission * commission_gst_percent
+
+            # TCS and TDS
+            tcs_percent = Decimal('0.01')
+            tds_percent = Decimal('0.01')
+            tcs_amount = subtotal * tcs_percent
+            tds_amount = subtotal * tds_percent
+
+            # Final Amount to User
+            total_amount = subtotal + tcs_amount
+
+            # Hotel's Earning
+            hotel_net = subtotal - commission - commission_gst - tds_amount
+
+            # Save fields
             self.base_amount = base
-            self.tax_amount = tax
             self.gst_amount = gst
-            self.total_amount = total
+            self.total_amount = total_amount
+            self.tax_amount = tcs_amount  # optional, or keep tax_amount separate
+            self.commission_amount = commission
+            self.commission_gst = commission_gst
+            self.tds_amount = tds_amount
+            self.tcs_amount = tcs_amount
+            self.hotel_earning = hotel_net
 
         super().save(*args, **kwargs)
 
