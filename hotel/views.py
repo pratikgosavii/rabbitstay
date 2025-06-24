@@ -376,11 +376,11 @@ def list_hotel_earning(request):
 
 
 
-from django.shortcuts import get_object_or_404
-from django.template.loader import render_to_string
-from django.http import HttpResponse
-from xhtml2pdf import pisa
-import io
+# from django.shortcuts import get_object_or_404
+# from django.template.loader import render_to_string
+# from django.http import HttpResponse
+# from xhtml2pdf import pisa
+# import io
 
 def render_pdf_view(request, booking_id):
     # booking = get_object_or_404(HotelBooking, id=booking_id)
