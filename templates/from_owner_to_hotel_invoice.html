@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +18,7 @@
 
 <div class="voucher-box">
   <div class="d-flex justify-content-between">
-    <img src="https://imgak.mmtcdn.com/pwa_v3/pwa_hotel_assets/header/logo@2x.png" height="40">
+    <img src="{% static 'images/rabitlogo.png'%}" height="40">
     <div class="text-end">
       <strong>{{ booking.hotel.name }}</strong><br>
       {{ booking.hotel.address|default:"Hotel Address" }}<br>
@@ -45,9 +46,6 @@
     </div>
   </div>
 
-  <div class="text-center">
-    <a href="#" class="btn btn-primary">CONFIRM BOOKING & GET PAYMENT</a>
-  </div>
 
   <div class="section-title">Room Details</div>
   <p>

@@ -83,6 +83,7 @@
                                                 <th>Star Rating</th>
                                                 <th>Ammenities</th>
                                                 <th>Featured</th>
+                                                <th>Is Active</th>
                                                 <th>Created At</th>
                                                 <th>Image</th>
                                                 <th>Action</th>
@@ -103,6 +104,12 @@
                                                     {% endfor %}
                                                 </td>
                                                 <td>{{ hotel.is_featured|yesno:"Yes,No" }}</td>
+                                                <td> {% if hotel.is_active %}
+    <span class="text-success">&#10004;</span>  {# ✅ check mark #}
+  {% else %}
+    <span class="text-danger">&#10006;</span>   {# ❌ cross mark #}
+  {% endif %}</td>
+
                                                 <td>{{ hotel.created_at }}</td>
                                                 <td>
                                                     {% if hotel.main_image %}

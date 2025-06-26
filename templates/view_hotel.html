@@ -175,6 +175,12 @@
                 </div>
             </div>
 
+            {% if not data.is_active %}
+            <div class="alert alert-danger d-flex align-items-center" role="alert" style="font-weight: 500; font-size: 15px;">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span>This hotel is <strong>not active yet</strong>. Please wait for admin approval.</span>
+            </div>
+            {% endif %}
 
         <div class="container">
             <div class="form-container">
