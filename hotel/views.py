@@ -409,7 +409,6 @@ from weasyprint import HTML
 from django.core.mail import EmailMessage
 from django.http import JsonResponse
 import tempfile
-from hotel.models import HotelBooking  # adjust this to your model
 
 def render_pdf_view(request, booking_id):
     booking = HotelBooking.objects.get(id=booking_id)
