@@ -382,18 +382,215 @@ def list_hotel_earning(request):
 # from xhtml2pdf import pisa
 # import io
 
+# from reportlab.lib.pagesizes import A4
+# from reportlab.pdfgen import canvas
+# from reportlab.lib import colors
+# from reportlab.platypus import Table, TableStyle
+# import io
+from django.http import HttpResponse
+
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+# from reportlab.pdfgen import canvas
+# from reportlab.platypus import Table, TableStyle
+# from reportlab.lib.pagesizes import A4
+# from reportlab.lib import colors
+# from django.template.loader import render_to_string
+# import io
+
+import tempfile
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+from django.http import JsonResponse  # optional, if returning a JSON response
+from django.conf import settings  #
+
+from django.template.loader import render_to_string
+from weasyprint import HTML
+from django.core.mail import EmailMessage
+from django.http import JsonResponse
+import tempfile
+from hotel.models import HotelBooking  # adjust this to your model
+
 def render_pdf_view(request, booking_id):
-    booking = get_object_or_404(HotelBooking, id=booking_id)
-    return render(request, 'from_owner_to_hotel_invoice.html', {'booking': booking})
+    booking = HotelBooking.objects.get(id=booking_id)
 
-    result = io.BytesIO()
-    pdf_status = pisa.CreatePDF(src=html_string, dest=result, encoding='UTF-8')
+    # Render HTML template
+    html_string = render_to_string('from_owner_to_hotel_invoice.html', {'booking': booking, 'request': request})
 
-    if pdf_status.err:
-        return HttpResponse('PDF generation failed', status=500)
+    # Generate PDF
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_pdf:
+        HTML(string=html_string, base_url=request.build_absolute_uri('/')).write_pdf(temp_pdf.name)
+        temp_pdf.seek(0)
 
-    response = HttpResponse(result.getvalue(), content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename="invoice_{booking_id}.pdf"'
-    return response
+        # Send email with attachment
+        email = EmailMessage(
+            subject="Booking Invoice",
+            body="Attached is the invoice for your booking.",
+            from_email="no-reply@yourdomain.com",
+            to=['pratikgosavi654@gmail.com'l],  # or any recipient
+        )
+        email.attach(f"invoice_{booking_id}.pdf", temp_pdf.read(), "application/pdf")
+        email.send()
 
-    # pass
+    return JsonResponse({'message': 'Invoice sent successfully'})
+
+
+
+
+    # booking = get_object_or_404(HotelBooking, id=booking_id)
+    # buffer = io.BytesIO()
+    # pdf = canvas.Canvas(buffer, pagesize=A4)
+    # width, height = A4
+
+    # net_amount = booking.total_amount - booking.hotel_earning
+    #   # Draw logo image (update the path to your actual logo file)
+    # pdf.drawImage("static/images/rabitlogo.png.", x=50, y=770, width=120, height=40)
+    # y = height - 80
+     
+    # pdf.setStrokeColor(colors.HexColor("#cccccc"))  # Light grey
+    # pdf.line(50, y - 4, width - 50, y - 4)
+    # pdf.setLineWidth(1)
+    
+    # # Header
+    # pdf.setFont("Times-Bold", 16)
+    # pdf.setFillColor(colors.black)
+    # pdf.drawRightString(width - 50, height - 50, f"{booking.hotel.name}")
+    # pdf.setFont("Times-Roman", 12)
+
+    # pdf.drawRightString(width - 50, height - 65, f"{booking.hotel.city.name}, India")
+
+    # y = height - 100
+
+    # # Section: Primary Guest Details
+    # pdf.setFont("Times-Bold", 12)
+    # pdf.drawString(50, y, "PRIMARY GUEST DETAILS")
+    # pdf.setStrokeColor(colors.HexColor("#cccccc"))  # Light grey
+    # pdf.setLineWidth(0.5)  # Thinner line
+    # pdf.line(50, y - 4, width - 50, y - 4)
+    # pdf.setLineWidth(1)  # Optional: reset if needed later
+
+    # y -= 20
+    # pdf.setFont("Times-Roman", 12)
+    # pdf.drawString(50, y, f"👤 {booking.first_name} {booking.last_name}")
+    # y -= 15
+    # pdf.drawString(50, y, f"Check-in: {booking.check_in}")
+    # y -= 15
+    # pdf.drawString(50, y, f"Check-out: {booking.check_out}")
+    # y -= 15
+    # pdf.drawString(50, y, f"Total Guests: {booking.guest_count}")
+
+    # # Booking Info
+    # y -= 30
+    # pdf.setFont("Times-Bold", 12)
+    # pdf.drawString(50, y, "BOOKING INFO")
+    # pdf.setStrokeColor(colors.HexColor("#cccccc"))  # Light grey
+    # pdf.setLineWidth(0.5)  # Thinner line
+    # pdf.line(50, y - 4, width - 50, y - 4)
+    # pdf.setLineWidth(1)  # Optional: reset if needed later
+
+    # y -= 20
+    # pdf.setFont("Times-Roman", 12)
+    # pdf.drawString(50, y, f"Booking ID: {booking.id}")
+    # pdf.drawString(250, y, f"Status: {booking.status}")
+    # y -= 15
+    # pdf.drawString(50, y, f"Booked on: {booking.created_at.strftime('%b %d, %Y, %I:%M %p')}")
+    # pdf.drawString(250, y, "Payment: Paid Online")
+
+    # # Room Details
+    # y -= 30
+    # pdf.setFont("Times-Bold", 12)
+    # pdf.drawString(50, y, "ROOM DETAILS")
+    # pdf.setStrokeColor(colors.HexColor("#cccccc"))  # Light grey
+    # pdf.setLineWidth(0.5)  # Thinner line
+    # pdf.line(50, y - 4, width - 50, y - 4)
+    # pdf.setLineWidth(1)  # Optional: reset if needed later
+
+    # y -= 20
+    # pdf.setFont("Times-Roman", 12)
+    # pdf.drawString(50, y, f"Room: {booking.room.room_type}")
+    # y -= 15
+    # pdf.drawString(50, y, f"Inclusions: {booking.special_request or 'Room Only'}")
+    # y -= 15
+    # pdf.drawString(50, y, "Cancellation Policy: This is a non-refundable, non-amendable tariff.")
+
+    # # Payment
+    # y -= 30
+    # pdf.setFont("Times-Bold", 12)
+    # pdf.drawString(50, y, "PAYMENT")
+    # pdf.setStrokeColor(colors.HexColor("#cccccc"))  # Light grey
+    # pdf.setLineWidth(0.5)  # Thinner line
+    # pdf.line(50, y - 4, width - 50, y - 4)
+    # pdf.setLineWidth(1)  # Optional: reset if needed later
+
+    # y -= 20
+    # pdf.setFont("Times-Roman", 12)
+    # pdf.drawString(50, y, f"Property Gross Charges: ₹ {booking.total_amount:.2f}")
+    # pdf.drawString(300, y, f"Payable to Property: ₹ {booking.hotel_earning:.2f}")
+
+    # # Table
+    # y -= 40
+    # pdf.setFont("Times-Bold", 12)
+    # pdf.drawString(50, y, "ROOM WISE PAYMENT BREAKUP (in ₹)")
+    # pdf.setStrokeColor(colors.HexColor("#cccccc"))  # Light grey
+    # pdf.setLineWidth(0.5)  # Thinner line
+    # pdf.line(50, y - 4, width - 50, y - 4)
+    # pdf.setLineWidth(1)  # Optional: reset if needed later
+
+    # y -= 20
+
+    # from reportlab.platypus import SimpleDocTemplate
+    # table_data = [
+    #     ["Date", "Room Charges", "Extra Adult/Child", "Taxes", "Gross Charges", "Commission", "Net Rate"],
+    #     [str(booking.check_in),
+    #      f"{booking.base_amount:.2f}",
+    #      "0.00",
+    #      f"{booking.gst_amount:.2f}",
+    #      f"{booking.total_amount:.2f}",
+    #      f"{booking.total_amount - booking.hotel_earning:.2f}",
+    #      f"{booking.hotel_earning:.2f}"]
+    # ]
+    # t = Table(table_data, colWidths=[75]*7)
+    # t.setStyle(TableStyle([
+    # ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#f2f2f2")),
+    # ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+    # ('FONTNAME', (0, 0), (-1, -1), 'Times-Roman'),
+    # ('FONTSIZE', (0, 0), (-1, -1), 9),
+    # ('ALIGN', (0, 0), (-1, 0), 'CENTER'),  # header
+    # ('ALIGN', (1, 1), (-1, -1), 'RIGHT'),  # numeric alignment
+    # ('LINEBELOW', (0, 0), (-1, 0), 1, colors.grey),
+    # ('LINEBELOW', (0, -1), (-1, -1), 1, colors.lightgrey),
+    # ('GRID', (0, 1), (-1, -1), 0.3, colors.HexColor("#dddddd")),
+    # ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    # ('TOPPADDING', (0, 0), (-1, -1), 6),
+    # ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+    # ]))
+
+    # t.wrapOn(pdf, width, height)
+    # t.drawOn(pdf, 50, y - 50)
+
+    # # Final Calculation
+    # y -= 130
+    # pdf.setFont("Times-Bold", 12)
+    # pdf.drawString(50, y, "FINAL CALCULATION")
+    # pdf.setStrokeColor(colors.HexColor("#cccccc"))  # Light grey
+    # pdf.setLineWidth(0.5)  # Thinner line
+    # pdf.line(50, y - 4, width - 50, y - 4)
+    # pdf.setLineWidth(1)  # Optional: reset if needed later
+
+    # y -= 20
+    # pdf.setFont("Times-Roman", 12)
+    # pdf.drawString(50, y, f"1. Room Charges: ₹ {booking.base_amount:.2f}")
+    # y -= 15
+    # pdf.drawString(50, y, f"2. Extra Adult/Child Charges: ₹ 0.00")
+    # y -= 15
+    # pdf.drawString(50, y, f"3. Property Taxes: ₹ {booking.gst_amount:.2f}")
+    # y -= 15
+    # pdf.drawString(50, y, f"4. Service Charges: ₹ 0.00")
+    # y -= 20
+    # pdf.setFont("Times-Bold", 10)
+    # pdf.drawString(50, y, f"(A) Property Gross Charges: ₹ {booking.total_amount:.2f}")
+
+    # pdf.showPage()
+    # pdf.save()
+    # buffer.seek(0)
+    # return HttpResponse(buffer, content_type='application/pdf')
