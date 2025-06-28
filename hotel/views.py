@@ -427,7 +427,7 @@ def render_pdf_view(request, booking_id):
             subject="Booking Invoice",
             body="Attached is the invoice for your booking.",
             from_email="no-reply@yourdomain.com",
-            to=['pratikgosavi654@gmail.com'l],  # or any recipient
+            to=['pratikgosavi654@gmail.com'],  # or any recipient
         )
         email.attach(f"invoice_{booking_id}.pdf", temp_pdf.read(), "application/pdf")
         email.send()
