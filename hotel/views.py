@@ -411,29 +411,23 @@ from django.http import JsonResponse
 import tempfile
 
 def render_pdf_view(request, booking_id):
+    
+    
     booking = HotelBooking.objects.get(id=booking_id)
 
-    # Render HTML template
+    # Render HTML template to string
     html_string = render_to_string('from_owner_to_hotel_invoice.html', {'booking': booking, 'request': request})
 
-    # Generate PDF
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_pdf:
+    # Generate PDF using WeasyPrint
+    with tempfile.NamedTemporaryFile(delete=True, suffix='.pdf') as temp_pdf:
         HTML(string=html_string, base_url=request.build_absolute_uri('/')).write_pdf(temp_pdf.name)
         temp_pdf.seek(0)
+        pdf_content = temp_pdf.read()
 
-        # Send email with attachment
-        email = EmailMessage(
-            subject="Booking Invoice",
-            body="Attached is the invoice for your booking.",
-            from_email="no-reply@yourdomain.com",
-            to=['pratikgosavi654@gmail.com'],  # or any recipient
-        )
-        email.attach(f"invoice_{booking_id}.pdf", temp_pdf.read(), "application/pdf")
-        email.send()
-
-    return JsonResponse({'message': 'Invoice sent successfully'})
-
-
+    # Return as HTTP response
+    response = HttpResponse(pdf_content, content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="invoice_{booking_id}.pdf"'  # or use 'attachment' to force download
+    return response
 
 
     # booking = get_object_or_404(HotelBooking, id=booking_id)
