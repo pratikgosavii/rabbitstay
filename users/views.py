@@ -484,16 +484,16 @@ def logout_page(request):
 
 def customer_user_list(request):
 
-    data = User.objects.filter(is_customer = True)
+    data = User.objects.filter(is_customer = True).order_by('-date_joined')
 
     return render(request, 'user_list.html', { 'data' : data})
 
 
 def provider_user_list(request):
 
-    data = User.objects.filter(is_service_provider = True)
+    data = User.objects.filter(is_service_provider = True).order_by('-date_joined')
 
-    return render(request, 'user_list.html', { 'data' : data})
+    return render(request, 'staff_list.html', { 'data' : data})
 
 
 from customer.models import *
@@ -518,3 +518,37 @@ def hotel_booking_history(request, user_id):
     hotel_instance = hotel.objects.get(user__id = user_id)
 
     return render(request, 'hotel_booking_history.html', { 'data' : data, 'hotel_instance' : hotel_instance})
+
+
+
+
+
+from django.shortcuts import render, redirect
+from .forms import CustomUserCreationForm
+from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import user_passes_test
+
+@user_passes_test(lambda u: u.is_superuser)
+def add_custom_user(request):
+    if request.method == 'POST':
+        form = UserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            groups = form.cleaned_data['group']  # this is a QuerySet
+            user.groups.set(groups)  # ✅ sets multiple groups at once
+            return redirect('list_custom_user')
+        else:
+            print(form.errors)
+    else:
+        form = UserForm()
+    return render(request, 'add_custom_user.html', {'form': form})
+
+
+def list_custom_user(request):
+    
+    users = User.objects.filter(
+        is_customer=False,
+        is_service_provider=False
+    ).order_by('-date_joined')
+
+    return render(request, 'user_list.html', { 'data' : users})

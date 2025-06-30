@@ -27,7 +27,7 @@ class User(AbstractUser):
     is_service_provider = models.BooleanField(default=False)
 
     mobile = models.CharField(max_length=15, unique=True)
-    email = models.EmailField(null=True, blank=True)  # Email is optional
+    email = models.EmailField(unique=True)  # Email is optional
 
     username = None  # Remove username field
 
@@ -35,3 +35,6 @@ class User(AbstractUser):
     REQUIRED_FIELDS = [] 
 
     objects = CustomUserManager()
+
+
+

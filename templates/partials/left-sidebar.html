@@ -22,21 +22,31 @@
 
                         <li>
                             <a href="javascript: void(0);" class="has-arrow">
-                                <i data-feather="layers"></i>
-                                <span data-key="t-authentication">Users management</span>
+                                <i data-feather="users"></i>
+                                <span data-key="t-authentication">Users Management</span>
                             </a>
+
                             <ul class="sub-menu" aria-expanded="false">
-                                <li><a href="{% url 'customer_user_list' %}">Users List</a></li>
-                            </ul>
-                            <ul class="sub-menu" aria-expanded="false">
+                                <!-- Staff Section with Submenu -->
+                                <li>
+                                <a href="javascript:void(0);" class="has-arrow">Staff</a>
+                                <ul class="sub-menu" aria-expanded="false">
+                                    <li><a href="{% url 'add_custom_user' %}">Add Staff</a></li>
+                                    <li><a href="{% url 'list_custom_user' %}">Staff List</a></li>
+                                </ul>
+                                </li>
+
+                                <!-- Customer -->
+                                <li><a href="{% url 'customer_user_list' %}">Customer List</a></li>
+
+                                <!-- Provider -->
                                 <li><a href="{% url 'provider_user_list' %}">Provider List</a></li>
-                            </ul>
-                           
-                            <ul class="sub-menu" aria-expanded="false">
+
+                                <!-- Vendor Requests -->
                                 <li><a href="{% url 'vendor_request' %}">Provider Request List</a></li>
                             </ul>
-                           
-                        </li>
+                            </li>
+
 
                         
                         <li>

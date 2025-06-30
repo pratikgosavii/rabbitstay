@@ -46,3 +46,37 @@ class VendorRegisterForm(forms.ModelForm):
         if password and confirm and password != confirm:
             raise forms.ValidationError("Passwords do not match.")
         return cleaned_data
+
+
+from django import forms
+from django.contrib.auth.models import Group
+from users.models import User  # adjust if needed
+
+
+
+class UserForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    
+    group = forms.ModelMultipleChoiceField(
+        queryset=Group.objects.all(),
+        required=True,
+        widget=forms.CheckboxSelectMultiple
+    )
+
+    class Meta:
+        model = User
+        fields = ['mobile', 'email', 'password', 'group', 'is_active']
+
+        widgets = {
+            'mobile': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data['password'])
+        if commit:
+            user.save()
+            self.save_m2m()
+        return user

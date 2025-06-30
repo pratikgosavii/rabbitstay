@@ -25,4 +25,9 @@ urlpatterns = [
     path('hotel-booking-history/<user_id>', hotel_booking_history, name='hotel_booking_history'),
 
 
+
+    path('add-custome-user/', add_custom_user, name='add_custom_user'),
+    path('list-custome-user/', list_custom_user, name='list_custom_user'),
+
+
 ]
