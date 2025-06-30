@@ -297,12 +297,57 @@ import json
 
 
 
+def vendor_request(request):
+
+    data = hotel.objects.filter(is_active = False)
+
+    context = {
+        'data' : data
+    }
+
+    return render(request, 'vendor_request_list.html', context)
+
+from django.core.mail import send_mail
+from django.http import HttpResponse
+
+def send_test_email(request, subject, body):
+    send_mail(
+        subject=subject,
+        message=body,
+        from_email='rabbitstay1@gmail.com',
+        recipient_list=['pratikgosavi654@gmail.com'],
+        fail_silently=False,
+    )
+    return HttpResponse("Email sent successfully!")
+
+
+def activate_vendor_request(request, user_id):
+
+    user_instance = User.objects.get(id = user_id)
+    user_instance.is_active = True
+
+    user_instance.save()
+
+    hotel_instance = hotel.objects.get(user = user_instance)
+    hotel_instance.is_active = True
+
+    hotel_instance.save()
+
+    send_test_email(request, 'Your account is actiated', 'Hi, Your account is activated login and completed your profile')
+
+    return redirect('vendor_request')
+
+
+from hotel.forms import *
+
 def register_vendor(request):
 
     if request.method == 'POST':
 
-        print('----------------------')
-
+        form = hotel_Form()
+        context = { 
+                'form': form, 
+        }
 
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
@@ -312,16 +357,16 @@ def register_vendor(request):
         confirm_password = request.POST.get('confirm_password')
 
         if not all([first_name, last_name, email, mobile, password, confirm_password]):
-            return render(request, 'vendor_register.html', {'error': 'All fields are required.'})
+            return render(request, 'hotel_registration.html', {'error': 'All fields are required.'}, context)
 
         if password != confirm_password:
-            return render(request, 'vendor_register.html', {'error': 'Passwords do not match.'})
+            return render(request, 'hotel_registration.html', {'error': 'Passwords do not match.'}, context)
 
         if User.objects.filter(email=email).exists():
-            return render(request, 'vendor_register.html', {'error': 'Email already registered.'})
+            return render(request, 'hotel_registration.html', {'error': 'Email already registered.'}, context)
 
         if User.objects.filter(mobile=mobile).exists():
-            return render(request, 'vendor_register.html', {'error': 'Mobile number already registered.'})
+            return render(request, 'hotel_registration.html', {'error': 'Mobile number already registered.'})
 
         print(request.POST)
         # Create the user
@@ -331,13 +376,45 @@ def register_vendor(request):
             password=password,
             first_name=first_name,
             last_name=last_name,
-            is_service_provider=True
+            is_service_provider=True,
+            is_active = False
         )
 
-        login(request, user)
-        return redirect('vendor_dashboard')
 
-    return render(request, 'vendor_register.html')
+        form = hotel_Form(request.POST, request.FILES)
+        if not request.user.is_superuser:
+            form.fields.pop('profit_margin')
+        if form.is_valid():
+            hotel = form.save(commit=False)
+            if not request.user.is_superuser:
+                hotel.user = user  # auto-assign vendor user
+            hotel.save()
+            form.save_m2m()  # Save the many-to-many relationships
+            
+            for img in request.FILES.getlist('image'):
+                HotelImage.objects.create(hotel=hotel, image=img)
+
+            return render(request, 'hotel_registration_succful.html')
+        
+        else:
+            print(form.errors)
+            context = {
+                'form': form
+            }
+            return render(request, 'add_hotel.html', context)
+        
+    else:
+
+    
+        form = hotel_Form()
+
+        context = { 
+                'form': form, 
+        }
+
+        return render(request, 'hotel_registration.html', context)
+
+
         
 
 def login_vendor(request):

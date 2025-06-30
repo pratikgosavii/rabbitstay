@@ -33,6 +33,83 @@ def vendor_dashboard(request):
 
 
 @login_required(login_url='login_admin')
+def register_hotel(request):
+
+    if request.method == 'POST':
+
+        form = hotel_Form()
+        context = { 
+                'form': form, 
+        }
+
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        mobile = request.POST.get('mobile')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if not all([first_name, last_name, email, mobile, password, confirm_password]):
+            return render(request, 'hotel_registration.html', {'error': 'All fields are required.'}, context)
+
+        if password != confirm_password:
+            return render(request, 'hotel_registration.html', {'error': 'Passwords do not match.'}, context)
+
+        if User.objects.filter(email=email).exists():
+            return render(request, 'hotel_registration.html', {'error': 'Email already registered.'}, context)
+
+        if User.objects.filter(mobile=mobile).exists():
+            return render(request, 'hotel_registration.html', {'error': 'Mobile number already registered.'})
+
+        print(request.POST)
+        # Create the user
+        user = User.objects.create_user(
+            email=email,
+            mobile=mobile,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            is_service_provider=True,
+            is_active = False
+        )
+
+
+        form = hotel_Form(request.POST, request.FILES)
+        if not request.user.is_superuser:
+            form.fields.pop('profit_margin')
+        if form.is_valid():
+            hotel = form.save(commit=False)
+            if not request.user.is_superuser:
+                hotel.user = user  # auto-assign vendor user
+            hotel.save()
+            form.save_m2m()  # Save the many-to-many relationships
+            
+            for img in request.FILES.getlist('image'):
+                HotelImage.objects.create(hotel=hotel, image=img)
+
+            return redirect('list_hotel')
+        
+        else:
+            print(form.errors)
+            context = {
+                'form': form
+            }
+            return render(request, 'add_hotel.html', context)
+        
+    else:
+
+    
+        form = hotel_Form()
+
+        context = { 
+                'form': form, 
+        }
+
+        return render(request, 'hotel_registration.html', context)
+
+
+
+@login_required(login_url='login_admin')
 def add_hotel(request):
 
     if request.method == 'POST':
@@ -73,7 +150,7 @@ def add_hotel(request):
         form = hotel_Form()
 
         context = { 
-                'form': forms, 
+                'form': form, 
         }
 
         return render(request, 'add_hotel.html', )
@@ -82,15 +159,16 @@ def add_hotel(request):
 @login_required(login_url='login_admin')
 def view_hotel(request):
 
-    user_hotel = get_object_or_404(
-        hotel.objects.prefetch_related(
+    try:
+        user_hotel = hotel.objects.prefetch_related(
             Prefetch(
                 'rooms',
                 queryset=hotel_rooms.objects.select_related('room_type').prefetch_related('room_amenities')
             )
-        ),
-        user=request.user
-    )
+        ).get(user=request.user)
+    except hotel.DoesNotExist:
+        user_hotel = None
+
 
     context = {
         'data': user_hotel # wrapped in a list if template expects iterable
@@ -162,9 +240,15 @@ def list_hotel(request):
     data = hotel.objects.prefetch_related(
         Prefetch('rooms', queryset=hotel_rooms.objects.select_related('room_type').prefetch_related('room_amenities'))
     )
+
+    filterset = HotelFilter(request.GET, queryset=data, request = request)
+    filtered_bookings = filterset.qs
+
     context = {
-        'data': data
+        'data': filtered_bookings
     }
+
+
     return render(request, 'list_hotel.html', context)
 
 
@@ -300,6 +384,40 @@ def list_hotel_bookings(request):
 
 from customer.forms import *
 
+
+
+def send_invoice(request, subject, body, booking_id):
+    booking = get_object_or_404(HotelBooking, id=booking_id)
+
+    # Generate HTML and PDF
+    html_file_path = generate_invoice_html(booking, request)
+    pdf_file_path = os.path.join(tempfile.gettempdir(), f"invoice_{booking.id}.pdf")
+    html_to_pdf_with_chromium(html_file_path, pdf_file_path)
+
+    # Create email
+    email = EmailMessage(
+        subject=subject,
+        body=body,
+        from_email='rabbitstay1@gmail.com',
+        to=['pratikgosavi654@gmail.com'],
+    )
+
+    # Attach PDF
+    if os.path.exists(pdf_file_path):
+        with open(pdf_file_path, 'rb') as f:
+            email.attach(f"invoice_{booking.id}.pdf", f.read(), 'application/pdf')
+
+    email.send()
+
+    # Optional: Clean up temp files
+    os.remove(html_file_path)
+    os.remove(pdf_file_path)
+
+    return HttpResponse("Email with PDF sent successfully!")
+
+
+
+
 @login_required(login_url='login_admin')
 def update_hotel_bookings(request, booking_id):
 
@@ -320,10 +438,17 @@ def update_hotel_bookings(request, booking_id):
         print('--------------------')
 
         if form.is_valid():
-            form.save()
+            updated_booking = form.save()
             print('--------------------')
 
+            if updated_booking.status == 'completed':
+                print("Booking has been marked as completed.")
 
+                subject = 'Invoice against Bookinid ' + str(updated_booking.id)
+
+                send_invoice(request, subject, 'Hi, attached pdf for invoice', updated_booking.id)
+
+                
             return redirect('list_hotel_bookings')
         
         else:
@@ -382,21 +507,21 @@ def list_hotel_earning(request):
 # from xhtml2pdf import pisa
 # import io
 
-# from reportlab.lib.pagesizes import A4
-# from reportlab.pdfgen import canvas
-# from reportlab.lib import colors
-# from reportlab.platypus import Table, TableStyle
-# import io
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+from reportlab.platypus import Table, TableStyle
+import io
 from django.http import HttpResponse
 
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
-# from reportlab.pdfgen import canvas
-# from reportlab.platypus import Table, TableStyle
-# from reportlab.lib.pagesizes import A4
-# from reportlab.lib import colors
-# from django.template.loader import render_to_string
-# import io
+from reportlab.pdfgen import canvas
+from reportlab.platypus import Table, TableStyle
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from django.template.loader import render_to_string
+import io
 
 import tempfile
 from django.template.loader import render_to_string
@@ -404,32 +529,56 @@ from django.core.mail import EmailMessage
 from django.http import JsonResponse  # optional, if returning a JSON response
 from django.conf import settings  #
 
-from django.template.loader import render_to_string
-from weasyprint import HTML
-from django.core.mail import EmailMessage
-from django.http import JsonResponse
-import tempfile
+from playwright.sync_api import sync_playwright
 
-def render_pdf_view(request, booking_id):
+import os
+
+import base64
+
+
+def generate_invoice_html(booking, request):
+
+    with open(os.path.join(settings.BASE_DIR, 'static/images/rabitlogo.png'), 'rb') as img_file:
+        logo_base64 = base64.b64encode(img_file.read()).decode('utf-8')
+
+    html_content = render_to_string('from_owner_to_hotel_invoice.html', {
+        'booking': booking,
+        'request': request,
+        'logo_base64': logo_base64
+    })
+
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix='.html', dir=settings.BASE_DIR)
+    tmp.write(html_content.encode('utf-8'))
+    tmp.close()
+    return tmp.name  # return the HTML file path
+
+from playwright.sync_api import sync_playwright
+
+def html_to_pdf_with_chromium(html_file_path, output_pdf_path):
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto(f'file://{html_file_path}', wait_until='networkidle')
+        page.pdf(path=output_pdf_path, format="A4", print_background=True)
+        browser.close()
+
+def generate_invoice_pdf(request, booking_id):
     
-    
-    booking = HotelBooking.objects.get(id=booking_id)
+    booking = get_object_or_404(HotelBooking, id=booking_id)
 
-    # Render HTML template to string
-    html_string = render_to_string('from_owner_to_hotel_invoice.html', {'booking': booking, 'request': request})
+    html_file_path = generate_invoice_html(booking, request)
+    pdf_file_path = os.path.join(tempfile.gettempdir(), f"invoice_{booking.id}.pdf")
 
-    # Generate PDF using WeasyPrint
-    with tempfile.NamedTemporaryFile(delete=True, suffix='.pdf') as temp_pdf:
-        HTML(string=html_string, base_url=request.build_absolute_uri('/')).write_pdf(temp_pdf.name)
-        temp_pdf.seek(0)
-        pdf_content = temp_pdf.read()
+    html_to_pdf_with_chromium(html_file_path, pdf_file_path)
 
-    # Return as HTTP response
-    response = HttpResponse(pdf_content, content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename="invoice_{booking_id}.pdf"'  # or use 'attachment' to force download
-    return response
+    with open(pdf_file_path, 'rb') as f:
+        pdf_data = f.read()
 
+    # Cleanup
+    os.remove(html_file_path)
+    os.remove(pdf_file_path)
 
+    return HttpResponse(pdf_data, content_type='application/pdf')
     # booking = get_object_or_404(HotelBooking, id=booking_id)
     # buffer = io.BytesIO()
     # pdf = canvas.Canvas(buffer, pagesize=A4)

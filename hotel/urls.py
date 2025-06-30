@@ -18,6 +18,7 @@ urlpatterns = [
 
     path('vendor-dashboard/', vendor_dashboard, name='vendor_dashboard'),
 
+    path('register-hotel/', register_hotel, name='register_hotel'),
     path('add-hotel/', add_hotel, name='add_hotel'),
     path('view-hotel/', view_hotel, name='view_hotel'),
     path('update-hotel/<hotel_id>', update_hotel, name='update_hotel'),
@@ -37,7 +38,7 @@ urlpatterns = [
     path('update-hotel-bookings/<booking_id>', update_hotel_bookings, name='update_hotel_bookings'),
 
     path('list-hotel-earning/', list_hotel_earning, name='list_hotel_earning'),
-    path('hotel-invoice/<booking_id>', render_pdf_view, name='render_pdf_view'),
+    path('hotel-invoice/<booking_id>', generate_invoice_pdf, name='render_pdf_view'),
 
 
 

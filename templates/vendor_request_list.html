@@ -136,6 +136,7 @@
                                                     {% endif %}
                                                 </td>
                                                 <td>
+                                                    <a href="{% url 'activate_vendor_request' hotel.user.id %}"><i class="bi bi-check-circle text-primary" title="activate"></i></a>
                                                     <a href="{% url 'update_hotel' hotel.id %}"><i class="bi bi-pencil-square text-primary" title="Edit"></i></a>
                                                     <a href="{% url 'delete_hotel' hotel.id %}"><i class="bi bi-trash text-danger" title="Delete"></i></a>
                                                 </td>

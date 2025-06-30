@@ -4,24 +4,73 @@ from django.db import models
 
 
 class hotel(models.Model):
+    
+    HOTEL_CATEGORY_CHOICES = [
+        ('Budget', 'Budget'),
+        ('Mid_range', 'Mid-range'),
+        ('Premium', 'Premium'),
+        ('Boutique', 'Boutique'),
+        # Add more as needed
+    ]
 
     user = models.OneToOneField("users.User", on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=255)
+    
+    category = models.CharField(max_length=50, choices=HOTEL_CATEGORY_CHOICES, default='Budget')
+    no_of_rooms = models.IntegerField()
+
     amenities = models.ManyToManyField("masters.amenity", blank=True)
     address = models.TextField()
     city = models.ForeignKey("masters.city", on_delete=models.CASCADE, null=True, blank=True)
+    landmark = models.TextField(null=True, blank=True)
+
+    pincode = models.IntegerField()
     star_rating = models.IntegerField()
     overall_rating = models.DecimalField(max_digits=2, decimal_places=1, null=True, blank=True)
     main_image = models.ImageField(upload_to='hotels/', null=True, blank=True)
-    profit_margin = models.DecimalField(max_digits=5, decimal_places=2)
+    profit_margin = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
 
     is_featured = models.BooleanField(default=False)
     description = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # ✅ Legal & Tax Info
+    gst_number = models.CharField(
+        max_length=15,
+        help_text="GST Number (15 characters, e.g., 29ABCDE1234F2Z5)",
+        null=True,
+        blank=True
+    )
+    gst_certificate = models.FileField(
+        upload_to='hotel_docs/gst_certificates/',
+        null=True,
+        blank=True,
+        help_text="Upload GST Certificate (PDF/Image)"
+    )
+    pan_number = models.CharField(
+        max_length=10,
+        null=True,
+        blank=True,
+        help_text="PAN Card Number (optional)"
+    )
+
+    # ✅ Bank Details
+    account_holder_name = models.CharField(max_length=255, null=True, blank=True)
+    account_number = models.CharField(max_length=30, null=True, blank=True)
+    ifsc_code = models.CharField(max_length=15, null=True, blank=True)
+    bank_name = models.CharField(max_length=255, null=True, blank=True)
+    bank_document = models.FileField(
+        upload_to='hotel_docs/bank_docs/',
+        null=True,
+        blank=True,
+        help_text="Upload Cancelled Cheque or Bank Passbook (Image/PDF)"
+    )
+
     def __str__(self):
         return self.name
+
+
 
 class HotelImage(models.Model):
     hotel = models.ForeignKey(hotel, related_name='images', on_delete=models.CASCADE)

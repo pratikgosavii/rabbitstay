@@ -7,7 +7,10 @@ urlpatterns = [
     path('login-admin/', login_admin, name='login_admin'),
     path('login-vendor/', login_vendor, name='login_vendor'),
 
+    path('vendor-request/', vendor_request, name='vendor_request'),
+
     path('register-vendor/', register_vendor, name='register_vendor'),
+    path('active-vendor-request/<user_id>', activate_vendor_request, name='activate_vendor_request'),
 
     path('update-user/', UserUpdateView.as_view(), name='UserUpdateView'),
     path('get-user/', UsergetView.as_view(), name='UsergetView'),

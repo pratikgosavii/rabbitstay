@@ -32,6 +32,10 @@
                                 <li><a href="{% url 'provider_user_list' %}">Provider List</a></li>
                             </ul>
                            
+                            <ul class="sub-menu" aria-expanded="false">
+                                <li><a href="{% url 'vendor_request' %}">Provider Request List</a></li>
+                            </ul>
+                           
                         </li>
 
                         
@@ -95,7 +99,6 @@
                                 <span data-key="t-authentication">Hotel</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <li><a href="{% url 'add_hotel' %}">Add Hotel</a></li>
                                 <li><a href="{% url 'list_hotel' %}">List Hotel</a></li>
                             </ul>
                            
@@ -185,6 +188,19 @@
                             <a href="javascript: void(0);" class="has-arrow">
                                 <i data-feather="layers"></i>
                                 <span data-key="t-authentication">Payments</span>
+                            </a>
+                            <ul class="sub-menu" aria-expanded="false">
+                                <li><a>Recent Payments</a></li>
+                                <li><a>Initiate Refunds</a></li>
+                                <li><a>Refunds</a></li>
+                                <li><a>Payment Reports</a></li>
+                            </ul>
+                        </li>
+                        
+                        <li>
+                            <a href="javascript: void(0);" class="has-arrow">
+                                <i data-feather="layers"></i>
+                                <span data-key="t-authentication">Reports</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">
                                 <li><a>Recent Payments</a></li>

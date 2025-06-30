@@ -6,6 +6,56 @@ from users.models import *
 from django import forms
 
 
+class HotelFilter(django_filters.FilterSet):
+    
+
+    user = django_filters.ModelChoiceFilter(
+        queryset=User.objects.all(),
+        empty_label="All Users",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
+    created_after = django_filters.DateFilter(
+        field_name='created_at',
+        lookup_expr='gte',
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        label="Created After"
+    )
+    created_before = django_filters.DateFilter(
+        field_name='created_at',
+        lookup_expr='lte',
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        label="Created Before"
+    )
+
+    is_active = django_filters.BooleanFilter(
+        field_name='is_active',
+        widget=forms.Select(choices=[('', 'All'), ('true', 'Active'), ('false', 'Inactive')],
+                            attrs={'class': 'form-select'}),
+        label='Status',
+        method='filter_is_active'
+    )
+
+    class Meta:
+        model = hotel
+        fields = ['user', 'created_after', 'created_before', 'is_active']
+
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+
+        # Hide user filter for non-admins
+        if request and not request.user.is_superuser:
+            self.filters.pop('user', None)
+
+    def filter_is_active(self, queryset, name, value):
+        if value == 'true':
+            return queryset.filter(is_active=True)
+        elif value == 'false':
+            return queryset.filter(is_active=False)
+        return queryset
+
+
 class HotelBookingFilter(django_filters.FilterSet):
     
    
