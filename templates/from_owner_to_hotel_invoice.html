@@ -109,7 +109,7 @@
       <tr class="table-light"><td><strong>(B) Commission Charges</strong></td><td><strong>₹ {{ booking.commission_amount|add:booking.commission_gst|floatformat:2 }}</strong></td>
 </tr>
       
-      <tr><td>7. TCS @ 0.1%</td><td>₹ {{ booking.tds_amount }}</td></tr>
+      <tr><td>7. TCS @ 0.5%</td><td>₹ {{ booking.tds_amount }}</td></tr>
       <tr><td>8. TDS @ 0.1%</td><td>₹ {{ booking.tcs_amount }}</td></tr>
      
       <tr class="table-light"><td><strong>(C) Tax Deduction (7+8)</strong></td><td><strong>₹ {{ booking.tds_amount|add:booking.tcs_amount|floatformat:2 }}</strong></td></tr>

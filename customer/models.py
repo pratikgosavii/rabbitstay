@@ -70,7 +70,7 @@ class HotelBooking(models.Model):
             tds_amount = base * tds_percent
 
             # Final Amount to User
-            total_amount = subtotal + tcs_amount
+            total_amount = subtotal
 
             # Hotel's Earning
             hotel_net = subtotal - commission - commission_gst - tds_amount
