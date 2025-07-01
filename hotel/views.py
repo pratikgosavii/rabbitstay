@@ -681,10 +681,12 @@ def update_hotel_availability(request):
     if request.method == 'POST':
         selected_date = request.POST.get('selected_date')
         is_open = request.POST.get('is_open') == 'true'
-
+        room_id = request.POST.get('room_id')
+        room_obj = hotel_rooms.objects.get(id = room_id)
         # Check for existing bookings
         has_bookings = HotelBooking.objects.filter(
             hotel=hotel_obj,
+            room = room_obj,
             check_in__lte=selected_date,
             check_out__gt=selected_date,
             status='confirmed'
