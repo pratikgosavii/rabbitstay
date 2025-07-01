@@ -167,13 +167,19 @@
 
          <div class="container-fluid">
             <!-- start page title -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0 font-size-18">My Hotel</h4>
-                    </div>
-                </div>
+           <div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+            <h4 class="mb-sm-0 font-size-18">My Hotel</h4>
+
+            <!-- Right-side calendar icon -->
+            <div class="calendar-icon" style="margin-right: 200px;">
+             <a href="{% url 'update_hotel_availability' %}">  <img src="{% static 'images/calendar.png' %}" alt="Calendar" style="height: 40px;"> </a>
             </div>
+        </div>
+    </div>
+</div>
+
 
             {% if not data.is_active %}
             <div class="alert alert-danger d-flex align-items-center" role="alert" style="font-weight: 500; font-size: 15px;">
