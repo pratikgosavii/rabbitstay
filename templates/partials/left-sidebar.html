@@ -217,7 +217,7 @@
                         <button type="submit" class="btn btn-primary" style="background-color: #0088CC;">Logout</button>
                     </form>
                 </div>
-                {% elif %}
+                {% elif request.user.is_service_provider %}
                     <div style="margin: 100% 0 0 35%; align-content: center">
                         <form method="POST" action="{% url 'vendor_logout' %}">
                             {% csrf_token %}
