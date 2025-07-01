@@ -162,6 +162,41 @@
                             {% endif %}
                         </div>
 
+                         <div class="mb-4">
+                            <label class="form-label">Landmark:</label>
+                            {{ form.landmark }}
+                            {% if form.landmark.errors %}
+                                <div class="text-danger">{{ form.landmark.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Pincode:</label>
+                            {{ form.pincode }}
+                            {% if form.pincode.errors %}
+                                <div class="text-danger">{{ form.pincode.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                         <div class="mb-4">
+                            <label class="form-label">Category :</label>
+                            {{ form.category }}
+                            {% if form.category.errors %}
+                                <div class="text-danger">{{ form.category.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                         <div class="mb-4">
+                            <label class="form-label">Number of rooms :</label>
+                            {{ form.no_of_rooms }}
+                            {% if form.no_of_rooms.errors %}
+                                <div class="text-danger">{{ form.no_of_rooms.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        {% if request.user.is_superuser %}
+
+
                         <div class="mb-4">
                             <label class="form-label">Star Rating:</label>
                             {{ form.star_rating }}
@@ -169,6 +204,9 @@
                                 <div class="text-danger">{{ form.star_rating.errors.0 }}</div>
                             {% endif %}
                         </div>
+
+                            {% endif %}
+
 
                         <div class="mb-4">
                             <label class="form-label">Amenities:</label>
