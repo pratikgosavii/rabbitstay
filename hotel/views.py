@@ -563,7 +563,7 @@ from django.core.mail import EmailMessage
 from django.http import JsonResponse  # optional, if returning a JSON response
 from django.conf import settings  #
 
-from playwright.sync_api import sync_playwright
+# from playwright.sync_api import sync_playwright
 
 import os
 
