@@ -53,7 +53,7 @@ class HotelBooking(models.Model):
             base = self.room.price_per_night * nights
 
             # Determine GST Rate
-            gst_percent = Decimal('0.12') if base <= 7500 else Decimal('0.18')
+            gst_percent = Decimal('0.12') if base < 7500 else Decimal('0.18')
             gst = base * gst_percent
             subtotal = base + gst
 
@@ -64,7 +64,7 @@ class HotelBooking(models.Model):
             commission_gst = commission * commission_gst_percent
 
             # TCS and TDS
-            tcs_percent = Decimal('0.01')
+            tcs_percent = Decimal('0.05')
             tds_percent = Decimal('0.01')
             tcs_amount = base * tcs_percent
             tds_amount = base * tds_percent

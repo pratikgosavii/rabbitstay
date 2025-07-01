@@ -428,34 +428,34 @@ from customer.forms import *
 
 
 
-def send_invoice(request, subject, body, booking_id):
-    booking = get_object_or_404(HotelBooking, id=booking_id)
+# def send_invoice(request, subject, body, booking_id):
+#     booking = get_object_or_404(HotelBooking, id=booking_id)
 
-    # Generate HTML and PDF
-    html_file_path = generate_invoice_html(booking, request)
-    pdf_file_path = os.path.join(tempfile.gettempdir(), f"invoice_{booking.id}.pdf")
-    html_to_pdf_with_chromium(html_file_path, pdf_file_path)
+#     # Generate HTML and PDF
+#     html_file_path = generate_invoice_html(booking, request)
+#     pdf_file_path = os.path.join(tempfile.gettempdir(), f"invoice_{booking.id}.pdf")
+#     html_to_pdf_with_chromium(html_file_path, pdf_file_path)
 
-    # Create email
-    email = EmailMessage(
-        subject=subject,
-        body=body,
-        from_email='rabbitstay1@gmail.com',
-        to=['pratikgosavi654@gmail.com'],
-    )
+#     # Create email
+#     email = EmailMessage(
+#         subject=subject,
+#         body=body,
+#         from_email='rabbitstay1@gmail.com',
+#         to=['pratikgosavi654@gmail.com'],
+#     )
 
-    # Attach PDF
-    if os.path.exists(pdf_file_path):
-        with open(pdf_file_path, 'rb') as f:
-            email.attach(f"invoice_{booking.id}.pdf", f.read(), 'application/pdf')
+#     # Attach PDF
+#     if os.path.exists(pdf_file_path):
+#         with open(pdf_file_path, 'rb') as f:
+#             email.attach(f"invoice_{booking.id}.pdf", f.read(), 'application/pdf')
 
-    email.send()
+#     email.send()
 
-    # Optional: Clean up temp files
-    os.remove(html_file_path)
-    os.remove(pdf_file_path)
+#     # Optional: Clean up temp files
+#     os.remove(html_file_path)
+#     os.remove(pdf_file_path)
 
-    return HttpResponse("Email with PDF sent successfully!")
+#     return HttpResponse("Email with PDF sent successfully!")
 
 
 
@@ -486,9 +486,8 @@ def update_hotel_bookings(request, booking_id):
             if updated_booking.status == 'completed':
                 print("Booking has been marked as completed.")
 
-                subject = 'Invoice against Bookinid ' + str(updated_booking.id)
 
-                send_invoice(request, subject, 'Hi, attached pdf for invoice', updated_booking.id)
+                generate_invoice_pdf(request,  updated_booking.id)
 
                 
             return redirect('list_hotel_bookings')
@@ -578,207 +577,102 @@ import os
 import base64
 
 
-def generate_invoice_html(booking, request):
+# def generate_invoice_html(booking, request):
 
+#     with open(os.path.join(settings.BASE_DIR, 'static/images/rabitlogo.png'), 'rb') as img_file:
+#         logo_base64 = base64.b64encode(img_file.read()).decode('utf-8')
+
+#     html_content = render_to_string('from_owner_to_hotel_invoice.html', {
+#         'booking': booking,
+#         'request': request,
+#         'logo_base64': logo_base64
+#     })
+
+#     tmp = tempfile.NamedTemporaryFile(delete=False, suffix='.html', dir=settings.BASE_DIR)
+#     tmp.write(html_content.encode('utf-8'))
+#     tmp.close()
+#     return tmp.name  # return the HTML file path
+
+# from playwright.sync_api import sync_playwright
+
+# def html_to_pdf_with_chromium(html_file_path, output_pdf_path):
+#     with sync_playwright() as p:
+#         browser = p.chromium.launch(headless=True)
+#         page = browser.new_page()
+#         page.goto(f'file://{html_file_path}', wait_until='networkidle')
+#         page.pdf(path=output_pdf_path, format="A4", print_background=True)
+#         browser.close()
+
+# def generate_invoice_pdf(request, booking_id):
+    
+#     booking = get_object_or_404(HotelBooking, id=booking_id)
+
+#     html_file_path = generate_invoice_html(booking, request)
+#     pdf_file_path = os.path.join(tempfile.gettempdir(), f"invoice_{booking.id}.pdf")
+
+#     html_to_pdf_with_chromium(html_file_path, pdf_file_path)
+
+#     with open(pdf_file_path, 'rb') as f:
+#         pdf_data = f.read()
+
+#     # Cleanup
+#     os.remove(html_file_path)
+#     os.remove(pdf_file_path)
+
+#     return HttpResponse(pdf_data, content_type='application/pdf')
+   
+
+
+import requests
+
+def generate_invoice_pdf(request, booking_id):
+    booking = get_object_or_404(HotelBooking, id=booking_id)
+
+    # Generate base64 logo for the template
     with open(os.path.join(settings.BASE_DIR, 'static/images/rabitlogo.png'), 'rb') as img_file:
         logo_base64 = base64.b64encode(img_file.read()).decode('utf-8')
 
+    # Render HTML
     html_content = render_to_string('from_owner_to_hotel_invoice.html', {
         'booking': booking,
         'request': request,
         'logo_base64': logo_base64
     })
+    subject = 'Invoice against Bookinid ' + str(booking_id)
 
-    tmp = tempfile.NamedTemporaryFile(delete=False, suffix='.html', dir=settings.BASE_DIR)
-    tmp.write(html_content.encode('utf-8'))
-    tmp.close()
-    return tmp.name  # return the HTML file path
 
-from playwright.sync_api import sync_playwright
 
-def html_to_pdf_with_chromium(html_file_path, output_pdf_path):
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        page.goto(f'file://{html_file_path}', wait_until='networkidle')
-        page.pdf(path=output_pdf_path, format="A4", print_background=True)
-        browser.close()
+    # Generate PDF using html2pdf.app
+    response = requests.post(
+        'https://api.html2pdf.app/v1/generate',
+        json={
+            'html': html_content,
+            'apiKey': settings.HTML2PDF_API_KEY,
+            'options': {
+                'printBackground': True,
+                'margin': '1cm',
+                'pageSize': 'A4'
+            }
+        }
+    )
 
-def generate_invoice_pdf(request, booking_id):
+    if response.status_code != 200:
+        return HttpResponse(f"PDF generation failed: {response.text}", status=400)
+
+    pdf_bytes = response.content
+
+    # Compose email
+    email = EmailMessage(
+        subject=subject,
+        body='Hi, attached pdf for invoice',
+        from_email='rabbitstay1@gmail.com',
+        to=['pratikgosavi654@gmail.com'],
+    )
+    email.attach(f"invoice_{booking.id}.pdf", pdf_bytes, 'application/pdf')
+    email.send()
+
+    return HttpResponse("Email with PDF sent successfully!")
     
-    booking = get_object_or_404(HotelBooking, id=booking_id)
-
-    html_file_path = generate_invoice_html(booking, request)
-    pdf_file_path = os.path.join(tempfile.gettempdir(), f"invoice_{booking.id}.pdf")
-
-    html_to_pdf_with_chromium(html_file_path, pdf_file_path)
-
-    with open(pdf_file_path, 'rb') as f:
-        pdf_data = f.read()
-
-    # Cleanup
-    os.remove(html_file_path)
-    os.remove(pdf_file_path)
-
-    return HttpResponse(pdf_data, content_type='application/pdf')
-    # booking = get_object_or_404(HotelBooking, id=booking_id)
-    # buffer = io.BytesIO()
-    # pdf = canvas.Canvas(buffer, pagesize=A4)
-    # width, height = A4
-
-    # net_amount = booking.total_amount - booking.hotel_earning
-    #   # Draw logo image (update the path to your actual logo file)
-    # pdf.drawImage("static/images/rabitlogo.png.", x=50, y=770, width=120, height=40)
-    # y = height - 80
-     
-    # pdf.setStrokeColor(colors.HexColor("#cccccc"))  # Light grey
-    # pdf.line(50, y - 4, width - 50, y - 4)
-    # pdf.setLineWidth(1)
-    
-    # # Header
-    # pdf.setFont("Times-Bold", 16)
-    # pdf.setFillColor(colors.black)
-    # pdf.drawRightString(width - 50, height - 50, f"{booking.hotel.name}")
-    # pdf.setFont("Times-Roman", 12)
-
-    # pdf.drawRightString(width - 50, height - 65, f"{booking.hotel.city.name}, India")
-
-    # y = height - 100
-
-    # # Section: Primary Guest Details
-    # pdf.setFont("Times-Bold", 12)
-    # pdf.drawString(50, y, "PRIMARY GUEST DETAILS")
-    # pdf.setStrokeColor(colors.HexColor("#cccccc"))  # Light grey
-    # pdf.setLineWidth(0.5)  # Thinner line
-    # pdf.line(50, y - 4, width - 50, y - 4)
-    # pdf.setLineWidth(1)  # Optional: reset if needed later
-
-    # y -= 20
-    # pdf.setFont("Times-Roman", 12)
-    # pdf.drawString(50, y, f"👤 {booking.first_name} {booking.last_name}")
-    # y -= 15
-    # pdf.drawString(50, y, f"Check-in: {booking.check_in}")
-    # y -= 15
-    # pdf.drawString(50, y, f"Check-out: {booking.check_out}")
-    # y -= 15
-    # pdf.drawString(50, y, f"Total Guests: {booking.guest_count}")
-
-    # # Booking Info
-    # y -= 30
-    # pdf.setFont("Times-Bold", 12)
-    # pdf.drawString(50, y, "BOOKING INFO")
-    # pdf.setStrokeColor(colors.HexColor("#cccccc"))  # Light grey
-    # pdf.setLineWidth(0.5)  # Thinner line
-    # pdf.line(50, y - 4, width - 50, y - 4)
-    # pdf.setLineWidth(1)  # Optional: reset if needed later
-
-    # y -= 20
-    # pdf.setFont("Times-Roman", 12)
-    # pdf.drawString(50, y, f"Booking ID: {booking.id}")
-    # pdf.drawString(250, y, f"Status: {booking.status}")
-    # y -= 15
-    # pdf.drawString(50, y, f"Booked on: {booking.created_at.strftime('%b %d, %Y, %I:%M %p')}")
-    # pdf.drawString(250, y, "Payment: Paid Online")
-
-    # # Room Details
-    # y -= 30
-    # pdf.setFont("Times-Bold", 12)
-    # pdf.drawString(50, y, "ROOM DETAILS")
-    # pdf.setStrokeColor(colors.HexColor("#cccccc"))  # Light grey
-    # pdf.setLineWidth(0.5)  # Thinner line
-    # pdf.line(50, y - 4, width - 50, y - 4)
-    # pdf.setLineWidth(1)  # Optional: reset if needed later
-
-    # y -= 20
-    # pdf.setFont("Times-Roman", 12)
-    # pdf.drawString(50, y, f"Room: {booking.room.room_type}")
-    # y -= 15
-    # pdf.drawString(50, y, f"Inclusions: {booking.special_request or 'Room Only'}")
-    # y -= 15
-    # pdf.drawString(50, y, "Cancellation Policy: This is a non-refundable, non-amendable tariff.")
-
-    # # Payment
-    # y -= 30
-    # pdf.setFont("Times-Bold", 12)
-    # pdf.drawString(50, y, "PAYMENT")
-    # pdf.setStrokeColor(colors.HexColor("#cccccc"))  # Light grey
-    # pdf.setLineWidth(0.5)  # Thinner line
-    # pdf.line(50, y - 4, width - 50, y - 4)
-    # pdf.setLineWidth(1)  # Optional: reset if needed later
-
-    # y -= 20
-    # pdf.setFont("Times-Roman", 12)
-    # pdf.drawString(50, y, f"Property Gross Charges: ₹ {booking.total_amount:.2f}")
-    # pdf.drawString(300, y, f"Payable to Property: ₹ {booking.hotel_earning:.2f}")
-
-    # # Table
-    # y -= 40
-    # pdf.setFont("Times-Bold", 12)
-    # pdf.drawString(50, y, "ROOM WISE PAYMENT BREAKUP (in ₹)")
-    # pdf.setStrokeColor(colors.HexColor("#cccccc"))  # Light grey
-    # pdf.setLineWidth(0.5)  # Thinner line
-    # pdf.line(50, y - 4, width - 50, y - 4)
-    # pdf.setLineWidth(1)  # Optional: reset if needed later
-
-    # y -= 20
-
-    # from reportlab.platypus import SimpleDocTemplate
-    # table_data = [
-    #     ["Date", "Room Charges", "Extra Adult/Child", "Taxes", "Gross Charges", "Commission", "Net Rate"],
-    #     [str(booking.check_in),
-    #      f"{booking.base_amount:.2f}",
-    #      "0.00",
-    #      f"{booking.gst_amount:.2f}",
-    #      f"{booking.total_amount:.2f}",
-    #      f"{booking.total_amount - booking.hotel_earning:.2f}",
-    #      f"{booking.hotel_earning:.2f}"]
-    # ]
-    # t = Table(table_data, colWidths=[75]*7)
-    # t.setStyle(TableStyle([
-    # ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#f2f2f2")),
-    # ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
-    # ('FONTNAME', (0, 0), (-1, -1), 'Times-Roman'),
-    # ('FONTSIZE', (0, 0), (-1, -1), 9),
-    # ('ALIGN', (0, 0), (-1, 0), 'CENTER'),  # header
-    # ('ALIGN', (1, 1), (-1, -1), 'RIGHT'),  # numeric alignment
-    # ('LINEBELOW', (0, 0), (-1, 0), 1, colors.grey),
-    # ('LINEBELOW', (0, -1), (-1, -1), 1, colors.lightgrey),
-    # ('GRID', (0, 1), (-1, -1), 0.3, colors.HexColor("#dddddd")),
-    # ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-    # ('TOPPADDING', (0, 0), (-1, -1), 6),
-    # ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-    # ]))
-
-    # t.wrapOn(pdf, width, height)
-    # t.drawOn(pdf, 50, y - 50)
-
-    # # Final Calculation
-    # y -= 130
-    # pdf.setFont("Times-Bold", 12)
-    # pdf.drawString(50, y, "FINAL CALCULATION")
-    # pdf.setStrokeColor(colors.HexColor("#cccccc"))  # Light grey
-    # pdf.setLineWidth(0.5)  # Thinner line
-    # pdf.line(50, y - 4, width - 50, y - 4)
-    # pdf.setLineWidth(1)  # Optional: reset if needed later
-
-    # y -= 20
-    # pdf.setFont("Times-Roman", 12)
-    # pdf.drawString(50, y, f"1. Room Charges: ₹ {booking.base_amount:.2f}")
-    # y -= 15
-    # pdf.drawString(50, y, f"2. Extra Adult/Child Charges: ₹ 0.00")
-    # y -= 15
-    # pdf.drawString(50, y, f"3. Property Taxes: ₹ {booking.gst_amount:.2f}")
-    # y -= 15
-    # pdf.drawString(50, y, f"4. Service Charges: ₹ 0.00")
-    # y -= 20
-    # pdf.setFont("Times-Bold", 10)
-    # pdf.drawString(50, y, f"(A) Property Gross Charges: ₹ {booking.total_amount:.2f}")
-
-    # pdf.showPage()
-    # pdf.save()
-    # buffer.seek(0)
-    # return HttpResponse(buffer, content_type='application/pdf')
-
 
 from django.http import JsonResponse
 from django.db.models import Q
