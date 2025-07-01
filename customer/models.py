@@ -64,8 +64,8 @@ class HotelBooking(models.Model):
             commission_gst = commission * commission_gst_percent
 
             # TCS and TDS
-            tcs_percent = Decimal('0.5')
-            tds_percent = Decimal('0.1')
+            tcs_percent = Decimal('0.005')
+            tds_percent = Decimal('0.001')
             tcs_amount = base * tcs_percent
             tds_amount = base * tds_percent
 
