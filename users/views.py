@@ -539,6 +539,10 @@ def vendor_logout_page(request):
     logout(request)
     return redirect('login_vendor')
 
+def staff_logout_page(request):
+    logout(request)
+    return redirect('login_staff')
+
 def customer_user_list(request):
 
     data = User.objects.filter(is_customer = True).order_by('-date_joined')

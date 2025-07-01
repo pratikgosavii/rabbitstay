@@ -217,9 +217,17 @@
                         <button type="submit" class="btn btn-primary" style="background-color: #0088CC;">Logout</button>
                     </form>
                 </div>
-                {% else %}
+                {% elif %}
                     <div style="margin: 100% 0 0 35%; align-content: center">
                         <form method="POST" action="{% url 'vendor_logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary" style="background-color: #0088CC;">Logout</button>
+                        </form>
+                    </div>
+                
+                {% else %}
+                    <div style="margin: 100% 0 0 35%; align-content: center">
+                        <form method="POST" action="{% url 'login_staff' %}">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-primary" style="background-color: #0088CC;">Logout</button>
                         </form>
