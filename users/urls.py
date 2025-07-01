@@ -20,6 +20,7 @@ urlpatterns = [
     
     path('customer-user-list/', customer_user_list, name='customer_user_list'),
     path('provider-user-list/', provider_user_list, name='provider_user_list'),
+    path('list-custome-user/', list_custom_user, name='list_custom_user'),
 
 
     path('user-booking-history/<user_id>', user_booking_history, name='user_booking_history'),
@@ -28,7 +29,6 @@ urlpatterns = [
 
 
     path('add-custome-user/', add_custom_user, name='add_custom_user'),
-    path('list-custome-user/', list_custom_user, name='list_custom_user'),
 
 
 ]
