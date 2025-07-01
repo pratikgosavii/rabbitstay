@@ -74,6 +74,13 @@
         <form method="post">
             {% csrf_token %}
             <div class="mb-3">
+                {{ form.first_name.label_tag }} {{ form.first_name }}
+            </div>
+            <div class="mb-3">
+                                {{ form.last_name.label_tag }} {{ form.last_name }}
+
+            </div>
+            <div class="mb-3">
                 {{ form.mobile.label_tag }} {{ form.mobile }}
             </div>
             <div class="mb-3">

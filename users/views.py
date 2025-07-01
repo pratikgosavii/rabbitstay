@@ -603,4 +603,4 @@ def list_custom_user(request):
         is_service_provider=False
     ).order_by('-date_joined')
 
-    return render(request, 'user_list.html', { 'data' : users})
+    return render(request, 'custom_user_list.html', { 'data' : users})

@@ -65,13 +65,16 @@ class UserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['mobile', 'email', 'password', 'group', 'is_active']
+        fields = ['first_name', 'last_name', 'mobile', 'email', 'password', 'group', 'is_active']
 
         widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'mobile': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+        
 
     def save(self, commit=True):
         user = super().save(commit=False)
