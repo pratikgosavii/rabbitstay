@@ -367,7 +367,7 @@ def delete_hotel_room_image(request, image_id):
 @login_required(login_url='login_admin')
 def list_hotel_rooms(request):
 
-    data = hotel_rooms.objects.all()
+    data = hotel_rooms.objects.filter(hotel__user = request.user)
     context = {
         'data': data
     }
