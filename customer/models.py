@@ -9,13 +9,12 @@ from decimal import Decimal
 class HotelBooking(models.Model):
     
     STATUS_CHOICES = [
-        ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
         ('cancelled', 'Cancelled'),
         ('completed', 'Completed'),
     ]
 
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='confirmed')
     
     user = models.ForeignKey("users.User", on_delete=models.SET_NULL, null=True, blank=True)
     hotel = models.ForeignKey("hotel.hotel", on_delete=models.CASCADE)
@@ -67,8 +66,8 @@ class HotelBooking(models.Model):
             # TCS and TDS
             tcs_percent = Decimal('0.01')
             tds_percent = Decimal('0.01')
-            tcs_amount = subtotal * tcs_percent
-            tds_amount = subtotal * tds_percent
+            tcs_amount = base * tcs_percent
+            tds_amount = base * tds_percent
 
             # Final Amount to User
             total_amount = subtotal + tcs_amount
@@ -89,6 +88,13 @@ class HotelBooking(models.Model):
 
         super().save(*args, **kwargs)
 
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+        if user and not user.is_superuser:
+            self.fields['status'].choices = [('completed', 'Completed')]
 
     def __str__(self):
         return f"Booking for {self.first_name} at {self.hotel.name}"

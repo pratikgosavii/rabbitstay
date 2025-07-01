@@ -35,11 +35,13 @@ urlpatterns = [
     path('delete-hotel-room-image/<int:image_id>/', delete_hotel_room_image, name='delete_hotel_room_image'),
     
     path('list-hotel-bookings/', list_hotel_bookings, name='list_hotel_bookings'),
+    path('list-hotel-future-bookings/', list_hotel_future_bookings, name='list_hotel_future_bookings'),
     path('update-hotel-bookings/<booking_id>', update_hotel_bookings, name='update_hotel_bookings'),
 
     path('list-hotel-earning/', list_hotel_earning, name='list_hotel_earning'),
     path('hotel-invoice/<booking_id>', generate_invoice_pdf, name='render_pdf_view'),
 
+    path('availability/update/', update_hotel_availability, name='update_hotel_availability'),
 
 
 ]  + router.urls

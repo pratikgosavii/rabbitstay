@@ -357,16 +357,37 @@ def register_vendor(request):
         confirm_password = request.POST.get('confirm_password')
 
         if not all([first_name, last_name, email, mobile, password, confirm_password]):
-            return render(request, 'hotel_registration.html', {'error': 'All fields are required.'}, context)
+            print('----1----')
+            context = { 
+                    'form': form, 
+                    'error': 'All fields are required.'
+            }
+            return render(request, 'hotel_registration.html', context)
 
         if password != confirm_password:
-            return render(request, 'hotel_registration.html', {'error': 'Passwords do not match.'}, context)
+            print('----2----')
+            context = { 
+                    'form': form, 
+                    'error': 'Passwords do not match.'
+            }
+            return render(request, 'hotel_registration.html', context)
 
         if User.objects.filter(email=email).exists():
-            return render(request, 'hotel_registration.html', {'error': 'Email already registered.'}, context)
+            print('----3----')
+            context = { 
+                    'form': form, 
+                   'error': 'Email already registered.'
+            }
+
+            return render(request, 'hotel_registration.html',  context)
 
         if User.objects.filter(mobile=mobile).exists():
-            return render(request, 'hotel_registration.html', {'error': 'Mobile number already registered.'})
+            print('----4---')
+            context = { 
+                    'form': form, 
+                   'error': 'Mobile number already registered.'
+            }
+            return render(request, 'hotel_registration.html',  context)
 
         print(request.POST)
         # Create the user
@@ -451,6 +472,37 @@ def login_vendor(request):
 
     return render(request, 'vendorLogin.html', {'form': form})
 
+
+
+def login_staff(request):
+   
+    form = LoginForm(request.POST)
+
+    if form.is_valid():
+        email = form.cleaned_data['email']
+        password = form.cleaned_data['password']
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            messages.error(request, 'Invalid email or password')
+            return render(request, 'stafflogin.html', {'form': form})
+
+        if user.check_password(password):
+            login(request, user)
+
+            print('------------------')
+
+            print(request.user)
+
+
+            
+            return redirect('dashboard')
+           
+        else:
+            messages.error(request, "Invalid email or password.")
+    
+    return render(request, 'stafflogin.html')
 
 # def resgister_page(request):
 

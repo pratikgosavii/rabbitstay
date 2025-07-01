@@ -1,122 +1,110 @@
 {% load static %}
+
+{% load static %}
+{% load group_tags %}
+
 {% block left_sidebar %}
-        <!-- ========== Left Sidebar Start ========== -->
-        <div class="vertical-menu">
-            <div data-simplebar class="h-100">
 
-                <!--- Sidemenu -->
-                <div id="sidebar-menu">
-                    <!-- Left Menu Start -->
-                    <ul class="metismenu list-unstyled" id="side-menu">
 
-                        {% if request.user.is_superuser %}
+{% if request.user.is_authenticated %}
 
+       <!-- ========== Left Sidebar Start ========== -->
+<div class="vertical-menu">
+    <div data-simplebar class="h-100">
+        <div id="sidebar-menu">
+            <ul class="metismenu list-unstyled" id="side-menu">
+
+                <!-- ===== Admin Section (Black) ===== -->
+                {% if request.user.is_superuser %}
+                <li>
+                    <a href="{% url 'dashboard' %}">
+                        <i data-feather="home"></i>
+                        <span class="badge rounded-pill text-success float-end">9+</span>
+                        <span>Admin Dashboard</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow">
+                        <i data-feather="users"></i>
+                        <span>Users Management</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
                         <li>
-                            <a href="{% url 'dashboard' %}">
-                                <i data-feather="home"></i>
-                                <span class="badge rounded-pill text-success float-end">9+</span>
-                                <span data-key="t-dashboard">Admin Dashboard</span>
-                            </a>
-                        </li>
-
-
-                        <li>
-                            <a href="javascript: void(0);" class="has-arrow">
-                                <i data-feather="users"></i>
-                                <span data-key="t-authentication">Users Management</span>
-                            </a>
-
+                            <a href="javascript:void(0);" class="has-arrow">Staff</a>
                             <ul class="sub-menu" aria-expanded="false">
-                                <!-- Staff Section with Submenu -->
-                                <li>
-                                <a href="javascript:void(0);" class="has-arrow">Staff</a>
-                                <ul class="sub-menu" aria-expanded="false">
-                                    <li><a href="{% url 'add_custom_user' %}">Add Staff</a></li>
-                                    <li><a href="{% url 'list_custom_user' %}">Staff List</a></li>
-                                </ul>
-                                </li>
-
-                                <!-- Customer -->
-                                <li><a href="{% url 'customer_user_list' %}">Customer List</a></li>
-
-                                <!-- Provider -->
-                                <li><a href="{% url 'provider_user_list' %}">Provider List</a></li>
-
-                                <!-- Vendor Requests -->
-                                <li><a href="{% url 'vendor_request' %}">Provider Request List</a></li>
+                                <li><a href="{% url 'add_custom_user' %}">Add Staff</a></li>
+                                <li><a href="{% url 'list_custom_user' %}">Staff List</a></li>
                             </ul>
-                            </li>
-
-
-                        
-                        <li>
-                            <a href="javascript: void(0);" class="has-arrow">
-                                <i data-feather="layers"></i>
-                                <span data-key="t-authentication">City</span>
-                            </a>
-                            <ul class="sub-menu" aria-expanded="false">
-                                <li><a href="{% url 'add_city' %}">Add City</a></li>
-                                <li><a href="{% url 'list_city' %}">List City</a></li>
-                            </ul>
-                          
-                           
                         </li>
-                        
-                        <li>
-                            <a href="javascript: void(0);" class="has-arrow">
-                                <i data-feather="layers"></i>
-                                <span data-key="t-authentication">Amenity</span>
-                            </a>
-                            <ul class="sub-menu" aria-expanded="false">
-                                <li><a href="{% url 'add_amenity' %}">Add Amenity</a></li>
-                                <li><a href="{% url 'list_amenity' %}">List Amenity</a></li>
-                            </ul>
-                          
-                           
-                        </li>
-                        
-                        <li>
-                            <a href="javascript: void(0);" class="has-arrow">
-                                <i data-feather="layers"></i>
-                                <span data-key="t-authentication">Room Amenity</span>
-                            </a>
-                            <ul class="sub-menu" aria-expanded="false">
-                                <li><a href="{% url 'add_room_amenity' %}">Add Room Amenity</a></li>
-                                <li><a href="{% url 'list_room_amenity' %}">List Room Amenity</a></li>
-                            </ul>
-                          
-                           
-                        </li>
-                        
-                        <li>
-                            <a href="javascript: void(0);" class="has-arrow">
-                                <i data-feather="layers"></i>
-                                <span data-key="t-authentication">Room Type</span>
-                            </a>
-                            <ul class="sub-menu" aria-expanded="false">
-                                <li><a href="{% url 'add_room_type' %}">Add Room Type</a></li>
-                                <li><a href="{% url 'list_room_type' %}">List Room Type</a></li>
-                            </ul>
-                          
-                           
-                        </li>
+                        <li><a href="{% url 'customer_user_list' %}">Customer List</a></li>
+                        <li><a href="{% url 'provider_user_list' %}">Provider List</a></li>
+                        <li><a href="{% url 'vendor_request' %}">Provider Request List</a></li>
+                    </ul>
+                </li>
 
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow">
+                        <i data-feather="map-pin"></i>
+                        <span>City</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="{% url 'add_city' %}">Add City</a></li>
+                        <li><a href="{% url 'list_city' %}">List City</a></li>
+                    </ul>
+                </li>
+                {% endif %}
 
+                <!-- ===== Staff Section (Red) ===== -->
+                {% if request.user|has_group:'Staff' or request.user.is_superuser %}
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow">
+                        <i data-feather="box"></i>
+                        <span>Amenity</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li><a href="{% url 'add_amenity' %}">Add Amenity</a></li>
+                        <li><a href="{% url 'list_amenity' %}">List Amenity</a></li>
+                    </ul>
+                </li>
 
-                        <li>
-                            <a href="javascript: void(0);" class="has-arrow">
-                                <i data-feather="layers"></i>
-                                <span data-key="t-authentication">Hotel</span>
-                            </a>
-                            <ul class="sub-menu" aria-expanded="false">
-                                <li><a href="{% url 'list_hotel' %}">List Hotel</a></li>
-                            </ul>
-                           
-                        </li>
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow">
+                        <i data-feather="box"></i>
+                        <span>Room Amenity</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li><a href="{% url 'add_room_amenity' %}">Add Room Amenity</a></li>
+                        <li><a href="{% url 'list_room_amenity' %}">List Room Amenity</a></li>
+                    </ul>
+                </li>
 
-                        {% endif %}
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow">
+                        <i data-feather="box"></i>
+                        <span>Room Type</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li><a href="{% url 'add_room_type' %}">Add Room Type</a></li>
+                        <li><a href="{% url 'list_room_type' %}">List Room Type</a></li>
+                    </ul>
+                </li>
 
-                        {% if request.user.is_service_provider %}
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow">
+                        <i data-feather="home"></i>
+                        <span>Hotel</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li><a href="{% url 'list_hotel' %}">List Hotel</a></li>
+                    </ul>
+                </li>
+
+                {% endif %}
+
+                {% if request.user|has_group:'Staff' or request.user.is_superuser or request.user.is_service_provider %}
+
+               {% if request.user.is_service_provider %}
 
                         <li>
                             <a href="{% url 'view_hotel' %}">
@@ -128,109 +116,106 @@
 
                         {% endif %}
 
-
-                        <li>
-                            <a href="javascript: void(0);" class="has-arrow">
-                                <i data-feather="layers"></i>
-                                <span data-key="t-authentication">Hotel Rooms</span>
-                            </a>
-                            <ul class="sub-menu" aria-expanded="false">
-                                <li><a href="{% url 'add_hotel_rooms' %}">Add Hotel Rooms</a></li>
-                                <li><a href="{% url 'list_hotel_rooms' %}">List Hotel Rooms</a></li>
-                            </ul>
-                           
-                        </li>
-
-
-                        <li>
-                            <a href="javascript: void(0);" class="has-arrow">
-                                <i data-feather="layers"></i>
-                                <span data-key="t-authentication">Bookings</span>
-                            </a>
-                            <ul class="sub-menu" aria-expanded="false">
-                                <li><a href="{% url 'list_hotel_bookings' %}">All Bookings</a></li>
-                                <li><a href="">All Future Bookings</a></li>
-                            </ul>
-                            
-                        </li>
-
-                        
-                        <li>
-                            <a href="{% url 'list_hotel_earning' %}">
-                                <i data-feather="layers"></i>
-                                <span data-key="t-authentication">Earnings</span>
-                            </a>
-                        </li>
-
-
-                        {% if request.user.is_superuser %}
-
-                        <li>
-                            <li>
-                                <a href="javascript: void(0);" class="has-arrow">
-                                    <i data-feather="layers"></i>
-                                    <span data-key="t-authentication">Coupon</span>
-                                </a>
-                                <ul class="sub-menu" aria-expanded="false">
-                                    <li><a href="{% url 'add_coupon' %}">Add Coupon</a></li>
-                                    <li><a href="{% url 'list_coupon' %}">Coupon List</a></li>
-                                </ul>
-                            </li>
-                        <li>
-
-                      
-                        
-                        <li>
-                            <a href="javascript: void(0);" class="has-arrow">
-                                <i data-feather="layers"></i>
-                                <span data-key="t-authentication">Banner</span>
-                            </a>
-                            <ul class="sub-menu" aria-expanded="false">
-                                <li><a href="{% url 'add_home_banner' %}">Banner Add</a></li>
-                                <li><a href="{% url 'list_home_banner' %}">Banner List</a></li>
-
-                            </ul>
-                        </li>
-
-                        {% endif %}
-                        
-                        <li>
-                            <a href="javascript: void(0);" class="has-arrow">
-                                <i data-feather="layers"></i>
-                                <span data-key="t-authentication">Payments</span>
-                            </a>
-                            <ul class="sub-menu" aria-expanded="false">
-                                <li><a>Recent Payments</a></li>
-                                <li><a>Initiate Refunds</a></li>
-                                <li><a>Refunds</a></li>
-                                <li><a>Payment Reports</a></li>
-                            </ul>
-                        </li>
-                        
-                        <li>
-                            <a href="javascript: void(0);" class="has-arrow">
-                                <i data-feather="layers"></i>
-                                <span data-key="t-authentication">Reports</span>
-                            </a>
-                            <ul class="sub-menu" aria-expanded="false">
-                                <li><a>Recent Payments</a></li>
-                                <li><a>Initiate Refunds</a></li>
-                                <li><a>Refunds</a></li>
-                                <li><a>Payment Reports</a></li>
-                            </ul>
-                        </li>
-                       
-                        <div style="margin: 100% 0 0 35%; align-content: center">
-                            <form method="POST" action="{% url 'logout' %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary" style="background-color: #0088CC; !important ;" >Logout</button>
-                        </form>
-                        </div>
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow">
+                        <i data-feather="layout"></i>
+                        <span>Hotel Rooms</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li><a href="{% url 'add_hotel_rooms' %}">Add Hotel Rooms</a></li>
+                        <li><a href="{% url 'list_hotel_rooms' %}">List Hotel Rooms</a></li>
                     </ul>
+                </li>
 
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow">
+                        <i data-feather="calendar"></i>
+                        <span>Bookings</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li><a href="{% url 'list_hotel_bookings' %}">All Bookings</a></li>
+                        <li><a href="{% url 'list_hotel_future_bookings' %}">All Future Bookings</a></li>
+                    </ul>
+                </li>
+
+                {% endif %}
+
+                {% if request.user|has_group:'Staff' or request.user.is_superuser %}
+
+
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow">
+                        <i data-feather="tag"></i>
+                        <span>Coupon</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li><a href="{% url 'add_coupon' %}">Add Coupon</a></li>
+                        <li><a href="{% url 'list_coupon' %}">Coupon List</a></li>
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow">
+                        <i data-feather="image"></i>
+                        <span>Banner</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li><a href="{% url 'add_home_banner' %}">Add Banner</a></li>
+                        <li><a href="{% url 'list_home_banner' %}">Banner List</a></li>
+                    </ul>
+                </li>
+                {% endif %}
+
+                <!-- ===== CA Section (Yellow) ===== -->
+                {% if request.user|has_group:'Staff' or request.user.is_superuser or request.user.is_service_provider %}
+
+                <li>
+                    <a href="{% url 'list_hotel_earning' %}">
+                        <i data-feather="dollar-sign"></i>
+                        <span>Earnings</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow">
+                        <i data-feather="credit-card"></i>
+                        <span>Payments</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li><a href="#">Recent Payments</a></li>
+                        <li><a href="#">Initiate Refunds</a></li>
+                        <li><a href="#">Refunds</a></li>
+                        <li><a href="#">Payment Reports</a></li>
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow">
+                        <i data-feather="bar-chart-2"></i>
+                        <span>Reports</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li><a href="#">Recent Payments</a></li>
+                        <li><a href="#">Initiate Refunds</a></li>
+                        <li><a href="#">Refunds</a></li>
+                        <li><a href="#">Payment Reports</a></li>
+                    </ul>
+                </li>
+                {% endif %}
+
+                <!-- ===== Logout ===== -->
+                <div style="margin: 100% 0 0 35%; align-content: center">
+                    <form method="POST" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary" style="background-color: #0088CC;">Logout</button>
+                    </form>
                 </div>
-                <!-- Sidebar -->
-            </div>
+            </ul>
         </div>
+    </div>
+</div>
+<!-- Left Sidebar End -->
+
+{% endif %}
         <!-- Left Sidebar End -->
 {% endblock left_sidebar %}

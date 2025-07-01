@@ -25,7 +25,7 @@ class hotel(models.Model):
     landmark = models.TextField(null=True, blank=True)
 
     pincode = models.IntegerField()
-    star_rating = models.IntegerField()
+    star_rating = models.IntegerField(null=True, blank=True)
     overall_rating = models.DecimalField(max_digits=2, decimal_places=1, null=True, blank=True)
     main_image = models.ImageField(upload_to='hotels/', null=True, blank=True)
     profit_margin = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
@@ -99,7 +99,7 @@ class hotel_rooms(models.Model):
         ('all_meals', 'Breakfast + Lunch + Dinner'),
     ]
 
-    hotel = models.ForeignKey("hotel.hotel", on_delete=models.CASCADE, related_name="rooms")
+    hotel = models.ForeignKey("hotel.hotel", on_delete=models.CASCADE, related_name="rooms", null=True, blank=True)
     room_type = models.ForeignKey("masters.room_type", on_delete=models.CASCADE, related_name="rooms")
     main_image = models.ImageField(upload_to='hotels/', null=True, blank=True)
    
@@ -130,3 +130,17 @@ class hotel_roomsImage(models.Model):
 
     def __str__(self):
         return f"{self.hotel.name} Image"
+
+
+
+class HotelAvailability(models.Model):
+    hotel = models.ForeignKey("hotel.hotel", on_delete=models.CASCADE)
+    date = models.DateField()
+    is_open = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = ('hotel', 'date')
+
+    def __str__(self):
+        return f"{self.hotel.name} - {self.date} - {'Open' if self.is_open else 'Closed'}"
+

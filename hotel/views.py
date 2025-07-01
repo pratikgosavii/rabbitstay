@@ -276,14 +276,27 @@ def add_hotel_rooms(request):
         form = hotel_rooms_Form(request.POST, request.FILES)
         
         if form.is_valid():
-             # Assign the user here
-            instance = form.save()
-            form.save_m2m()  # Save the many-to-many relationships
-            
+            instance = form.save(commit=False)
+
+            if request.user.is_superuser:
+                # Admin: hotel selected in form by dropdown (already present in form.cleaned_data)
+                pass  # already handled by form
+            else:
+                # Vendor: assign hotel based on the user
+                try:
+                    user_hotel = hotel.objects.get(user=request.user)
+                    instance.hotel = user_hotel
+                except hotel.DoesNotExist:
+                    return HttpResponse("You are not linked to any hotel.", status=403)
+
+            instance.save()
+            form.save_m2m()
+
             for img in request.FILES.getlist('image'):
-                HotelImage.objects.create(hotel=instance, image=img)
-            
+                HotelImage.objects.create(hotel=instance.hotel, image=img)
+
             return redirect('list_hotel_rooms')
+
         
         else:
             print(form.errors)
@@ -368,6 +381,35 @@ def list_hotel_bookings(request):
     queryset = HotelBooking.objects.all() if request.user.is_superuser else HotelBooking.objects.filter(hotel__user=request.user)
 
     filterset = HotelBookingFilter(request.GET, queryset=queryset, request = request)
+    filtered_bookings = filterset.qs
+
+    total_earning = filtered_bookings.aggregate(total=Sum('hotel_earning'))['total'] or 0
+
+    context = {
+        'data': filtered_bookings,
+        'filterset': filterset,
+        'total_earning': total_earning,
+    }
+    return render(request, 'list_hotel_bookings.html', context)
+
+
+
+from django.utils import timezone
+from datetime import date
+
+@login_required(login_url='login_admin')
+def list_hotel_future_bookings(request):
+    
+    today = date.today()
+
+    base_queryset = HotelBooking.objects.filter(check_in__gt=today)
+
+    if request.user.is_superuser:
+        queryset = base_queryset
+    else:
+        queryset = base_queryset.filter(hotel__user=request.user)
+
+    filterset = HotelBookingFilter(request.GET, queryset=queryset, request=request)
     filtered_bookings = filterset.qs
 
     total_earning = filtered_bookings.aggregate(total=Sum('hotel_earning'))['total'] or 0
@@ -736,3 +778,54 @@ def generate_invoice_pdf(request, booking_id):
     # pdf.save()
     # buffer.seek(0)
     # return HttpResponse(buffer, content_type='application/pdf')
+
+
+from django.http import JsonResponse
+from django.db.models import Q
+from datetime import datetime, timedelta
+from django.contrib import messages
+
+
+
+@login_required
+def update_hotel_availability(request):
+    hotel_obj = hotel.objects.get(user=request.user)
+
+    if request.method == 'POST':
+        selected_date = request.POST.get('selected_date')
+        is_open = request.POST.get('is_open') == 'true'
+
+        # Check for existing bookings
+        has_bookings = HotelBooking.objects.filter(
+            hotel=hotel_obj,
+            check_in__lte=selected_date,
+            check_out__gt=selected_date,
+            status='confirmed'
+        ).exists()
+
+        if not is_open and has_bookings:
+            messages.error(request, f"Cannot close {selected_date} — Bookings exist.")
+        else:
+            HotelAvailability.objects.update_or_create(
+                hotel=hotel_obj,
+                date=selected_date,
+                defaults={'is_open': is_open}
+            )
+            messages.success(request, f"{selected_date} marked as {'Open' if is_open else 'Closed'}")
+
+        return redirect('update_hotel_availability')
+
+    availability = HotelAvailability.objects.filter(hotel=hotel_obj)
+
+    events = [
+        {
+            'title': 'Open' if a.is_open else 'Closed',
+            'start': a.date.isoformat(),
+            'color': '#28a745' if a.is_open else '#dc3545'
+        } for a in availability
+    ]
+
+    context = {
+        'events': events,
+    }
+    return render(request, 'hotel_calender.html', context)

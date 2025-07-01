@@ -6,6 +6,7 @@ urlpatterns = [
     path('login/', LoginAPIView.as_view(), name='login'),
     path('login-admin/', login_admin, name='login_admin'),
     path('login-vendor/', login_vendor, name='login_vendor'),
+    path('login-staff/', login_staff, name='login_staff'),
 
     path('vendor-request/', vendor_request, name='vendor_request'),
 

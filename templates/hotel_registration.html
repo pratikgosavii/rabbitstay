@@ -13,6 +13,12 @@
         background-color: #f0d28c;
         padding-bottom: 20px;
     }
+    
+
+    .main-content {
+
+        margin-left : 0px;
+    }
 
     .form-container {
         background-color: #ffffff;
@@ -285,13 +291,6 @@
                             {% endif %}
                         </div>
 
-                        <div class="mb-4">
-                            <label class="form-label">Star Rating:</label>
-                            {{ form.star_rating }}
-                            {% if form.star_rating.errors %}
-                                <div class="text-danger">{{ form.star_rating.errors.0 }}</div>
-                            {% endif %}
-                        </div>
 
                         <div class="mb-4">
                             <label class="form-label">Amenities:</label>
