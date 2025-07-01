@@ -548,19 +548,12 @@ def list_hotel_earning(request):
 # from xhtml2pdf import pisa
 # import io
 
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
-from reportlab.lib import colors
-from reportlab.platypus import Table, TableStyle
 import io
 from django.http import HttpResponse
 
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
-from reportlab.pdfgen import canvas
-from reportlab.platypus import Table, TableStyle
-from reportlab.lib.pagesizes import A4
-from reportlab.lib import colors
+
 from django.template.loader import render_to_string
 import io
 
