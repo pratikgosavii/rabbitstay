@@ -224,9 +224,20 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-$(document).on('click', '.hotel-row td:last-child a, .hotel-row td:last-child i', function (e) {
-    e.stopPropagation();
+$(document).ready(function () {
+  $(".hotel-row").click(function (e) {
+    // Prevent toggle if clicking on a link, button, icon, or image
+    if ($(e.target).closest("a, i, button, img").length > 0) {
+      return;
+    }
+
+    const hotelId = $(this).data("hotel-id");
+    $(".room-row").hide(); // hide all first
+    $(".hotel-" + hotelId).toggle(); // toggle current
+  });
 });
+
+
 
 
 
