@@ -351,6 +351,21 @@ def delete_hotel_rooms(request, hotel_rooms_id):
 
 
 @login_required(login_url='login_admin')
+def view_hotel_rooms(request, hotel_id):
+
+    hotel_instance = hotel.objects.get(id = hotel_id)
+    data = hotel_rooms.objects.filter(hotel__id=hotel_id)
+
+    context = {
+        'data': data,
+        'hote_name' : hotel_instance.name
+    }
+
+    return render(request, 'list_hotel_rooms.html', context)
+
+
+
+@login_required(login_url='login_admin')
 def delete_hotel_room_image(request, image_id):
     image = get_object_or_404(hotel_roomsImage, id=image_id)
 
@@ -368,15 +383,12 @@ def delete_hotel_room_image(request, image_id):
 @login_required(login_url='login_admin')
 def list_hotel_rooms(request):
 
-    if request.user.is_superuser:
-        
-        data = hotel_rooms.objects.all()
-
-    else:
-
-        data = hotel_rooms.objects.filter(hotel__user = request.user)
     
-    filterset = HotelRoomFilter(request.GET, queryset=data, request = request)
+    data = hotel.objects.prefetch_related(
+        Prefetch('rooms', queryset=hotel_rooms.objects.select_related('room_type').prefetch_related('room_amenities'))
+    )
+
+    filterset = HotelFilter(request.GET, queryset=data, request = request)
     filtered_bookings = filterset.qs
 
     context = {
@@ -384,7 +396,8 @@ def list_hotel_rooms(request):
         'filterset': filterset
     }
 
-    return render(request, 'list_hotel_rooms.html', context)
+
+    return render(request, 'list_hotel.html', context)
 
 
 from customer.models import *

@@ -55,7 +55,7 @@
         <div class="container-fluid">
             <div class="row mb-3">
                 <div class="col-12">
-                    <h4 class="mb-0">List Rooms</h4>
+                    <h4 class="mb-0">Hotel {{ hote_name }} List Rooms</h4>
                 </div>
             </div>
 
@@ -85,7 +85,6 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Hotel</th>
                                             <th>Room Type</th>
                                             <th>Package</th>
                                             <th>Price/Night</th>
@@ -96,10 +95,10 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        
                                         {% for room in data %}
                                             <tr>
                                                 <td>{{ forloop.counter }}</td>
-                                                <td>{{ room.hotel.name }}</td>
                                                 <td>{{ room.room_type }}</td>
                                                 <td>{{ room.get_title_display }}</td>
                                                 <td>₹{{ room.price_per_night }}</td>

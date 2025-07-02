@@ -104,6 +104,7 @@
                                                 <th>Is Active</th>
                                                 <th>Created At</th>
                                                 <th>Image</th>
+                                                <th>Room</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -137,6 +138,9 @@
                                                         N/A
                                                     {% endif %}
                                                 </td>
+                                                   <td>
+                                                            <a href="{% url 'view_hotel_rooms' hotel.id %}">View</a>
+                                                    </td>
                                                 <td>
                                                     <a href="{% url 'update_hotel' hotel.id %}"><i class="bi bi-pencil-square text-primary" title="Edit"></i></a>
                                                     <a href="{% url 'delete_hotel' hotel.id %}"><i class="bi bi-trash text-danger" title="Delete"></i></a>
