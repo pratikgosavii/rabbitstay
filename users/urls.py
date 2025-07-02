@@ -32,6 +32,8 @@ urlpatterns = [
 
 
     path('add-custome-user/', add_custom_user, name='add_custom_user'),
+    path('custom-user-update/<int:user_id>/', update_custom_user, name='update_custom_user'),
+    path('custom-user-delete/<int:user_id>/', delete_custom_user, name='delete_custom_user'),
 
 
 ]

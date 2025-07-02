@@ -1,5 +1,5 @@
 from email import message
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
@@ -603,6 +603,32 @@ def add_custom_user(request):
     else:
         form = UserForm()
     return render(request, 'add_custom_user.html', {'form': form})
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def update_custom_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        form = UserForm(request.POST, instance=user)
+        if form.is_valid():
+            user = form.save()
+            groups = form.cleaned_data['group']
+            user.groups.set(groups)
+            return redirect('list_custom_user')
+        else:
+            print(form.errors)
+    else:
+        form = UserForm(instance=user)
+    return render(request, 'add_custom_user.html', {'form': form, 'update': True})
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def delete_custom_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        user.delete()
+        return redirect('list_custom_user')
+    return render(request, 'confirm_delete.html', {'user': user})
 
 
 def list_custom_user(request):
