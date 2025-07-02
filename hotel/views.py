@@ -384,25 +384,37 @@ def delete_hotel_room_image(request, image_id):
 def list_hotel_rooms(request):
 
     if request.user.is_superuser:
-        data = hotel.objects.filter(user = request.user).prefetch_related(
+        data = hotel.objects.prefetch_related(
             Prefetch('rooms', queryset=hotel_rooms.objects.select_related('room_type').prefetch_related('room_amenities'))
         )
+
+        filterset = HotelFilter(request.GET, queryset=data, request = request)
+        filtered_bookings = filterset.qs
+
+        context = {
+            'data': filtered_bookings,
+            'filterset': filterset
+        }
+
+
+        return render(request, 'list_hotel.html', context)
+
     else:
-        
-        data = hotel.objects.filter(user = request.user).prefetch_related(
-            Prefetch('rooms', queryset=hotel_rooms.objects.filter(hotel__user = request.user).select_related('room_type').prefetch_related('room_amenities'))
-        )
 
-    filterset = HotelFilter(request.GET, queryset=data, request = request)
-    filtered_bookings = filterset.qs
+        hotel_instance = hotel.objects.get(user = request.user)
+        data = hotel_rooms.objects.filter(hotel=hotel_instance)
 
-    context = {
-        'data': filtered_bookings,
-        'filterset': filterset
-    }
+        context = {
+            'data': data,
+            'hote_name' : hotel_instance.name
+        }
+
+        return render(request, 'list_hotel_rooms.html', context)
 
 
-    return render(request, 'list_hotel.html', context)
+
+
+   
 
 
 from customer.models import *
