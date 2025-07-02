@@ -224,16 +224,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-
-
-$(".hotel-row").click(function (e) {
-    // Prevent toggle if the click was on a link, button, or icon
-    if ($(e.target).is('a, i, button, img')) return;
-
-    const hotelId = $(this).data("hotel-id");
-    $(".room-row").hide();
-    $(".hotel-" + hotelId).toggle();
+$(document).on('click', '.hotel-row td:last-child a, .hotel-row td:last-child i', function (e) {
+    e.stopPropagation();
 });
+
 
 
 
