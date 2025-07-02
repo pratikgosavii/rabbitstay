@@ -8,6 +8,11 @@ from django import forms
 
 class HotelFilter(django_filters.FilterSet):
     
+    hotel_id = django_filters.CharFilter(
+        label='Hotel ID',
+        method='filter_hotel_id',
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
 
     user = django_filters.ModelChoiceFilter(
         queryset=User.objects.all(),
@@ -15,18 +20,13 @@ class HotelFilter(django_filters.FilterSet):
         widget=forms.Select(attrs={'class': 'form-select'})
     )
 
-    created_after = django_filters.DateFilter(
+    created_at = django_filters.DateFilter(
         field_name='created_at',
-        lookup_expr='gte',
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-        label="Created After"
+        label="Created On"
     )
-    created_before = django_filters.DateFilter(
-        field_name='created_at',
-        lookup_expr='lte',
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-        label="Created Before"
-    )
+
+    
 
     is_active = django_filters.BooleanFilter(
         field_name='is_active',
@@ -38,7 +38,7 @@ class HotelFilter(django_filters.FilterSet):
 
     class Meta:
         model = hotel
-        fields = ['user', 'created_after', 'created_before', 'is_active']
+        fields = ['user', 'hotel_id', 'created_at', 'is_active']
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request', None)
@@ -55,11 +55,33 @@ class HotelFilter(django_filters.FilterSet):
             return queryset.filter(is_active=False)
         return queryset
 
+class HotelRoomFilter(django_filters.FilterSet):
+ 
+
+    hotel = django_filters.ModelChoiceFilter(
+        queryset=hotel.objects.all(),
+        empty_label="All hotels",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+  
+
+
+
+    class Meta:
+        model = hotel_rooms
+        fields = ['hotel']
+
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+
+
+    
+
 
 class HotelBookingFilter(django_filters.FilterSet):
     
-   
-
+    
     hotel = django_filters.ModelChoiceFilter(
         queryset= hotel.objects.all(),
         empty_label="All Hotels",

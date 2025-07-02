@@ -58,6 +58,24 @@
                     <h4 class="mb-0">List Rooms</h4>
                 </div>
             </div>
+
+                      
+<form method="get">
+    <div class="row">
+        {% for field in filterset.form %}
+            <div class="col-md-3 mb-2">
+                <label>{{ field.label }}</label>
+                {{ field }}
+            </div>
+        {% endfor %}
+        <div class="col-md-3 mb-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary me-2">Apply</button>
+            <a href="{% url 'list_hotel' %}" class="btn btn-secondary">Reset</a>
+        </div>
+    </div>
+</form>
+
+
             <div class="row">
                 <div class="col-12">
                     <div class="card">

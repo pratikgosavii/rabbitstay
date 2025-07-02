@@ -60,7 +60,7 @@
   <div class="section-title">Payment</div>
   <div class="row">
     <div class="col-md-6">
-      <div>Property Gross Charges: ₹ <strong>{{ booking.base_amount }}</strong></div>
+      <div>Property Gross Charges: ₹ <strong>{{ booking.total_amount }}</strong></div>
     </div>
     <div class="col-md-6 text-end">
       <div>Payable to Property: ₹ <strong>{{ booking.hotel_earning }}</strong></div>
@@ -106,13 +106,24 @@
       <tr><td>5. Commission (10%)</td><td>₹ {{ booking.commission_amount }}</td></tr>
       <tr><td>6. GST on Commission (18%)</td><td>₹ {{ booking.commission_gst }}</td></tr>
       
-      <tr class="table-light"><td><strong>(B) Commission Charges</strong></td><td><strong>₹ {{ booking.commission_amount|add:booking.commission_gst|floatformat:2 }}</strong></td>
-</tr>
+      {% with total_commission=booking.commission_amount|add:booking.commission_gst %}
+          <tr class="table-light">
+              <td><strong>(B) Commission Charges (5+6)</strong></td>
+              <td><strong>₹ {{ total_commission|floatformat:2 }}</strong></td>
+          </tr>
+      {% endwith %}
+
       
       <tr><td>7. TCS @ 0.5%</td><td>₹ {{ booking.tcs_amount }}</td></tr>
       <tr><td>8. TDS @ 0.1%</td><td>₹ {{ booking.tds_amount }}</td></tr>
      
-      <tr class="table-light"><td><strong>(C) Tax Deduction (7+8)</strong></td><td><strong>₹ {{ booking.tds_amount|add:booking.tcs_amount|floatformat:2 }}</strong></td></tr>
+      {% with tax_total=booking.tds_amount|add:booking.tcs_amount %}
+          <tr class="table-light">
+              <td><strong>(C) Tax Deduction (7+8)</strong></td>
+              <td><strong>₹ {{ tax_total|floatformat:2 }}</strong></td>
+          </tr>
+      {% endwith %}
+
 
 
 

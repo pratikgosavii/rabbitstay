@@ -13,7 +13,9 @@ class hotel(models.Model):
         # Add more as needed
     ]
 
-    user = models.OneToOneField("users.User", on_delete=models.CASCADE, null=True, blank=True)
+    hotel_id = models.CharField(max_length=20, unique=True, blank=True, null=True)
+
+    user = models.OneToOneField("users.User", on_delete=models.CASCADE, null=True, blank=True, related_name ="hotel")
     name = models.CharField(max_length=255)
     
     category = models.CharField(max_length=50, choices=HOTEL_CATEGORY_CHOICES, default='Budget')
@@ -66,6 +68,16 @@ class hotel(models.Model):
         blank=True,
         help_text="Upload Cancelled Cheque or Bank Passbook (Image/PDF)"
     )
+
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)  # Save to get an ID
+
+        if is_new and not self.hotel_id:
+            self.hotel_id = f"RS-{self.id:03d}"
+            super().save(update_fields=["hotel_id"])
+
 
     def __str__(self):
         return self.name

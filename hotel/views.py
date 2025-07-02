@@ -245,7 +245,8 @@ def list_hotel(request):
     filtered_bookings = filterset.qs
 
     context = {
-        'data': filtered_bookings
+        'data': filtered_bookings,
+        'filterset': filterset
     }
 
 
@@ -374,9 +375,15 @@ def list_hotel_rooms(request):
     else:
 
         data = hotel_rooms.objects.filter(hotel__user = request.user)
+    
+    filterset = HotelRoomFilter(request.GET, queryset=data, request = request)
+    filtered_bookings = filterset.qs
+
     context = {
-        'data': data
+        'data': filtered_bookings,
+        'filterset': filterset
     }
+
     return render(request, 'list_hotel_rooms.html', context)
 
 
@@ -665,7 +672,8 @@ def generate_invoice_pdf(request, booking_id):
         subject=subject,
         body='Hi, attached pdf for invoice',
         from_email='rabbitstay1@gmail.com',
-        to=[booking.hotel.user.email],
+        # to=[booking.hotel.user.email],
+        to=['rushabgupta00@gmail.com'],
     )
     email.attach(f"invoice_{booking.id}.pdf", pdf_bytes, 'application/pdf')
     email.send()

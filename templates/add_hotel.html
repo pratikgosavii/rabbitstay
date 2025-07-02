@@ -138,11 +138,41 @@
                             </div>
                         {% endif %}
 
+                     
+                        {% if request.user.is_superuser %}
+
+
                         <div class="mb-4">
+                            <label class="form-label">Star Rating:</label>
+                            {{ form.star_rating }}
+                            {% if form.star_rating.errors %}
+                                <div class="text-danger">{{ form.star_rating.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                            {% endif %}
+
+  <div class="mb-4">
                             <label class="form-label">Hotel Name:</label>
                             {{ form.name }}
                             {% if form.name.errors %}
-                                <div class="text-danger">{{ form.name.errors.0 }}</div>
+                            <div class="text-danger">{{ form.name.errors.0 }}</div>
+                                {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Category :</label>
+                            {{ form.category }}
+                            {% if form.category.errors %}
+                                <div class="text-danger">{{ form.category.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Number of rooms :</label>
+                            {{ form.no_of_rooms }}
+                            {% if form.no_of_rooms.errors %}
+                                <div class="text-danger">{{ form.no_of_rooms.errors.0 }}</div>
                             {% endif %}
                         </div>
 
@@ -161,8 +191,8 @@
                                 <div class="text-danger">{{ form.city.errors.0 }}</div>
                             {% endif %}
                         </div>
-
-                         <div class="mb-4">
+                
+                        <div class="mb-4">
                             <label class="form-label">Landmark:</label>
                             {{ form.landmark }}
                             {% if form.landmark.errors %}
@@ -178,35 +208,6 @@
                             {% endif %}
                         </div>
 
-                         <div class="mb-4">
-                            <label class="form-label">Category :</label>
-                            {{ form.category }}
-                            {% if form.category.errors %}
-                                <div class="text-danger">{{ form.category.errors.0 }}</div>
-                            {% endif %}
-                        </div>
-
-                         <div class="mb-4">
-                            <label class="form-label">Number of rooms :</label>
-                            {{ form.no_of_rooms }}
-                            {% if form.no_of_rooms.errors %}
-                                <div class="text-danger">{{ form.no_of_rooms.errors.0 }}</div>
-                            {% endif %}
-                        </div>
-
-                        {% if request.user.is_superuser %}
-
-
-                        <div class="mb-4">
-                            <label class="form-label">Star Rating:</label>
-                            {{ form.star_rating }}
-                            {% if form.star_rating.errors %}
-                                <div class="text-danger">{{ form.star_rating.errors.0 }}</div>
-                            {% endif %}
-                        </div>
-
-                            {% endif %}
-
 
                         <div class="mb-4">
                             <label class="form-label">Amenities:</label>
@@ -216,22 +217,79 @@
                             {% endif %}
                         </div>
 
+                        <hr>
+                                            
+                        <h4 style="font-size: 17px; padding-bottom: 11px;"> Legal & Tax Information </h4>
+
+
+                                <!-- ✅ GST Fields -->
                         <div class="mb-4">
-                            <label class="form-label">Description:</label>
-                            {{ form.description }}
-                            {% if form.description.errors %}
-                                <div class="text-danger">{{ form.description.errors.0 }}</div>
+                            <label class="form-label">GST Number:</label>
+                            {{ form.gst_number }}
+                            {% if form.gst_number.errors %}
+                                <div class="text-danger">{{ form.gst_number.errors.0 }}</div>
                             {% endif %}
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label">Hotel Image:</label>
-                            {{ form.main_image }}
-                            {% if form.main_image.errors %}
-                                <div class="text-danger">{{ form.main_image.errors.0 }}</div>
+                            <label class="form-label">GST Certificate:</label>
+                            {{ form.gst_certificate }}
+                            {% if form.gst_certificate.errors %}
+                                <div class="text-danger">{{ form.gst_certificate.errors.0 }}</div>
                             {% endif %}
-                            <div id="imagesPreview"></div>
                         </div>
+
+                        <!-- ✅ PAN Field -->
+                        <div class="mb-4">
+                            <label class="form-label">PAN Number:</label>
+                            {{ form.pan_number }}
+                            {% if form.pan_number.errors %}
+                                <div class="text-danger">{{ form.pan_number.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- ✅ Bank Details -->
+                        <div class="mb-4">
+                            <label class="form-label">Account Holder Name:</label>
+                            {{ form.account_holder_name }}
+                            {% if form.account_holder_name.errors %}
+                                <div class="text-danger">{{ form.account_holder_name.errors.0 }}</div>
+                            {% endif %}
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">Account Number:</label>
+                                {{ form.account_number }}
+                                {% if form.account_number.errors %}
+                                    <div class="text-danger">{{ form.account_number.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">IFSC Code:</label>
+                                {{ form.ifsc_code }}
+                                {% if form.ifsc_code.errors %}
+                                    <div class="text-danger">{{ form.ifsc_code.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">Bank Name:</label>
+                                {{ form.bank_name }}
+                                {% if form.bank_name.errors %}
+                                    <div class="text-danger">{{ form.bank_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">Bank Document:</label>
+                                {{ form.bank_document }}
+                                {% if form.bank_document.errors %}
+                                    <div class="text-danger">{{ form.bank_document.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                    
 
                         {% if request.user.is_superuser %}
                            
@@ -259,6 +317,15 @@
                                 {% endif %}
                             </div>
                         {% endif %}
+
+                        <div class="mb-4">
+                            <label class="form-label">Hotel Image:</label>
+                            {{ form.main_image }}
+                            {% if form.main_image.errors %}
+                                <div class="text-danger">{{ form.main_image.errors.0 }}</div>
+                            {% endif %}
+                            <div id="imagesPreview"></div>
+                        </div>
 
                         <div class="mb-4">
                             <label class="form-label">Select Hotel Gallery Images:</label>

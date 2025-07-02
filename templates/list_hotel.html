@@ -80,7 +80,7 @@
         {% endfor %}
         <div class="col-md-3 mb-2 d-flex align-items-end">
             <button type="submit" class="btn btn-primary me-2">Apply</button>
-            <a href="{% url 'list_hotel_earning' %}" class="btn btn-secondary">Reset</a>
+            <a href="{% url 'list_hotel' %}" class="btn btn-secondary">Reset</a>
         </div>
     </div>
 </form>
@@ -95,6 +95,7 @@
                                         <thead>
                                             <tr>
                                                 <th>#</th>
+                                                <th>Hotel ID</th>
                                                 <th>Name</th>
                                                 <th>City</th>
                                                 <th>Star Rating</th>
@@ -110,6 +111,7 @@
                                             {% for hotel in data %}
                                             <tr class="hotel-row" data-hotel-id="{{ hotel.id }}">
                                                 <td>{{ forloop.counter }}</td>
+                                                <td>{{ hotel.hotel_id }}</td>
                                                 <td>{{ hotel.name }}</td>
                                                 <td>{{ hotel.city }}</td>
                                                 <td>{{ hotel.star_rating }}</td>

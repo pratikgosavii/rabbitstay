@@ -111,7 +111,7 @@
                                                 <th>Mobile</th>
                                                 <th>Email</th>
                                                 <th>Active</th>
-                                                <th>Type</th>
+                                                <th>Hotel Name</th>
                                             </tr>
                                             </thead>
                                             <tbody id="tableBody">
@@ -123,11 +123,7 @@
                                                     <td>{{ i.mobile }}</td>
                                                     <td>{{ i.email }}</td>
                                                     <td>{{ i.is_active }}</td>
-                                                    <td>   {% if i.is_customer %}
-                                                                    Customer
-                                                            {% elif i.is_service_provider %}
-                                                                    Provider
-                                                            {% endif %}
+                                                    <td>  {{ i.hotel.name }}
                                                     </td>
 
                                                    
