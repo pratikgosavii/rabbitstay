@@ -202,14 +202,20 @@
 
 
 <script>
-$(document).ready(function () {
-  // Prevent clicks on action buttons/icons from bubbling up
-  $(document).on('click', '.hotel-row a, .hotel-row i, .hotel-row button, .hotel-row img', function (e) {
+
+
+    $(document).ready(function () {
+
+  // Prevent click propagation for inner elements inside action column
+  $(document).on('click', '.hotel-row td:last-child a, .hotel-row td:last-child i', function (e) {
     e.stopPropagation();
   });
 
-  // Handle hotel row click to toggle its room rows
-  $(".hotel-row").click(function () {
+  // Handle hotel row toggle only if clicking elsewhere
+  $(".hotel-row").click(function (e) {
+    // Skip if the target is inside the last cell (actions)
+    if ($(e.target).closest('td').index() === 11) return;
+
     const hotelId = $(this).data("hotel-id");
 
     // First hide all
@@ -219,7 +225,6 @@ $(document).ready(function () {
     $(".hotel-" + hotelId).toggle();
   });
 });
-s
 
 
 

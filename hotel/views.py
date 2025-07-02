@@ -383,10 +383,15 @@ def delete_hotel_room_image(request, image_id):
 @login_required(login_url='login_admin')
 def list_hotel_rooms(request):
 
-    
-    data = hotel.objects.prefetch_related(
-        Prefetch('rooms', queryset=hotel_rooms.objects.select_related('room_type').prefetch_related('room_amenities'))
-    )
+    if request.user.is_superuser:
+        data = hotel.objects.prefetch_related(
+            Prefetch('rooms', queryset=hotel_rooms.objects.select_related('room_type').prefetch_related('room_amenities'))
+        )
+    else:
+        
+        data = hotel.objects.prefetch_related(
+            Prefetch('rooms', queryset=hotel_rooms.objects.filter(user = request.user).select_related('room_type').prefetch_related('room_amenities'))
+        )
 
     filterset = HotelFilter(request.GET, queryset=data, request = request)
     filtered_bookings = filterset.qs
