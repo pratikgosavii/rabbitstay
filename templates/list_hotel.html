@@ -222,6 +222,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+
+
+
+$(".hotel-row").click(function (e) {
+    // Prevent toggle if the click was on a link, button, or icon
+    if ($(e.target).is('a, i, button, img')) return;
+
+    const hotelId = $(this).data("hotel-id");
+    $(".room-row").hide();
+    $(".hotel-" + hotelId).toggle();
+});
+
+
+
 </script>
 
 
