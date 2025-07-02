@@ -390,7 +390,7 @@ def list_hotel_rooms(request):
     else:
         
         data = hotel.objects.prefetch_related(
-            Prefetch('rooms', queryset=hotel_rooms.objects.filter(user = request.user).select_related('room_type').prefetch_related('room_amenities'))
+            Prefetch('rooms', queryset=hotel_rooms.objects.filter(hotel__user = request.user).select_related('room_type').prefetch_related('room_amenities'))
         )
 
     filterset = HotelFilter(request.GET, queryset=data, request = request)
