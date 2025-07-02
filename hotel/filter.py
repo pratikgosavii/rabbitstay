@@ -58,8 +58,6 @@ class HotelFilter(django_filters.FilterSet):
 class HotelRoomFilter(django_filters.FilterSet):
  
 
-    class HotelRoomFilter(django_filters.FilterSet):
-
     hotel_id = django_filters.CharFilter(
         label='Hotel ID',
         method='filter_hotel_id',
