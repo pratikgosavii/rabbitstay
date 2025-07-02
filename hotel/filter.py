@@ -58,22 +58,31 @@ class HotelFilter(django_filters.FilterSet):
 class HotelRoomFilter(django_filters.FilterSet):
  
 
+    class HotelRoomFilter(django_filters.FilterSet):
+
+    hotel_id = django_filters.CharFilter(
+        label='Hotel ID',
+        method='filter_hotel_id',
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+
     hotel = django_filters.ModelChoiceFilter(
         queryset=hotel.objects.all(),
         empty_label="All hotels",
         widget=forms.Select(attrs={'class': 'form-select'})
     )
-  
-
-
 
     class Meta:
         model = hotel_rooms
-        fields = ['hotel']
+        fields = ['hotel', 'hotel_id']  # ✅ include hotel_id here!
+
+    def filter_hotel_id(self, queryset, name, value):
+        return queryset.filter(hotel__hotel_id__icontains=value)
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
+
 
 
     
