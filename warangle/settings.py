@@ -161,13 +161,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-us'        # Keep as 'en-us' unless you want Hindi/another language
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'     # ✅ Set Indian time zone
 
 USE_I18N = True
+USE_TZ = True                  # Recommended: keep True to store in UTC, but display in IST
 
-USE_TZ = True
 
 
 # settings.py
