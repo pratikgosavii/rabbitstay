@@ -202,40 +202,24 @@
 
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  // Attach click listener on all hotel rows
-  document.querySelectorAll(".hotel-row").forEach(hotelRow => {
-    hotelRow.style.cursor = "pointer"; // show pointer on hover
-
-    hotelRow.addEventListener("click", () => {
-      const hotelId = hotelRow.getAttribute("data-hotel-id");
-      const roomRows = document.querySelectorAll(`.room-row.hotel-${hotelId}`);
-
-      roomRows.forEach(roomRow => {
-        // Toggle display of room rows
-        if (roomRow.style.display === "none" || roomRow.style.display === "") {
-          roomRow.style.display = "table-row";
-        } else {
-          roomRow.style.display = "none";
-        }
-      });
-    });
-  });
-});
-
-
 $(document).ready(function () {
-  $(".hotel-row").click(function (e) {
-    // Prevent toggle if clicking on a link, button, icon, or image
-    if ($(e.target).closest("a, i, button, img").length > 0) {
-      return;
-    }
+  // Prevent clicks on action buttons/icons from bubbling up
+  $(document).on('click', '.hotel-row a, .hotel-row i, .hotel-row button, .hotel-row img', function (e) {
+    e.stopPropagation();
+  });
 
+  // Handle hotel row click to toggle its room rows
+  $(".hotel-row").click(function () {
     const hotelId = $(this).data("hotel-id");
-    $(".room-row").hide(); // hide all first
-    $(".hotel-" + hotelId).toggle(); // toggle current
+
+    // First hide all
+    $(".room-row").hide();
+
+    // Then show matching hotel’s room rows
+    $(".hotel-" + hotelId).toggle();
   });
 });
+s
 
 
 
