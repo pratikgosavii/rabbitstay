@@ -107,11 +107,12 @@
                                             <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Name</th>
+                                                <th>Hotel ID</th>
+                                                <th>Hotel Name</th>
+                                                <th>Manager Name</th>
                                                 <th>Mobile</th>
                                                 <th>Email</th>
                                                 <th>Active</th>
-                                                <th>Hotel Name</th>
                                             </tr>
                                             </thead>
                                             <tbody id="tableBody">
@@ -119,12 +120,12 @@
                                             {% for i in data %}
                                                 <tr>
                                                     <td>{{ forloop.counter }}</td>
+                                                    <td>  {{ i.hotel.hotel_id }} </td>
+                                                    <td>  {{ i.hotel.name }} </td>
                                                     <td>{{ i.first_name }} {{ i.last_name }}</td>
                                                     <td>{{ i.mobile }}</td>
                                                     <td>{{ i.email }}</td>
                                                     <td>{{ i.is_active }}</td>
-                                                    <td>  {{ i.hotel.name }}
-                                                    </td>
 
                                                    
                                                 </tr>
