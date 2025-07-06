@@ -156,3 +156,15 @@ class HotelAvailability(models.Model):
     def __str__(self):
         return f"{self.hotel.name} - {self.date} - {'Open' if self.is_open else 'Closed'}"
 
+
+
+class RoomAvailability(models.Model):
+    room = models.ForeignKey("hotel_rooms", on_delete=models.CASCADE)
+    date = models.DateField()
+    available_count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        unique_together = ('room', 'date')
+
+    def __str__(self):
+        return f"{self.room} - {self.date} - {self.available_count} available"

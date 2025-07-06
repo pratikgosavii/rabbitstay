@@ -717,48 +717,79 @@ from datetime import datetime, timedelta
 from django.contrib import messages
 
 
+from collections import defaultdict
+import json
+
 
 @login_required
 def update_hotel_availability(request):
+
+    
     hotel_obj = hotel.objects.get(user=request.user)
 
     if request.method == 'POST':
         selected_date = request.POST.get('selected_date')
-        is_open = request.POST.get('is_open') == 'true'
-        room_id = request.POST.get('room_id')
-        room_obj = hotel_rooms.objects.get(id = room_id)
-        # Check for existing bookings
-        has_bookings = HotelBooking.objects.filter(
-            hotel=hotel_obj,
-            room = room_obj,
-            check_in__lte=selected_date,
-            check_out__gt=selected_date,
-            status='confirmed'
-        ).exists()
+        selected_date_obj = datetime.strptime(selected_date, "%Y-%m-%d").date()
 
-        if not is_open and has_bookings:
-            messages.error(request, f"Cannot close {selected_date} — Bookings exist.")
-        else:
-            HotelAvailability.objects.update_or_create(
-                hotel=hotel_obj,
-                date=selected_date,
-                defaults={'is_open': is_open}
-            )
-            messages.success(request, f"{selected_date} marked as {'Open' if is_open else 'Closed'}")
+        for room in hotel_rooms.objects.filter(hotel=hotel_obj):
+            field_name = f"availability_{room.id}"
+            count = request.POST.get(field_name)
 
+            if count is not None and count != '':
+                new_count = int(count)
+
+                # Check for existing confirmed bookings on that day for this room
+                existing_bookings = HotelBooking.objects.filter(
+                    hotel=hotel_obj,
+                    room=room,
+                    status='confirmed',
+                    check_in__lte=selected_date_obj,
+                    check_out__gte=selected_date_obj
+                ).count()
+
+                print('-----------------')
+                print(existing_bookings)
+                print(hotel_obj)
+                print(room)
+                print(selected_date_obj)
+                print('-----------------')
+
+
+                if new_count < existing_bookings:
+                    messages.error(
+                        request,
+                        f"Cannot set availability for {room.room_type} on {selected_date} "
+                        f"to {new_count} — {existing_bookings} confirmed booking(s) exist."
+                    )
+                    continue  # Skip saving this room
+
+                # Save/update room availability
+                RoomAvailability.objects.update_or_create(
+                    room=room,
+                    date=selected_date_obj,
+                    defaults={'available_count': new_count}
+                )
+
+        messages.success(request, f"Availability updated for {selected_date}")
         return redirect('update_hotel_availability')
 
-    availability = HotelAvailability.objects.filter(hotel=hotel_obj)
+    # Availability dictionary to populate JS
+    raw_availability = RoomAvailability.objects.filter(room__hotel=hotel_obj)
+    availability_data = defaultdict(dict)
+    for entry in raw_availability:
+        availability_data[str(entry.date)][str(entry.room.id)] = entry.available_count
 
     events = [
         {
-            'title': 'Open' if a.is_open else 'Closed',
+            'title': f"{a.room.room_type}: {a.available_count} rooms",
             'start': a.date.isoformat(),
-            'color': '#28a745' if a.is_open else '#dc3545'
-        } for a in availability
+            'color': '#007bff'
+        } for a in raw_availability
     ]
 
     context = {
         'events': events,
+        'rooms': hotel_rooms.objects.filter(hotel=hotel_obj),
+        'availability_json': json.dumps(availability_data),
     }
-    return render(request, 'hotel_calender.html', context)
+    return render(request, 'update_hotel_bookings.html', context)
