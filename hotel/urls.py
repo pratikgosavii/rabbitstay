@@ -43,6 +43,7 @@ urlpatterns = [
     path('hotel-invoice/<booking_id>', generate_invoice_pdf, name='render_pdf_view'),
 
     path('availability/update/', update_hotel_availability, name='update_hotel_availability'),
+    path('availability/update-from-to/', update_from_to_hotel_availability, name='update_from_to_hotel_availability'),
 
 
 ]  + router.urls

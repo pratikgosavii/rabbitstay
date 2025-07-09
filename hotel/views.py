@@ -719,6 +719,7 @@ from django.contrib import messages
 
 from collections import defaultdict
 import json
+from collections import defaultdict
 
 
 @login_required
@@ -773,23 +774,111 @@ def update_hotel_availability(request):
         messages.success(request, f"Availability updated for {selected_date}")
         return redirect('update_hotel_availability')
 
-    # Availability dictionary to populate JS
+    hotel_obj = hotel.objects.get(user=request.user)
+
     raw_availability = RoomAvailability.objects.filter(room__hotel=hotel_obj)
+
+    # Build JSON: { "2025-07-05": { "8": 5, "9": 3 } }
     availability_data = defaultdict(dict)
     for entry in raw_availability:
-        availability_data[str(entry.date)][str(entry.room.id)] = entry.available_count
+        availability_data[entry.date.isoformat()][str(entry.room.id)] = entry.available_count
+
+    # Combine room data by date for single event display
+    grouped = defaultdict(list)
+    for entry in raw_availability:
+        grouped[entry.date.isoformat()].append(
+            f"{entry.room.room_type}: {entry.available_count} rooms"
+        )
 
     events = [
         {
-            'title': f"{a.room.room_type}: {a.available_count} rooms",
-            'start': a.date.isoformat(),
-            'color': '#007bff'
-        } for a in raw_availability
+            "title": "<br>".join(labels),
+            "start": date,
+            "color": "#007bff"
+        }
+        for date, labels in grouped.items()
     ]
 
+    print(json.dumps(availability_data))
+
+    
     context = {
-        'events': events,
-        'rooms': hotel_rooms.objects.filter(hotel=hotel_obj),
-        'availability_json': json.dumps(availability_data),
+        "rooms": hotel_rooms.objects.filter(hotel=hotel_obj),
+        "availability_json": json.dumps(availability_data),
+        "events": json.dumps(events),
     }
-    return render(request, 'update_hotel_bookings.html', context)
+
+    return render(request, "update_hotel_bookings.html", context)
+
+
+
+from datetime import datetime, timedelta
+from collections import defaultdict
+import json
+
+@login_required
+def update_from_to_hotel_availability(request):
+    hotel_obj = hotel.objects.get(user=request.user)
+
+    if request.method == 'POST':
+        from_date = request.POST.get('from_date')
+        to_date = request.POST.get('to_date')
+
+        try:
+            from_date_obj = datetime.strptime(from_date, "%Y-%m-%d").date()
+            to_date_obj = datetime.strptime(to_date, "%Y-%m-%d").date()
+        except (ValueError, TypeError):
+            messages.error(request, "Invalid date range")
+            return redirect('update_hotel_availability')
+
+        if from_date_obj > to_date_obj:
+            messages.error(request, "'From' date must be before 'To' date.")
+            return redirect('update_hotel_availability')
+
+        failed_updates = defaultdict(list)
+
+        for room in hotel_rooms.objects.filter(hotel=hotel_obj):
+            field_name = f"availability_{room.id}"
+            count = request.POST.get(field_name)
+
+            if count is not None and count != '':
+                new_count = int(count)
+
+                current_date = from_date_obj
+                while current_date <= to_date_obj:
+                    # Count confirmed bookings on this date
+                    confirmed_count = HotelBooking.objects.filter(
+                        hotel=hotel_obj,
+                        room=room,
+                        status='confirmed',
+                        check_in__lte=current_date,
+                        check_out__gte=current_date
+                    ).count()
+
+                    if new_count < confirmed_count:
+                        failed_updates[room.room_type].append(current_date)
+                    else:
+                        RoomAvailability.objects.update_or_create(
+                            room=room,
+                            date=current_date,
+                            defaults={'available_count': new_count}
+                        )
+
+                    current_date += timedelta(days=1)
+
+        if failed_updates:
+            for room_type, dates in failed_updates.items():
+                date_strs = ", ".join(d.strftime("%Y-%m-%d") for d in dates)
+                messages.warning(
+                    request,
+                    f"Could not update availability for '{room_type}' on: {date_strs} "
+                    f"due to existing confirmed bookings."
+                )
+        else:
+            messages.success(request, f"Availability successfully updated from {from_date} to {to_date}.")
+
+        return redirect('update_hotel_availability')
+
+    
+    
+    return redirect('update_hotel_availability')
