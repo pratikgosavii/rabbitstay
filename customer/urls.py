@@ -16,7 +16,14 @@ router.register(r'hotel-bookings', HotelBookingViewSet)
 
 urlpatterns = [
 
-   
+
+    path('hotels/', HotelListAPIView.as_view(), name='hotel-list'),
+    path('hotels/<int:hotel_id>/', HotelDetailAPIView.as_view(), name='hotel-detail'),
+
+    path('hotels/<int:hotel_id>/rooms/', HotelRoomListAPIView.as_view(), name='hotel-room-list'),
+    path('room/<int:room_id>/', HotelRoomDetailAPIView.as_view(), name='room-detail'),
+
+    path('available-rooms/', AvailableRoomsAPIView.as_view(), name='available-rooms'),
 
 ]  + router.urls
 

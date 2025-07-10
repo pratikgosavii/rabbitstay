@@ -2,6 +2,15 @@ from django.urls import path
 
 from .views import *
 
+
+from rest_framework.routers import DefaultRouter
+
+
+router = DefaultRouter()
+router.register(r'profile', UserProfileViewSet, basename='user-profile')
+
+
+
 urlpatterns = [
     path('login/', LoginAPIView.as_view(), name='login'),
     path('login-admin/', login_admin, name='login_admin'),
@@ -36,4 +45,4 @@ urlpatterns = [
     path('custom-user-delete/<int:user_id>/', delete_custom_user, name='delete_custom_user'),
 
 
-]
+] + router.urls

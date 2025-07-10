@@ -133,62 +133,69 @@ class SignupView(APIView):
             return Response({"error": str(e)}, status=400)
 
 
-class LoginAPIView(APIView):
 
+from .serializer import *
+
+
+
+class LoginAPIView(APIView):
     def post(self, request):
         id_token = request.data.get("idToken")
-
         if not id_token:
-            return Response({"error": "id_token is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "idToken is required"}, status=400)
 
         try:
             decoded_token = firebase_auth.verify_id_token(id_token)
-            uid = decoded_token["uid"]
-            phone_number = decoded_token.get("phone_number")
-            email = decoded_token.get("email")
+            mobile = decoded_token.get("phone_number")
+            uid = decoded_token.get("uid")
 
-            if not phone_number:
+            if not mobile:
                 return Response({"error": "Phone number not found in token"}, status=400)
 
-            user = User.objects.filter(mobile=phone_number).first()
-            created = False
+            user, created = User.objects.get_or_create(
+                mobile=mobile,
+                is_customer = True,
+                defaults={'firebase_uid': uid}
+            )
 
-            if user:
-                if user.firebase_uid != uid:
-                    user.firebase_uid = uid
-                    user.save()
+            if not user.is_active:
+                user.is_active = True
+                user.save()
 
-                refresh = RefreshToken.for_user(user)
+            if user.firebase_uid != uid:
+                user.firebase_uid = uid
+                user.save()
 
-                # Include wallet amount only for non-customer
-               
-                return Response({
-                    "access": str(refresh.access_token),
-                    "refresh": str(refresh),
-                    "user": {
-                        "id": user.id,
-                        "mobile": user.mobile,
-                        "email": user.email,
-                        "user_type": (
-                            "doctor" if user.is_doctor else
-                            "daycare" if user.is_daycare else
-                            "customer" if user.is_customer else
-                            "service_provider" if user.is_service_provider else
-                            "unknown"
-                        ),
-                        "name": f"{user.first_name or ''} {user.last_name or ''}".strip(),
-                        "created": created
-                    }
-                })
+            # Update optional fields from frontend
+            optional_fields = [
+                "email", "first_name", "last_name"
+            ]
+            for field in optional_fields:
+                if field in request.data:
+                    setattr(user, field, request.data.get(field))
 
-            else:
-                return Response({"error": "no user found, try to signup"}, status=status.HTTP_401_UNAUTHORIZED)
+            user.save()
+
+            # JWT tokens
+            refresh = RefreshToken.for_user(user)
+            user_data = UserProfileSerializer(user).data
+
+            return Response({
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user": {
+                    "id": user.id,
+                    "mobile": user.mobile,
+                    "is_customer": user.is_customer,
+                    "created": created
+                },
+                "user_details": user_data
+            })
 
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+            print("Firebase auth error:", e)
+            return Response({"error": "Invalid or expired Firebase token."}, status=400)
         
-
-
 
 
 
@@ -639,3 +646,36 @@ def list_custom_user(request):
     ).order_by('-date_joined')
 
     return render(request, 'custom_user_list.html', { 'data' : users})
+
+
+
+
+from rest_framework import viewsets, mixins
+from rest_framework.permissions import IsAuthenticated
+from .serializer import UserProfileSerializer
+from .models import User
+from rest_framework.decorators import action
+
+
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+
+class UserProfileViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [JSONParser, MultiPartParser, FormParser]  # 👈 necessary for photo uploads
+
+    @action(detail=False, methods=['get', 'put'], url_path='me')
+    def me(self, request):
+        user = request.user
+
+        if request.method == 'GET':
+            serializer = UserProfileSerializer(user)
+            return Response(serializer.data)
+
+        elif request.method == 'PUT':
+            serializer = UserProfileSerializer(user, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+

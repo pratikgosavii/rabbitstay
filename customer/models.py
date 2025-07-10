@@ -10,6 +10,7 @@ class HotelBooking(models.Model):
     
     STATUS_CHOICES = [
         ('confirmed', 'Confirmed'),
+        ('checked_in', 'Check In'),
         ('cancelled', 'Cancelled'),
         ('completed', 'Completed'),
     ]
