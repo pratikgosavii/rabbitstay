@@ -551,7 +551,7 @@ def update_hotel_bookings(request, booking_id):
     else:
 
 
-        form = HotelBookingStatusForm(instance = instance)
+        form = HotelBookingStatusForm(instance = instance, user=request.user)
 
         context = {
         
@@ -808,7 +808,7 @@ def update_hotel_availability(request):
         "events": json.dumps(events),
     }
 
-    return render(request, "update_hotel_bookings.html", context)
+    return render(request, "update_hotel_availability.html", context)
 
 
 
