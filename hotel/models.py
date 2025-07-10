@@ -71,12 +71,16 @@ class hotel(models.Model):
 
 
     def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        super().save(*args, **kwargs)  # Save to get an ID
-
-        if is_new and not self.hotel_id:
+        # First save to get ID
+        if not self.hotel_id:
+            super().save(*args, **kwargs)  # Save once to get ID
             self.hotel_id = f"RS-{self.id:03d}"
+            # Save again only for hotel_id update
             super().save(update_fields=["hotel_id"])
+        else:
+            # If hotel_id already present, normal save
+            super().save(*args, **kwargs)
+
 
 
     def __str__(self):
