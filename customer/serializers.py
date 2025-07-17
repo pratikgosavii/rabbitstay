@@ -84,6 +84,9 @@ class HotelSerializer(serializers.ModelSerializer):
     amenities = serializers.StringRelatedField(many=True)  # or use AmenitySerializer
     main_image = serializers.ImageField(required=False)
 
+    min_price = serializers.SerializerMethodField()
+    max_price = serializers.SerializerMethodField()
+
     class Meta:
         model = hotel
         fields = [
@@ -93,6 +96,15 @@ class HotelSerializer(serializers.ModelSerializer):
             'is_featured', 'description', 'is_active', 'created_at',
             'gst_number', 'gst_certificate', 'pan_number',
             'account_holder_name', 'account_number', 'ifsc_code', 'bank_name', 'bank_document',
-            'rooms', 'images'
+            'rooms', 'images',
+
+            'min_price', 'max_price'
         ]
 
+    def get_min_price(self, obj):
+        prices = obj.rooms.values_list('price_per_night', flat=True)
+        return min(prices) if prices else None
+
+    def get_max_price(self, obj):
+        prices = obj.rooms.values_list('price_per_night', flat=True)
+        return max(prices) if prices else None
