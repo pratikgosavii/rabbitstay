@@ -79,11 +79,20 @@ class HotelRoomSerializer(serializers.ModelSerializer):
 
 class HotelSerializer(serializers.ModelSerializer):
     rooms = HotelRoomSerializer(many=True, read_only=True)
-    images = HotelImageSerializer(many=True, read_only=True)  # hotel images
+    images = HotelImageSerializer(many=True, read_only=True)
+    city = serializers.StringRelatedField()  # or use CitySerializer if needed
+    amenities = serializers.StringRelatedField(many=True)  # or use AmenitySerializer
+    main_image = serializers.ImageField(required=False)
 
     class Meta:
         model = hotel
         fields = [
-            'id', 'name', 'hotel_id', 'address', 'city', 'pincode',
+            'id', 'name', 'hotel_id', 'user', 'category', 'no_of_rooms',
+            'amenities', 'address', 'city', 'landmark', 'pincode',
+            'star_rating', 'overall_rating', 'main_image', 'profit_margin',
+            'is_featured', 'description', 'is_active', 'created_at',
+            'gst_number', 'gst_certificate', 'pan_number',
+            'account_holder_name', 'account_number', 'ifsc_code', 'bank_name', 'bank_document',
             'rooms', 'images'
         ]
+

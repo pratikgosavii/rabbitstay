@@ -27,11 +27,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from hotel.models import hotel
+from hotel.filters import *
 from .serializers import *
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from hotel.models import hotel, hotel_rooms
-from .filters import HotelFilter, HotelRoomFilter
+from .filters import HotelRoomFilter
 
 
 class HotelListAPIView(generics.ListAPIView):
@@ -39,6 +40,11 @@ class HotelListAPIView(generics.ListAPIView):
     serializer_class = HotelSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = HotelFilter
+
+    def get_filterset_kwargs(self):
+        kwargs = super().get_filterset_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
 
 class HotelDetailAPIView(generics.RetrieveAPIView):

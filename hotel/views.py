@@ -564,7 +564,7 @@ def update_hotel_bookings(request, booking_id):
 
 from django.db.models import Sum
 
-from .filter import *
+from .filters import *
 
 @login_required(login_url='login_admin')
 def list_hotel_earning(request):

@@ -2,16 +2,6 @@
 import django_filters
 from hotel.models import hotel, hotel_rooms
 
-class HotelFilter(django_filters.FilterSet):
-    city = django_filters.CharFilter(lookup_expr='icontains')
-    state = django_filters.CharFilter(lookup_expr='icontains')
-    pincode = django_filters.CharFilter(lookup_expr='exact')
-
-    class Meta:
-        model = hotel
-        fields = ['city', 'state', 'pincode']
-
-
 class HotelRoomFilter(django_filters.FilterSet):
     room_type = django_filters.NumberFilter(field_name='room_type__id')
     title = django_filters.CharFilter(lookup_expr='icontains')
