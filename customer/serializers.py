@@ -78,12 +78,12 @@ class HotelRoomSerializer(serializers.ModelSerializer):
 
 
 class HotelSerializer(serializers.ModelSerializer):
-    rooms = HotelRoomSerializer(many=True, read_only=True, source='rooms')
+    rooms = HotelRoomSerializer(many=True, read_only=True)
     images = HotelImageSerializer(many=True, read_only=True)  # hotel images
 
     class Meta:
         model = hotel
         fields = [
-            'id', 'name', 'hotel_id', 'address', 'state', 'city', 'pincode',
+            'id', 'name', 'hotel_id', 'address', 'city', 'pincode',
             'rooms', 'images'
         ]
