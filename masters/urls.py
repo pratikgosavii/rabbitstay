@@ -77,6 +77,9 @@ urlpatterns = [
     path('delete-home-banner/<home_banner_id>', delete_home_banner, name='delete_home_banner'),  # create or fetch list of admins
     path('get-home-banner/', get_home_banner, name='get_home_banner'), 
 
+    path('admin/support-tickets/', list_support_tickets, name='list_support_tickets'),
+    path('admin/support-tickets/<int:ticket_id>/', ticket_detail, name='ticket_detail'),
+
 
 ]  + router.urls
 

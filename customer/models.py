@@ -110,3 +110,19 @@ class HotelBooking(models.Model):
 
     def __str__(self):
         return f"Booking for {self.first_name} at {self.hotel.name}"
+    
+
+
+    
+class SupportTicket(models.Model):
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    shipment = models.ForeignKey(HotelBooking, on_delete=models.CASCADE)
+    subject = models.CharField(max_length=255)
+    is_resolved = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class TicketMessage(models.Model):
+    ticket = models.ForeignKey(SupportTicket, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
