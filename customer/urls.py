@@ -27,6 +27,8 @@ urlpatterns = [
 
     path('available-hotels/', AvailableHotelsAPIView.as_view(), name='available-hotels'),
 
+    path('cancel-booking/<int:booking_id>/', CancelBookingAPIView.as_view(), name='cancel_booking'),
+
 ]  + router.urls
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

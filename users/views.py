@@ -440,7 +440,7 @@ def register_vendor(request):
                 'form': form, 
         }
 
-        return render(request, 'hotel_registration.html', context)
+        return render(request, 'hotel_registration_new.html', context)
 
 
         
