@@ -441,8 +441,6 @@ from django.views import View
 class get_city(ListAPIView):
     queryset = city.objects.all()
     serializer_class = city_serializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = '__all__'  # enables filtering on all fields
 
 
 
