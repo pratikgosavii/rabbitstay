@@ -6,11 +6,17 @@ from hotel.models import *
 from datetime import timedelta
 
 
+from rest_framework import serializers
+from datetime import date as today_date, timedelta
+from datetime import date, timedelta
+
+
  
+
 class HotelBookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = HotelBooking
-        exclude = ['user']  # user added in view
+        exclude = ['user']  # user is added in the view
 
     def validate(self, data):
         room = data.get('room')
@@ -20,20 +26,27 @@ class HotelBookingSerializer(serializers.ModelSerializer):
         if not room or not check_in or not check_out:
             raise serializers.ValidationError("Room, check-in, and check-out are required.")
 
-        # Check availability on each date
-        date = check_in
-        while date < check_out:
-            try:
-                avail = RoomAvailability.objects.get(room=room, date=date)
-                if avail.available_count < 1:
-                    raise serializers.ValidationError(
-                        f"Room not available on {date}. Please choose a different date."
-                    )
-            except RoomAvailability.DoesNotExist:
-                raise serializers.ValidationError(
-                    f"Room availability not set for {date}. Please contact support."
-                )
-            date += timedelta(days=1)
+        if check_in < date.today():
+            raise serializers.ValidationError("Check-in cannot be in the past.")
+
+        if check_in >= check_out:
+            raise serializers.ValidationError("Check-out must be after check-in.")
+
+        # Fetch all required availabilities in one query
+        num_days = (check_out - check_in).days
+        required_dates = {check_in + timedelta(days=i) for i in range(num_days)}
+
+        availabilities = RoomAvailability.objects.filter(
+            room=room,
+            date__range=(check_in, check_out - timedelta(days=1))
+        )
+
+        found_dates = {a.date for a in availabilities if a.available_count >= 1}
+
+        missing = required_dates - found_dates
+        if missing:
+            missing_str = ", ".join(str(d) for d in sorted(missing))
+            raise serializers.ValidationError(f"Room not available on: {missing_str}")
 
         return data
     

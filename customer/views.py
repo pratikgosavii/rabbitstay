@@ -9,6 +9,9 @@ from .models import HotelBooking
 from .serializers import HotelBookingSerializer
 
 from datetime import timedelta
+from rest_framework.exceptions import ValidationError
+from django.db import transaction
+from datetime import timedelta
 
 
 class HotelBookingViewSet(viewsets.ModelViewSet):
@@ -16,9 +19,28 @@ class HotelBookingViewSet(viewsets.ModelViewSet):
     serializer_class = HotelBookingSerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        with transaction.atomic():
+            booking = serializer.save(user=self.request.user)
 
+            room = booking.room
+            check_in = booking.check_in
+            check_out = booking.check_out
+            total_days = (check_out - check_in).days
+            dates = [check_in + timedelta(days=i) for i in range(total_days)]
 
+            availabilities = RoomAvailability.objects.select_for_update().filter(
+                room=room,
+                date__in=dates
+            )
+
+            if availabilities.count() != total_days:
+                raise ValidationError("Some dates are missing availability records.")
+
+            for avail in availabilities:
+                if avail.available_count < 1:
+                    raise ValidationError(f"Room not available on {avail.date}.")
+                avail.available_count -= 1
+                avail.save()
    
 
 
@@ -128,3 +150,54 @@ class AvailableRoomsAPIView(generics.ListAPIView):
     
 
     
+
+    
+
+class AvailableHotelsAPIView(APIView):
+    def get(self, request):
+        city = request.query_params.get('city')
+        check_in = request.query_params.get('check_in')
+        check_out = request.query_params.get('check_out')
+
+        if not city or not check_in or not check_out:
+            return Response({"error": "city, check_in, and check_out are required."}, status=400)
+
+        try:
+            check_in = datetime.strptime(check_in, "%Y-%m-%d").date()
+            check_out = datetime.strptime(check_out, "%Y-%m-%d").date()
+        except ValueError:
+            return Response({"error": "Invalid date format. Use YYYY-MM-DD."}, status=400)
+
+        if check_in >= check_out:
+            return Response({"error": "check_out must be after check_in"}, status=400)
+
+        if check_in < date.today():
+            return Response({"error": "check_in cannot be in the past."}, status=400)
+
+        # Step 1: Get all rooms from hotels in the given city
+        rooms = hotel_rooms.objects.select_related('hotel').filter(hotel__city=city)
+
+        # Step 2: Get all availabilities for the room/date range
+        room_ids = rooms.values_list('id', flat=True)
+        days = (check_out - check_in).days
+        required_dates = {check_in + timedelta(days=i) for i in range(days)}
+
+        availabilities = RoomAvailability.objects.filter(
+            room_id__in=room_ids,
+            date__range=(check_in, check_out - timedelta(days=1)),
+            available_count__gte=1
+        ).values('room_id', 'date')
+
+        # Step 3: Build room → available_dates mapping
+        from collections import defaultdict
+        room_to_dates = defaultdict(set)
+        for entry in availabilities:
+            room_to_dates[entry['room_id']].add(entry['date'])
+
+        # Step 4: Filter rooms that are available for all required dates
+        valid_room_ids = [room_id for room_id, dates in room_to_dates.items() if required_dates.issubset(dates)]
+
+        # Step 5: Get unique hotels from those rooms
+        available_hotels = hotel.objects.filter(rooms__id__in=valid_room_ids).distinct()
+
+        return Response(HotelSerializer(available_hotels, many=True).data)

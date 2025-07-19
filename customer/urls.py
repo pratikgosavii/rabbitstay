@@ -25,6 +25,8 @@ urlpatterns = [
 
     path('available-rooms/', AvailableRoomsAPIView.as_view(), name='available-rooms'),
 
+    path('available-hotels/', AvailableHotelsAPIView.as_view(), name='available-hotels'),
+
 ]  + router.urls
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
