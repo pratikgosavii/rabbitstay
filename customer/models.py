@@ -116,7 +116,7 @@ class HotelBooking(models.Model):
     
 class SupportTicket(models.Model):
     user = models.ForeignKey('users.User', on_delete=models.CASCADE)
-    shipment = models.ForeignKey(HotelBooking, on_delete=models.CASCADE)
+    booking = models.ForeignKey(HotelBooking, on_delete=models.CASCADE)
     subject = models.CharField(max_length=255)
     is_resolved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

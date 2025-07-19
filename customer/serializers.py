@@ -128,7 +128,7 @@ class HotelSerializer(serializers.ModelSerializer):
 class SupportTicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = SupportTicket
-        fields = ['id', 'subject', 'shipment', 'is_resolved', 'created_at']
+        fields = ['id', 'subject', 'booking', 'is_resolved', 'created_at']
         read_only_fields = ['id', 'is_resolved', 'created_at']
 
 
