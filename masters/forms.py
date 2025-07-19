@@ -64,7 +64,9 @@ class city_Form(forms.ModelForm):
            
             'name': forms.TextInput(attrs={
                 'class': 'form-control', 'id': 'name'
-            })
+            }),
+            'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+
 
         }
         

@@ -71,6 +71,15 @@
                 <div class="form-container">
                     <form method="POST"  enctype="multipart/form-data">
                         {% csrf_token %}
+                     
+                       {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                     
                         <!-- Category Title Section -->
                         <div class="mb-4">
                             <label for="code" class="form-label">Coupon Code:</label>
