@@ -90,11 +90,14 @@ class HotelRoomSerializer(serializers.ModelSerializer):
         }
 
 
+from masters.serializers import *
+
 class HotelSerializer(serializers.ModelSerializer):
     rooms = HotelRoomSerializer(many=True, read_only=True)
     images = HotelImageSerializer(many=True, read_only=True)
     city = serializers.StringRelatedField()  # or use CitySerializer if needed
-    amenities = serializers.StringRelatedField(many=True)  # or use AmenitySerializer
+    amenities = amenity_serializer(many=True, read_only=True)  # or use AmenitySerializer
+    property_type = property_type_serializer(many=True, read_only=True)  # or use AmenitySerializer
     main_image = serializers.ImageField(required=False)
 
     min_price = serializers.SerializerMethodField()
@@ -109,7 +112,7 @@ class HotelSerializer(serializers.ModelSerializer):
             'is_featured', 'description', 'is_active', 'created_at',
             'gst_number', 'gst_certificate', 'pan_number',
             'account_holder_name', 'account_number', 'ifsc_code', 'bank_name', 'bank_document',
-            'rooms', 'images',
+            'rooms', 'images', 'is_recommended', 'property_type',
 
             'min_price', 'max_price'
         ]

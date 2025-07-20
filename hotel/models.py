@@ -19,6 +19,7 @@ class hotel(models.Model):
     name = models.CharField(max_length=255)
     
     category = models.CharField(max_length=50, choices=HOTEL_CATEGORY_CHOICES, default='Budget')
+    property_type = models.ForeignKey("masters.property_type", on_delete=models.CASCADE, null=True, blank=True)
     no_of_rooms = models.IntegerField()
 
     amenities = models.ManyToManyField("masters.amenity", blank=True)
@@ -33,6 +34,7 @@ class hotel(models.Model):
     profit_margin = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
 
     is_featured = models.BooleanField(default=False)
+    is_recommended = models.BooleanField(default=False)
     description = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

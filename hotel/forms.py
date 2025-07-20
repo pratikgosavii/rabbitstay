@@ -30,6 +30,8 @@ class hotel_Form(forms.ModelForm):
             'main_image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'is_featured': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'is_recommended': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
 
             # ✅ GST Fields
             'gst_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., 29ABCDE1234F2Z5'}),

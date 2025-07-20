@@ -347,6 +347,26 @@
                             {% endfor %}
                         </div>
 
+                        
+
+                           <div class="mb-4">
+                                <label class="form-label">Featured:</label>
+                                {{ form.is_featured }}
+                                {% if form.is_featured.errors %}
+                                    <div class="text-danger">{{ form.is_featured.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                           <div class="mb-4">
+                                <label class="form-label">Recommended:</label>
+                                {{ form.is_recommended }}
+                                {% if form.is_recommended.errors %}
+                                    <div class="text-danger">{{ form.is_recommended.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+
+
                         <div class="text-center">
                             <input type="submit" class="btn btn-primary custom-button" value="Submit" />
                         </div>

@@ -25,6 +25,13 @@ class amenity(models.Model):
         return self.name
 
 
+class property_type(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
 
 class city(models.Model):
     name = models.CharField(max_length=255)

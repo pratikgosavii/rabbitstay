@@ -524,6 +524,86 @@ class get_amenity(ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = '__all__'  # enables filtering on all fields
 
+def add_property_type(request):
+    
+    if request.method == "POST":
+
+        forms = property_type_Form(request.POST, request.FILES)
+
+        if forms.is_valid():
+            forms.save()
+            return redirect('list_property_type')
+        else:
+            print(forms.errors)
+            context = {
+                'form': forms
+            }
+            return render(request, 'add_property_type.html', context)
+
+
+    else:
+
+        # create first row using admin then editing only
+
+        
+
+        return render(request, 'add_property_type.html', { 'form' : property_type_Form()})
+
+def update_property_type(request, property_type_id):
+    
+    instance = property_type.objects.get(id = property_type_id)
+
+    if request.method == "POST":
+
+        forms = property_type_Form(request.POST, request.FILES, instance=instance)
+
+        if forms.is_valid():
+            forms.save()
+            return redirect('list_property_type')
+        else:
+            print(forms.errors)
+            context = {
+                'form': forms
+            }
+            return render(request, 'add_property_type.html', context)
+    
+    else:
+
+        # create first row using admin then editing only
+
+        forms = property_type_Form(instance=instance)
+        
+        context = {
+                'form': forms
+            }
+
+        return render(request, 'add_property_type.html', context)
+
+
+def list_property_type(request):
+
+    data = property_type.objects.all()
+
+    return render(request, 'list_property_type.html', {'data' : data})
+
+
+def delete_property_type(request, property_type_id):
+
+    data = property_type.objects.get(id = property_type_id).delete()
+
+    return redirect('list_property_type')
+
+
+from django.views import View
+
+
+
+class get_property_type(ListAPIView):
+    queryset = property_type.objects.all()
+    serializer_class = property_type_serializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = '__all__'  # enables filtering on all fields
+
 def add_room_amenity(request):
     
     if request.method == "POST":
