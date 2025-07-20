@@ -23,6 +23,8 @@ class User(AbstractUser):
 
     firebase_uid = models.CharField(max_length=128, unique=True, null=True, blank=True)
     
+    profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
+
     is_customer = models.BooleanField(default=False)
     is_service_provider = models.BooleanField(default=False)
 
