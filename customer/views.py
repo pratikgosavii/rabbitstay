@@ -42,6 +42,11 @@ class HotelBookingViewSet(viewsets.ModelViewSet):
                 avail.available_count -= 1
                 avail.save()
    
+    def get_queryset(self):
+        # Return bookings only for the logged-in user
+        return HotelBooking.objects.filter(user=self.request.user)
+
+
 
 
 # views.py
