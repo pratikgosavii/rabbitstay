@@ -238,17 +238,22 @@ from django.db.models import Prefetch
 def list_hotel(request):
 
     data = hotel.objects.prefetch_related(
-        Prefetch('rooms', queryset=hotel_rooms.objects.select_related('room_type').prefetch_related('room_amenities'))
-    )
+            Prefetch('rooms', queryset=hotel_rooms.objects.select_related('room_type').prefetch_related('room_amenities'))
+        )
 
-    filterset = HotelFilter(request.GET, queryset=data, request = request)
+    filterset = HotelFilter(request.GET, queryset=data, request=request)
     filtered_bookings = filterset.qs
 
-    context = {
-        'data': filtered_bookings,
-        'filterset': filterset
-    }
+    # Paginate
+    paginator = Paginator(filtered_bookings, 30)  # Show 10 hotels per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
+    context = {
+        'data': page_obj,  # use paginated data
+        'filterset': filterset,
+        'page_obj': page_obj,
+    }
 
     return render(request, 'list_hotel.html', context)
 
@@ -426,10 +431,15 @@ def list_hotel_bookings(request):
     filterset = HotelBookingFilter(request.GET, queryset=queryset, request = request)
     filtered_bookings = filterset.qs
 
+    paginator = Paginator(filtered_bookings, 30)  # Show 10 hotels per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+
     total_earning = filtered_bookings.aggregate(total=Sum('hotel_earning'))['total'] or 0
 
     context = {
-        'data': filtered_bookings,
+        'data': page_obj,
         'filterset': filterset,
         'total_earning': total_earning,
     }
@@ -455,10 +465,14 @@ def list_hotel_future_bookings(request):
     filterset = HotelBookingFilter(request.GET, queryset=queryset, request=request)
     filtered_bookings = filterset.qs
 
+    paginator = Paginator(filtered_bookings, 30)  # Show 10 hotels per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     total_earning = filtered_bookings.aggregate(total=Sum('hotel_earning'))['total'] or 0
 
     context = {
-        'data': filtered_bookings,
+        'data': page_obj,
         'filterset': filterset,
         'total_earning': total_earning,
     }

@@ -56,6 +56,18 @@ class amenity_Form(forms.ModelForm):
 
         }
         
+class property_type_Form(forms.ModelForm):
+    class Meta:
+        model = property_type
+        fields = '__all__'
+        widgets = {
+           
+            'name': forms.TextInput(attrs={
+                'class': 'form-control', 'id': 'name'
+            })
+
+        }
+        
 class city_Form(forms.ModelForm):
     class Meta:
         model = city

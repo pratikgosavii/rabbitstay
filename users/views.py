@@ -550,18 +550,31 @@ def staff_logout_page(request):
     logout(request)
     return redirect('login_staff')
 
+
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+
 def customer_user_list(request):
 
     data = User.objects.filter(is_customer = True).order_by('-date_joined')
 
-    return render(request, 'user_list.html', { 'data' : data})
+    paginator = Paginator(data, 30)  # Show 10 hotels per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'user_list.html', { 'data' : page_obj})
 
 
 def provider_user_list(request):
 
     data = User.objects.filter(is_service_provider = True).order_by('-date_joined')
 
-    return render(request, 'staff_list.html', { 'data' : data})
+    paginator = Paginator(data, 30)  # Show 10 hotels per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+
+    return render(request, 'staff_list.html', { 'data' : page_obj})
 
 
 from customer.models import *
@@ -645,7 +658,13 @@ def list_custom_user(request):
         is_service_provider=False
     ).order_by('-date_joined')
 
-    return render(request, 'custom_user_list.html', { 'data' : users})
+    paginator = Paginator(users, 30)  # Show 10 hotels per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    
+
+    return render(request, 'custom_user_list.html', { 'data' : page_obj})
 
 
 
