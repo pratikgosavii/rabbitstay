@@ -102,7 +102,7 @@ class HotelBooking(models.Model):
 
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
+        user = kwargs['context']['request'].user if 'context' in kwargs and 'request' in kwargs['context'] else None
         super().__init__(*args, **kwargs)
 
         if user and not user.is_superuser:

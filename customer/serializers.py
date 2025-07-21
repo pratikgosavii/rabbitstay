@@ -16,7 +16,14 @@ from datetime import date, timedelta
 class HotelBookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = HotelBooking
-        exclude = ['user']  # user is added in the view
+        exclude = ['user']
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs['context']['request'].user if 'context' in kwargs and 'request' in kwargs['context'] else None
+        super().__init__(*args, **kwargs)
+
+        if user and not user.is_superuser:
+            self.fields['status'].choices = [('completed', 'Completed')]  # ✅ restrict choices here
 
     def validate(self, data):
         room = data.get('room')
@@ -32,7 +39,7 @@ class HotelBookingSerializer(serializers.ModelSerializer):
         if check_in >= check_out:
             raise serializers.ValidationError("Check-out must be after check-in.")
 
-        # Fetch all required availabilities in one query
+        # Check availability
         num_days = (check_out - check_in).days
         required_dates = {check_in + timedelta(days=i) for i in range(num_days)}
 
@@ -42,14 +49,13 @@ class HotelBookingSerializer(serializers.ModelSerializer):
         )
 
         found_dates = {a.date for a in availabilities if a.available_count >= 1}
-
         missing = required_dates - found_dates
         if missing:
             missing_str = ", ".join(str(d) for d in sorted(missing))
             raise serializers.ValidationError(f"Room not available on: {missing_str}")
 
         return data
-    
+
     
 
 
