@@ -35,7 +35,6 @@ class HotelFilter(django_filters.FilterSet):
         label='City'
     )
 
-
     amenities = django_filters.ModelMultipleChoiceFilter(
         field_name='amenities',
         queryset=amenity.objects.all(),
@@ -54,8 +53,16 @@ class HotelFilter(django_filters.FilterSet):
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
+
+        # Restrict 'user' field for non-superusers
         if request and not request.user.is_superuser:
             self.filters.pop('user', None)
+
+        # Apply 'form-control' to all visible fields
+        for field in self.form.fields.values():
+            if not isinstance(field.widget, (forms.CheckboxInput, forms.RadioSelect)):
+                field.widget.attrs.update({'class': 'form-control'})
+
 
   
 
