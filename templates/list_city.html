@@ -124,14 +124,18 @@
                     </td>
                     <td>
                         <!-- Edit Button -->
-                        <a href="{% url 'update_city' i.id %}" title="Edit">
-                            <i class="bi bi-pencil-square text-primary action-icons edit"></i>
-                        </a>
 
-                        <!-- Delete Button -->
-                        <a href="{% url 'delete_city' i.id %}" title="Delete" onclick="return confirm('Are you sure you want to delete this city?');">
-                            <i class="bi bi-trash text-danger action-icons delete"></i>
-                        </a>
+                        <a href="{% url 'update_city' hotel.id %}" class="btn btn-sm btn-outline-primary mb-2" title="Edit">
+                                                            <i class="bi bi-pencil-square"></i> Edit
+                                                        </a>
+
+                                                        <a href="{% url 'delete_city' hotel.id %}" 
+                                                            class="btn btn-sm btn-outline-danger" 
+                                                            title="Delete"
+                                                            onclick="return confirm('Are you sure you want to delete this hotel?');">
+                                                            <i class="bi bi-trash"></i> Delete
+                                                        </a>
+
                     </td>
                 </tr>
             {% endfor %}
