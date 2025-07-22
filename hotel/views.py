@@ -239,7 +239,7 @@ def list_hotel(request):
 
     data = hotel.objects.prefetch_related(
             Prefetch('rooms', queryset=hotel_rooms.objects.select_related('room_type').prefetch_related('room_amenities'))
-        )
+        ).order_by('-id')
 
     filterset = HotelFilter(request.GET, queryset=data, request=request)
     filtered_bookings = filterset.qs
