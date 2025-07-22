@@ -220,20 +220,19 @@ class CancelBookingAPIView(APIView):
         except HotelBooking.DoesNotExist:
             return Response({'error': 'Booking not found or unauthorized'}, status=404)
 
+        # ✅ Check if room is currently rentable (active)
+        if not booking.room.refundable:
+            return Response({'error': 'Cancellation is not allowed as the room is not currently rentable'}, status=400)
+
         if booking.status == 'cancelled':
             return Response({'message': 'Booking already cancelled'}, status=400)
 
-        # Calculate check-in datetime as 9 AM on the check-in date
         checkin_datetime = datetime.combine(booking.check_in, time(hour=9, minute=0))
-
-        # Calculate current datetime
         now = datetime.now()
 
-        # Ensure cancellation is at least 24 hours in advance
         if now > checkin_datetime - timedelta(hours=24):
             return Response({'error': 'Cannot cancel less than 24 hours before check-in (9 AM)'}, status=400)
 
-        # Cancel the booking
         booking.status = 'cancelled'
         booking.save()
 
