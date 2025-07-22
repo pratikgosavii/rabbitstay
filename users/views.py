@@ -351,8 +351,7 @@ def register_vendor(request):
 
     if request.method == 'POST':
 
-        form = hotel_Form()
-       
+        form = hotel_Form(request.POST, request.FILES)  # ⬅️ Preserve submitted data
 
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
@@ -364,71 +363,76 @@ def register_vendor(request):
         if not all([first_name, last_name, email, mobile, password, confirm_password]):
             print('----1----')
             context = { 
-                    'form': form, 
-                    'error': 'All fields are required.'
+                'form': form, 
+                'error': 'All fields are required.'
             }
             return render(request, 'hotel_registration_new.html', context)
 
         if password != confirm_password:
             print('----2----')
             context = { 
-                    'form': form, 
-                    'error': 'Passwords do not match.'
+                'form': form, 
+                'error': 'Passwords do not match.'
             }
             return render(request, 'hotel_registration_new.html', context)
 
         if User.objects.filter(email=email).exists():
             print('----3----')
             context = { 
-                    'form': form, 
-                   'error': 'Email already registered.'
+                'form': form, 
+                'error': 'Email already registered.'
             }
-
             return render(request, 'hotel_registration_new.html',  context)
 
         if User.objects.filter(mobile=mobile).exists():
             print('----4---')
             context = { 
-                    'form': form, 
-                   'error': 'Mobile number already registered.'
+                'form': form, 
+                'error': 'Mobile number already registered.'
             }
             return render(request, 'hotel_registration_new.html',  context)
 
-        print(request.POST)
-        # Create the user
-        user = User.objects.create_user(
-            email=email,
-            mobile=mobile,
-            password=password,
-            first_name=first_name,
-            last_name=last_name,
-            is_service_provider=True,
-            is_active = False
-        )
+        try:
+            # Create the user
+            user = User.objects.create_user(
+                email=email,
+                mobile=mobile,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                is_service_provider=True,
+                is_active=False
+            )
 
-
-        form = hotel_Form(request.POST, request.FILES)
-        if not request.user.is_superuser:
-            form.fields.pop('profit_margin')
-        if form.is_valid():
-            hotel = form.save(commit=False)
             if not request.user.is_superuser:
-                hotel.user = user  # auto-assign vendor user
-            hotel.save()
-            form.save_m2m()  # Save the many-to-many relationships
-            
-            for img in request.FILES.getlist('image'):
-                HotelImage.objects.create(hotel=hotel, image=img)
+                form.fields.pop('profit_margin')
 
-            return render(request, 'hotel_registration_succful.html')
-        
-        else:
-            print(form.errors)
-            context = {
-                'form': form
+            if form.is_valid():
+                hotel = form.save(commit=False)
+                if not request.user.is_superuser:
+                    hotel.user = user  # auto-assign vendor user
+                hotel.save()
+                form.save_m2m()
+
+                for img in request.FILES.getlist('image'):
+                    HotelImage.objects.create(hotel=hotel, image=img)
+
+                return render(request, 'hotel_registration_succful.html')
+
+            else:
+                print(form.errors)
+                context = { 'form': form }
+                return render(request, 'hotel_registration_new.html', context)
+
+        except Exception as e:
+            print(f"Registration failed: {e}")
+            user.delete()  # optional: rollback user if hotel fails
+            context = { 
+                'form': form, 
+                'error': 'Something went wrong during registration. Please try again.'
             }
             return render(request, 'hotel_registration_new.html', context)
-        
+
     else:
 
     
