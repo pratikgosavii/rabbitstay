@@ -10,51 +10,7 @@ from rest_framework import serializers
 from datetime import date as today_date, timedelta
 from datetime import date, timedelta
 
-
  
-
-class HotelBookingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = HotelBooking
-        exclude = ['user']
-
-    def __init__(self, *args, **kwargs):
-        user = kwargs['context']['request'].user if 'context' in kwargs and 'request' in kwargs['context'] else None
-        super().__init__(*args, **kwargs)
-
-        if user and not user.is_superuser:
-            self.fields['status'].choices = [('completed', 'Completed')]  # ✅ restrict choices here
-
-    def validate(self, data):
-        room = data.get('room')
-        check_in = data.get('check_in')
-        check_out = data.get('check_out')
-
-        if not room or not check_in or not check_out:
-            raise serializers.ValidationError("Room, check-in, and check-out are required.")
-
-        if check_in < date.today():
-            raise serializers.ValidationError("Check-in cannot be in the past.")
-
-        if check_in >= check_out:
-            raise serializers.ValidationError("Check-out must be after check-in.")
-
-        # Check availability
-        num_days = (check_out - check_in).days
-        required_dates = {check_in + timedelta(days=i) for i in range(num_days)}
-
-        availabilities = RoomAvailability.objects.filter(
-            room=room,
-            date__range=(check_in, check_out - timedelta(days=1))
-        )
-
-        found_dates = {a.date for a in availabilities if a.available_count >= 1}
-        missing = required_dates - found_dates
-        if missing:
-            missing_str = ", ".join(str(d) for d in sorted(missing))
-            raise serializers.ValidationError(f"Room not available on: {missing_str}")
-
-        return data
 
     
 
@@ -155,3 +111,53 @@ class TicketMessageSerializer(serializers.ModelSerializer):
     def get_is_from_user(self, obj):
         request = self.context.get('request')
         return obj.sender == request.user if request else False
+    
+
+
+    
+class HotelBookingSerializer(serializers.ModelSerializer):
+    
+    hotel = HotelSerializer(read_only=True)
+    room = HotelRoomSerializer(read_only=True)
+
+    class Meta:
+        model = HotelBooking
+        exclude = ['user']
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs['context']['request'].user if 'context' in kwargs and 'request' in kwargs['context'] else None
+        super().__init__(*args, **kwargs)
+
+        if user and not user.is_superuser:
+            self.fields['status'].choices = [('completed', 'Completed')]
+
+    def validate(self, data):
+        room = data.get('room')
+        check_in = data.get('check_in')
+        check_out = data.get('check_out')
+
+        if not room or not check_in or not check_out:
+            raise serializers.ValidationError("Room, check-in, and check-out are required.")
+
+        if check_in < date.today():
+            raise serializers.ValidationError("Check-in cannot be in the past.")
+
+        if check_in >= check_out:
+            raise serializers.ValidationError("Check-out must be after check-in.")
+
+        # Check availability
+        num_days = (check_out - check_in).days
+        required_dates = {check_in + timedelta(days=i) for i in range(num_days)}
+
+        availabilities = RoomAvailability.objects.filter(
+            room=room,
+            date__range=(check_in, check_out - timedelta(days=1))
+        )
+
+        found_dates = {a.date for a in availabilities if a.available_count >= 1}
+        missing = required_dates - found_dates
+        if missing:
+            missing_str = ", ".join(str(d) for d in sorted(missing))
+            raise serializers.ValidationError(f"Room not available on: {missing_str}")
+
+        return data
