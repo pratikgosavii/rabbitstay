@@ -169,3 +169,11 @@ class HotelBookingSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(f"Room not available on: {missing_str}")
 
         return data
+
+        
+
+class FavouriteHotelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = favouritehotel
+        fields = ['id', 'user', 'hotel']  # Include 'user' but make it read-only
+        read_only_fields = ['user']  

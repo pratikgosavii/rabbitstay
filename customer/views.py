@@ -288,3 +288,28 @@ class TicketMessageViewSet(viewsets.ViewSet):
 
         serializer = TicketMessageSerializer(new_message, context={'request': request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+
+
+
+class FavouriteHotelViewSet(viewsets.ModelViewSet):
+    queryset = favouritehotel.objects.all()
+    serializer_class = FavouriteHotelSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        hotel = serializer.validated_data['hotel']
+        
+        if favouritehotel.objects.filter(user=user, hotel=hotel).exists():
+            raise ValidationError("You have already added this hotel to favourites.")
+        
+        serializer.save(user=user)
+
+    def get_queryset(self):
+        # Optionally filter by current user
+        if self.request.user.is_authenticated:
+            return favouritehotel.objects.filter(user=self.request.user)
+        return favouritehotel.objects.none()
+

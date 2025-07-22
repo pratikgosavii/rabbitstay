@@ -126,3 +126,12 @@ class TicketMessage(models.Model):
     sender = models.ForeignKey('users.User', on_delete=models.CASCADE)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+
+class favouritehotel(models.Model):
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    hotel = models.ForeignKey("hotel.hotel", on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'hotel') 

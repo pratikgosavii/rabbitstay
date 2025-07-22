@@ -16,6 +16,8 @@ router.register(r'hotel-bookings', HotelBookingViewSet)
 router.register('tickets', SupportTicketViewSet, basename='tickets')
 router.register('ticket-messages', TicketMessageViewSet, basename='ticket-messages')
 
+router.register(r'favourite-hotels', FavouriteHotelViewSet, basename='favouritehotel')
+
 urlpatterns = [
 
 
