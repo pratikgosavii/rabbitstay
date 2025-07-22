@@ -117,8 +117,16 @@ class TicketMessageSerializer(serializers.ModelSerializer):
     
 class HotelBookingSerializer(serializers.ModelSerializer):
     
-    hotel = HotelSerializer(read_only=True)
-    room = HotelRoomSerializer(read_only=True)
+    room = serializers.PrimaryKeyRelatedField(
+        queryset=hotel_rooms.objects.all(), write_only=True
+    )
+    hotel = serializers.PrimaryKeyRelatedField(
+        queryset=hotel.objects.all(), write_only=True
+    )
+
+    # Read-only nested output fields
+    room_details = HotelRoomSerializer(source='room', read_only=True)
+    hotel_details = HotelSerializer(source='hotel', read_only=True)
 
     class Meta:
         model = HotelBooking
@@ -145,7 +153,7 @@ class HotelBookingSerializer(serializers.ModelSerializer):
         if check_in >= check_out:
             raise serializers.ValidationError("Check-out must be after check-in.")
 
-        # Check availability
+        # Room availability check
         num_days = (check_out - check_in).days
         required_dates = {check_in + timedelta(days=i) for i in range(num_days)}
 
