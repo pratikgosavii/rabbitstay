@@ -295,7 +295,7 @@ def add_hotel_rooms(request):
             form.save_m2m()
 
             for img in request.FILES.getlist('image'):
-                HotelImage.objects.create(hotel=instance.hotel, image=img)
+                hotel_roomsImage.objects.create(hotel=instance.hotel, image=img)
 
             return redirect('list_hotel_rooms')
 
@@ -324,6 +324,15 @@ def update_hotel_rooms(request, hotel_rooms_id):
 
         if form.is_valid():
             room = form.save(commit=False)
+
+            # Ensure the correct hotel is assigned if user is not a superuser
+            if not request.user.is_superuser:
+                try:
+                    user_hotel = hotel.objects.get(user=request.user)
+                    room.hotel = user_hotel
+                except hotel.DoesNotExist:
+                    return HttpResponse("You are not linked to any hotel.", status=403)
+
             room.save()
             form.save_m2m()
 
@@ -342,6 +351,8 @@ def update_hotel_rooms(request, hotel_rooms_id):
     }
     return render(request, 'add_hotel_rooms.html', context)
         
+
+
 
 @login_required(login_url='login_admin')
 def delete_hotel_rooms(request, hotel_rooms_id):
