@@ -73,14 +73,12 @@ class hotel(models.Model):
 
 
     def save(self, *args, **kwargs):
-        # First save to get ID
+    # First save to get ID
         if not self.hotel_id:
             super().save(*args, **kwargs)  # Save once to get ID
             self.hotel_id = f"RS-{self.id:03d}"
-            # Save again only for hotel_id update
-            super().save(update_fields=["hotel_id"])
+            super().save(update_fields=["hotel_id"])  # Save only hotel_id
         else:
-            # If hotel_id already present, normal save
             super().save(*args, **kwargs)
 
 
@@ -88,6 +86,15 @@ class hotel(models.Model):
     def __str__(self):
         return self.name
 
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+@receiver(post_save, sender=hotel)
+def sync_user_status_with_hotel(sender, instance, **kwargs):
+    if instance.user:
+        if instance.user.is_active != instance.is_active:
+            instance.user.is_active = instance.is_active
+            instance.user.save(update_fields=["is_active"])
 
 
 class HotelImage(models.Model):

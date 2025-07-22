@@ -473,8 +473,10 @@ def login_vendor(request):
                     
                     return redirect('dashboard')
                 else:
+                    print('Access denied: not a service provider')
                     messages.error(request, 'Access denied: not a service provider')
             else:
+                print('Invalid email or password')
                 messages.error(request, 'Invalid email or password')
 
     return render(request, 'vendorLogin.html', {'form': form})
