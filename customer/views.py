@@ -221,8 +221,8 @@ class CancelBookingAPIView(APIView):
             return Response({'error': 'Booking not found or unauthorized'}, status=404)
 
         # ✅ Check if room is currently rentable (active)
-        if not booking.room.refundable:
-            return Response({'error': 'Cancellation is not allowed as the room is not currently rentable'}, status=400)
+        # if not booking.room.refundable:
+        #     return Response({'error': 'Cancellation is not allowed as the room is not currently rentable'}, status=400)
 
         if booking.status == 'cancelled':
             return Response({'message': 'Booking already cancelled'}, status=400)
