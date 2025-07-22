@@ -352,9 +352,7 @@ def register_vendor(request):
     if request.method == 'POST':
 
         form = hotel_Form()
-        context = { 
-                'form': form, 
-        }
+       
 
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')

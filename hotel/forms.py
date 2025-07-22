@@ -38,7 +38,7 @@ class hotel_Form(forms.ModelForm):
             'gst_certificate': forms.ClearableFileInput(attrs={'class': 'form-control'}),
 
             # PAN Field
-            'pan_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Optional'}),
+            'pan_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'PAN Number'}),
             'landmark': forms.TextInput(attrs={'class': 'form-control', 'placeholder': "Landmark"}),
 
             # Bank Fields

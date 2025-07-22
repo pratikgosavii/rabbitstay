@@ -36,11 +36,8 @@ def vendor_dashboard(request):
 def register_hotel(request):
 
     if request.method == 'POST':
-
         form = hotel_Form()
-        context = { 
-                'form': form, 
-        }
+        context = {'form': form}
 
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
@@ -59,52 +56,51 @@ def register_hotel(request):
             return render(request, 'hotel_registration.html', {'error': 'Email already registered.'}, context)
 
         if User.objects.filter(mobile=mobile).exists():
-            return render(request, 'hotel_registration.html', {'error': 'Mobile number already registered.'})
+            return render(request, 'hotel_registration.html', {'error': 'Mobile number already registered.'}, context)
 
-        print(request.POST)
-        # Create the user
-        user = User.objects.create_user(
-            email=email,
-            mobile=mobile,
-            password=password,
-            first_name=first_name,
-            last_name=last_name,
-            is_service_provider=True,
-            is_active = False
-        )
+        try:
+            with transaction.atomic():
+                # Create user
+                user = User.objects.create_user(
+                    email=email,
+                    mobile=mobile,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name,
+                    is_service_provider=True,
+                    is_active=False
+                )
 
+                form = hotel_Form(request.POST, request.FILES)
+                if not request.user.is_superuser:
+                    form.fields.pop('profit_margin')
 
-        form = hotel_Form(request.POST, request.FILES)
-        if not request.user.is_superuser:
-            form.fields.pop('profit_margin')
-        if form.is_valid():
-            hotel = form.save(commit=False)
-            if not request.user.is_superuser:
-                hotel.user = user  # auto-assign vendor user
-            hotel.save()
-            form.save_m2m()  # Save the many-to-many relationships
-            
-            for img in request.FILES.getlist('image'):
-                HotelImage.objects.create(hotel=hotel, image=img)
+                if form.is_valid():
+                    hotel = form.save(commit=False)
+                    if not request.user.is_superuser:
+                        hotel.user = user
+                    hotel.save()
+                    form.save_m2m()
 
-            return redirect('list_hotel')
-        
-        else:
-            print(form.errors)
-            context = {
-                'form': form
-            }
-            return render(request, 'add_hotel.html', context)
-        
+                    for img in request.FILES.getlist('image'):
+                        HotelImage.objects.create(hotel=hotel, image=img)
+
+                    return redirect('list_hotel')
+                else:
+                    # Validation failed — raise exception to rollback user
+                    raise Exception(f"Form invalid: {form.errors}")
+
+        except Exception as e:
+            print("Error:", e)
+            # Optional: show custom error message
+            return render(request, 'hotel_registration.html', {
+                'form': form,
+                'error': 'Something went wrong during registration. Please try again.'
+            })
+
     else:
-
-    
         form = hotel_Form()
-
-        context = { 
-                'form': form, 
-        }
-
+        context = {'form': form}
         return render(request, 'hotel_registration.html', context)
 
 
