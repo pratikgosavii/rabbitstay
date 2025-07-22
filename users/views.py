@@ -340,7 +340,7 @@ def activate_vendor_request(request, user_id):
 
     hotel_instance.save()
 
-    msg = 'Your account is actiated', 'Hi, Your account is activated login and completed your profile' + hotel_instance.id
+    msg = 'Your account is actiated', 'Hi, Your account is activated login and completed your profile' + str(hotel_instance.id)
 
     send_test_email(request, msg)
 
