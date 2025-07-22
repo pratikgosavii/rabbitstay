@@ -422,14 +422,14 @@ def register_vendor(request):
             for img in request.FILES.getlist('image'):
                 HotelImage.objects.create(hotel=hotel, image=img)
 
-            return render(request, 'hotel_registration_succful.html')
+            return render(request, 'hotel_registration_new.html')
         
         else:
             print(form.errors)
             context = {
                 'form': form
             }
-            return render(request, 'add_hotel.html', context)
+            return render(request, 'hotel_registration_new.html', context)
         
     else:
 
