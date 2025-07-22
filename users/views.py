@@ -369,7 +369,7 @@ def register_vendor(request):
                     'form': form, 
                     'error': 'All fields are required.'
             }
-            return render(request, 'hotel_registration.html', context)
+            return render(request, 'hotel_registration_new.html', context)
 
         if password != confirm_password:
             print('----2----')
@@ -377,7 +377,7 @@ def register_vendor(request):
                     'form': form, 
                     'error': 'Passwords do not match.'
             }
-            return render(request, 'hotel_registration.html', context)
+            return render(request, 'hotel_registration_new.html', context)
 
         if User.objects.filter(email=email).exists():
             print('----3----')
@@ -386,7 +386,7 @@ def register_vendor(request):
                    'error': 'Email already registered.'
             }
 
-            return render(request, 'hotel_registration.html',  context)
+            return render(request, 'hotel_registration_new.html',  context)
 
         if User.objects.filter(mobile=mobile).exists():
             print('----4---')
@@ -394,7 +394,7 @@ def register_vendor(request):
                     'form': form, 
                    'error': 'Mobile number already registered.'
             }
-            return render(request, 'hotel_registration.html',  context)
+            return render(request, 'hotel_registration_new.html',  context)
 
         print(request.POST)
         # Create the user
@@ -422,7 +422,7 @@ def register_vendor(request):
             for img in request.FILES.getlist('image'):
                 HotelImage.objects.create(hotel=hotel, image=img)
 
-            return render(request, 'hotel_registration_new.html')
+            return render(request, 'hotel_registration_succful.html')
         
         else:
             print(form.errors)
