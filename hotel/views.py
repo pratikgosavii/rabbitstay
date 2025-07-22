@@ -295,7 +295,7 @@ def add_hotel_rooms(request):
             form.save_m2m()
 
             for img in request.FILES.getlist('image'):
-                hotel_roomsImage.objects.create(hotel=instance.hotel, image=img)
+                hotel_roomsImage.objects.create(hotel_rooms=instance, image=img)
 
             return redirect('list_hotel_rooms')
 

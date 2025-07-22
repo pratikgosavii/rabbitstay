@@ -144,11 +144,11 @@
                                                     <td>
                                                         <!-- remove Button -->
                                                       
-                                                        <a href="{% url 'update_coupon' hotel.id %}" class="btn btn-sm btn-outline-primary mb-2" title="Edit">
+                                                        <a href="{% url 'update_coupon' i.id %}" class="btn btn-sm btn-outline-primary mb-2" title="Edit">
                                                             <i class="bi bi-pencil-square"></i> Edit
                                                         </a>
 
-                                                        <a href="{% url 'delete_coupon' hotel.id %}" 
+                                                        <a href="{% url 'delete_coupon' i.id %}" 
                                                             class="btn btn-sm btn-outline-danger" 
                                                             title="Delete"
                                                             onclick="return confirm('Are you sure you want to delete this hotel?');">
