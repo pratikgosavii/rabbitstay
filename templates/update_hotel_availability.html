@@ -48,7 +48,11 @@
 
                     {% for room in rooms %}
                     <div class="mb-2">
-                        <label>{{ room.room_type }} ({{ room.title }})</label>
+                        <label>{{ room.room_type }} ({{ room.title }})   {% if room.refundable %}
+                                        Refundable
+                                    {% else %}
+                                        Not Refundable
+                                    {% endif %} </label>
                         <input type="number" name="availability_{{ room.id }}" class="form-control" min="0" placeholder="Number of rooms available">
                     </div>
                     {% endfor %}
@@ -79,7 +83,16 @@
                                     <p>Set availability for <strong id="modal_date"></strong></p>
                                     {% for room in rooms %}
                                     <div class="mb-2">
-                                        <label>{{ room.room_type }} ({{ room.title }})</label>
+                                        <label>
+                                    {{ room.room_type }} ({{ room.title }}) - 
+                                    {% if room.refundable %}
+                                        Refundable
+                                    {% else %}
+                                        Not Refundable
+                                    {% endif %}
+                                    </label>
+
+
                                         <input type="number" name="availability_{{ room.id }}" class="form-control" min="0" placeholder="Number of rooms available">
                                     </div>
                                     {% endfor %}
