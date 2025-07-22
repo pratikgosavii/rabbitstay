@@ -462,21 +462,16 @@ def login_vendor(request):
                 return render(request, 'vendorLogin.html', {'form': form})
 
             if user.check_password(password):
+                if not user.is_active:
+                    messages.error(request, 'Your account verification is under process.')
+                    return render(request, 'vendorLogin.html', {'form': form})
+
                 if user.is_service_provider:
                     login(request, user)
-
-                    print('------------------')
-
-                    print(request.user)
-
-
-                    
                     return redirect('dashboard')
                 else:
-                    print('Access denied: not a service provider')
                     messages.error(request, 'Access denied: not a service provider')
             else:
-                print('Invalid email or password')
                 messages.error(request, 'Invalid email or password')
 
     return render(request, 'vendorLogin.html', {'form': form})
