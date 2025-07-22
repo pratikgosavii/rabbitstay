@@ -760,13 +760,17 @@
 
                 
               </div>
-              <div
-                id="galleryImagesPreview"
-                class="d-flex flex-wrap gap-2"
-              ></div>
+              <div class="row">
+             <div
+              id="galleryImagesPreview"
+              class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-3 mt-2"
+            ></div>
 
 
+
+              </div>
                 <div class="step-indicator">Step 5 of 5</div>
+
               </div>
 
               <button type="submit" class="btn-next">Submit</button>
@@ -783,7 +787,7 @@
     <script>
       // Hotel Image Preview
       document
-        .getElementById("hotelImageInput")
+        .getElementById("id_main_image")
         .addEventListener("change", function (e) {
           const preview = document.getElementById("hotelImagePreview");
           preview.innerHTML = "";
@@ -800,21 +804,28 @@
 
       // Gallery Images Preview
       document
-        .getElementById("galleryImagesInput")
-        .addEventListener("change", function (e) {
-          const preview = document.getElementById("galleryImagesPreview");
-          preview.innerHTML = "";
-          Array.from(e.target.files).forEach((file) => {
-            if (file && file.type.startsWith("image/")) {
-              const img = document.createElement("img");
-              img.src = URL.createObjectURL(file);
-              img.style.maxWidth = "120px";
-              img.style.marginBottom = "10px";
-              img.classList.add("img-thumbnail");
-              preview.appendChild(img);
-            }
-          });
-        });
+  .getElementById("image-upload")
+  .addEventListener("change", function (e) {
+    const preview = document.getElementById("galleryImagesPreview");
+    preview.innerHTML = "";
+    Array.from(e.target.files).forEach((file) => {
+      if (file && file.type.startsWith("image/")) {
+        const col = document.createElement("div");
+        col.className = "col";
+
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        img.classList.add("img-thumbnail");
+        img.style.width = "100%";
+        img.style.height = "auto";
+        img.style.objectFit = "cover";
+
+        col.appendChild(img);
+        preview.appendChild(col);
+      }
+    });
+  });
+
 
       // Display Select Amenities
       const checkboxes = document.querySelectorAll(".amenity-checkbox");
