@@ -128,8 +128,7 @@ options = {
         }
     }
 };
-chart = new ApexCharts(document.querySelector("#market-overview"), options);
-chart.render();
+
 ChartColorChange(chart, "#market-overview");
 
 var vectormapColors = getChartColorsArray("#sales-by-locations");
