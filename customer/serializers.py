@@ -39,7 +39,7 @@ class HotelRoomSerializer(serializers.ModelSerializer):
             'refundable', 'meals_included', 'capacity', 'view', 'bed_type',
             'images', 'hotel_details'
         ]
-        read_only_fields = ['hotel_details']
+        read_only_fields = ['hotel_details', 'booking_id']
 
     def get_hotel_details(self, obj):
         # avoid full hotel -> rooms -> hotel recursion

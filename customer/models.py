@@ -17,6 +17,8 @@ class HotelBooking(models.Model):
 
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='confirmed')
     
+    booking_id = models.CharField(max_length=20, unique=True, blank=True, null=True)
+
     user = models.ForeignKey("users.User", on_delete=models.SET_NULL, null=True, blank=True)
     hotel = models.ForeignKey("hotel.hotel", on_delete=models.CASCADE)
     room = models.ForeignKey("hotel.hotel_rooms", on_delete=models.CASCADE)
@@ -52,6 +54,12 @@ class HotelBooking(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
+
+        if not self.booking_id:
+            last = HotelBooking.objects.order_by('-id').first()
+            next_id = (last.id + 1) if last else 1
+            self.booking_id = f"RS-BK{next_id:04d}"  # RS-BK0001, RS-BK0002, etc.
+
         if self.check_in and self.check_out and self.room:
             
             if self.check_in and self.check_out and self.room:

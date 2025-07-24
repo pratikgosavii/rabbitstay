@@ -132,6 +132,7 @@
                                         <thead>
                                             <tr>
                                                 <th>#</th>
+                                                <th>Booking ID</th>
                                                 <th>Hotel</th>
                                                 <th>Room</th>
                                                 <th>User</th>
@@ -154,6 +155,7 @@
                                                 {% for booking in data %}
                                                     <tr>
                                                         <td>{{ forloop.counter }}</td>
+                                                        <td>{{ booking.booking_id }}</td>
                                                         <td>{{ booking.hotel.name }}</td>
                                                         <td>{{ booking.room.room_type }}</td>
                                                         <td>{{ booking.user.name|default:"Guest" }}</td>
