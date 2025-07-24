@@ -21,10 +21,11 @@ class HotelBookingViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         with transaction.atomic():
             booking = serializer.save(user=self.request.user)
-
             room = booking.room
             check_in = booking.check_in
             check_out = booking.check_out
+            quantity = booking.room_quantity  # new field
+
             total_days = (check_out - check_in).days
             dates = [check_in + timedelta(days=i) for i in range(total_days)]
 
@@ -37,9 +38,9 @@ class HotelBookingViewSet(viewsets.ModelViewSet):
                 raise ValidationError("Some dates are missing availability records.")
 
             for avail in availabilities:
-                if avail.available_count < 1:
-                    raise ValidationError(f"Room not available on {avail.date}.")
-                avail.available_count -= 1
+                if avail.available_count < quantity:
+                    raise ValidationError(f"Only {avail.available_count} rooms available on {avail.date}.")
+                avail.available_count -= quantity
                 avail.save()
    
     def get_queryset(self):

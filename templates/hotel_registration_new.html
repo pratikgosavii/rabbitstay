@@ -479,12 +479,15 @@
                       <input
                         type="text"
                         class="form-control"
-                        placeholder="Mobile"
+                        placeholder="Enter your mobile"
                         value="{{ mobile|default:'' }}"
                         name="mobile"
-                        placeholder="Enter your mobile"
+                        pattern="^\d{10}$"
+                        maxlength="10"
+                        title="Enter a 10-digit mobile number"
                         required
                       />
+
                     </div>
                   </div>
                   <div class="col-md-6 mb-3">

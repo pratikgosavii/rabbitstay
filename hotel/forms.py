@@ -72,6 +72,7 @@ class hotel_rooms_Form(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'main_image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'price_per_night': forms.NumberInput(attrs={'class': 'form-control'}),
+            'max_guest_count': forms.NumberInput(attrs={'class': 'form-control'}),
             'refundable': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'meals_included': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'bed_type': forms.TextInput(attrs={'class': 'form-control'}),

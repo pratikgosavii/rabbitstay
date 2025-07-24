@@ -147,6 +147,14 @@
                         </div>
 
                         <div class="mb-4">
+                            <label class="form-label">Max Guest Count:</label>
+                            {{ form.max_guest_count }}
+                            {% if form.max_guest_count.errors %}
+                                <div class="text-danger">{{ form.max_guest_count.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
                             <label class="form-label">Refundable:</label>
                             {{ form.refundable }}
                             {% if form.refundable.errors %}

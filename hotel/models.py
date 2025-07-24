@@ -127,7 +127,8 @@ class hotel_rooms(models.Model):
     hotel = models.ForeignKey("hotel.hotel", on_delete=models.CASCADE, related_name="rooms", null=True, blank=True)
     room_type = models.ForeignKey("masters.room_type", on_delete=models.CASCADE, related_name="rooms")
     main_image = models.ImageField(upload_to='hotels/', null=True, blank=True)
-   
+    
+    max_guest_count = models.IntegerField()
 
     title = models.CharField(
         max_length=50,

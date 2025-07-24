@@ -88,6 +88,7 @@
                                             <th>Room Type</th>
                                             <th>Package</th>
                                             <th>Price/Night</th>
+                                            <th>Max Guest Count</th>
                                             <th>Refundable</th>
                                             <th>Meals</th>
                                             <th>Capacity</th>
@@ -102,6 +103,7 @@
                                                 <td>{{ room.room_type }}</td>
                                                 <td>{{ room.get_title_display }}</td>
                                                 <td>₹{{ room.price_per_night }}</td>
+                                                <td>{{ room.max_guest_count }}</td>
                                                 <td>{{ room.refundable|yesno:"Yes,No" }}</td>
                                                 <td>{{ room.meals_included|yesno:"Yes,No" }}</td>
                                                 <td>{{ room.capacity }}</td>
