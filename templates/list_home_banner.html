@@ -108,6 +108,7 @@
                                             <tr>
                                                 <th>#</th>
                                                 <th>Title</th>
+                                                <th>Image</th>
                                                 <th>For Web Only</th>
                                                 <th>Description</th>
                                                 <th>Action</th>
@@ -119,6 +120,11 @@
                                                 <tr>
                                                     <td>{{ forloop.counter }}</td>
                                                     <td>{{ i.title }}</td>
+                                                    <td>   {% if i.image %}
+                                                        <img width="60" src="{{ i.image.url }}">
+                                                    {% else %}
+                                                        N/A
+                                                    {% endif %}</td>
                                                     <td>{{ i.is_for_web }}</td>
                                                     <td>{{ i.description }}</td>
                                                   
