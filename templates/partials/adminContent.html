@@ -39,10 +39,10 @@
                                         <div class="flex-grow-1">
                                             <span class="text-muted mb-3 lh-1 d-block text-truncate">Total Booking</span>
                                             <h4 class="mb-3">
-                                                $<span class="counter-value" data-target="{{ bookings_count }}">{{ bookings_count }}</span>
+                                                <span class="counter-value" data-target="{{ bookings_count }}">{{ bookings_count }}</span>
                                             </h4>
                                             {% comment %} <div class="text-nowrap">
-                                                <span class="badge bg-soft-success text-success">+$20.9k</span>
+                                                <span class="badge bg-soft-success text-success">+₹20.9k</span>
                                                 <span class="ms-1 text-muted font-size-13">Since last week</span>
                                             </div> {% endcomment %}
                                         </div>
@@ -88,7 +88,7 @@
                                         <div class="flex-grow-1">
                                             <span class="text-muted mb-3 lh-1 d-block text-truncate">Total Collection</span>
                                             <h4 class="mb-3">
-                                                $<span class="counter-value" data-target="{{ total_collection }}">{{ total_collection }}</span>
+                                                ₹<span class="counter-value" data-target="{{ total_collection }}">{{ total_collection }}</span>
                                             </h4>
                                             <div class="text-nowrap">
                                                 <span class="badge bg-soft-success text-success">+ {{ percentage_change }}</span>
@@ -165,7 +165,7 @@
                                             <div class="p-4">
                                                 
                                                 <div class="mt-4 pt-2">
-                                                    <a href="" class="btn btn-primary w-100" style="background-color: #0088CC; !important ;">See All Hotel Booking <i
+                                                    <a href="{% url 'list_hotel' %}" class="btn btn-primary w-100" style="background-color: #0088CC; !important ;">See All Hotel Booking <i
                                                             class="mdi mdi-arrow-right ms-1"></i></a>
                                                 </div>
 

@@ -22,7 +22,7 @@ class hotel_Form(forms.ModelForm):
             'category': forms.Select(attrs={'class': 'form-control', 'placeholder': "Category (e.g. Budget)"}),
             'no_of_rooms': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': "Number of Rooms"}),
             'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': "Address"}),
-            'city': forms.Select(attrs={'class': 'form-control'}),
+            'city': forms.Select(attrs={'class': 'form-control select2'}),
             'star_rating': forms.NumberInput(attrs={'class': 'form-control'}),
             'overall_rating': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),
             'pincode': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': "Pincode"}),

@@ -80,10 +80,7 @@ def dashboard(request):
     print(months)
     print(bookings)
 
-    months = ['August', 'September', 'October', 'November', 'December',
-              'January', 'February', 'March', 'April', 'May', 'June', 'July']
-    bookings = [10, 15, 8, 20, 12, 17, 25, 18, 22, 30, 28, 35]
-
+  
 
     context = {
         'bookings_count': bookings_count,
