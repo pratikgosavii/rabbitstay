@@ -118,6 +118,11 @@ class AvailableRoomsAPIView(generics.ListAPIView):
         from_date_str = self.request.query_params.get('from_date')
         to_date_str = self.request.query_params.get('to_date')
 
+        hotel_id = self.request.query_params.get('hotel_id')
+        if not hotel_id:
+            raise ValidationError("'hotel_id' is required.")
+
+
         if not from_date_str or not to_date_str:
             raise ValidationError("Both 'from_date' and 'to_date' are required.")
 
@@ -148,7 +153,7 @@ class AvailableRoomsAPIView(generics.ListAPIView):
         )
 
         # Start with rooms available on all dates
-        qs = hotel_rooms.objects.filter(id__in=available_room_ids)
+        qs = hotel_rooms.objects.filter(id__in=available_room_ids, hotel_id=hotel_id)
 
         # Now apply your existing filterset filtering for other fields
         filterset = HotelRoomFilter(self.request.GET, queryset=qs)
