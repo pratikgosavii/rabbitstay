@@ -67,10 +67,10 @@ class HotelBooking(models.Model):
             self.booking_id = f"RS-BK{next_id:04d}"  # RS-BK0001, RS-BK0002, etc.
         else:
 
-            print('------------------')
+            print('--------11----------')
 
             print(self.booking_id)
-            
+
         if self.check_in and self.check_out and self.room:
             
             if self.check_in and self.check_out and self.room:
