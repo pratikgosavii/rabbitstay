@@ -58,8 +58,12 @@ class HotelBooking(models.Model):
     def save(self, *args, **kwargs):
 
         if not self.booking_id:
+
+            print('----------------')
+
             last = HotelBooking.objects.order_by('-id').first()
             next_id = (last.id + 1) if last else 1
+            print(f"RS-BK{next_id:04d}" )
             self.booking_id = f"RS-BK{next_id:04d}"  # RS-BK0001, RS-BK0002, etc.
 
         if self.check_in and self.check_out and self.room:
