@@ -71,9 +71,9 @@ def register_hotel(request):
                     is_active=False
                 )
 
-                form = hotel_Form(request.POST, request.FILES)
-                if not request.user.is_superuser:
-                    form.fields.pop('profit_margin')
+                form = hotel_Form(request.POST, request.FILES, user=request.user)
+
+                
 
                 if form.is_valid():
                     hotel = form.save(commit=False)
@@ -110,9 +110,10 @@ def add_hotel(request):
 
     if request.method == 'POST':
 
-        form = hotel_Form(request.POST, request.FILES)
-        if not request.user.is_superuser:
-            form.fields.pop('profit_margin')
+        
+        form = hotel_Form(request.POST, request.FILES, user=request.user)
+
+       
         if form.is_valid():
             hotel = form.save(commit=False)
             if not request.user.is_superuser:
@@ -180,10 +181,8 @@ def update_hotel(request, hotel_id):
     if request.method == 'POST':
 
         instance = hotel.objects.get(id=hotel_id)
-
-        forms = hotel_Form(request.POST, request.FILES, instance=instance)
-        if not request.user.is_superuser:
-            forms.fields.pop('profit_margin')
+        forms = hotel_Form(request.POST, request.FILES, instance=instance, user=request.user)
+        
         
         if forms.is_valid():
             hotels = forms.save(commit=False)

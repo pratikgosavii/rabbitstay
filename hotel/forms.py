@@ -5,13 +5,12 @@ from masters.models import *
 class hotel_Form(forms.ModelForm):
    
     amenities = forms.ModelMultipleChoiceField(
-    queryset=amenity.objects.all(),
-    widget=forms.SelectMultiple(attrs={
-        'class': 'form-select d-none',  # Hide the default <select>
-    }),
-    required=False
-)
-
+        queryset=amenity.objects.all(),
+        widget=forms.SelectMultiple(attrs={
+            'class': 'form-select d-none',
+        }),
+        required=False
+    )
 
     class Meta:
         model = hotel
@@ -48,6 +47,16 @@ class hotel_Form(forms.ModelForm):
             'bank_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': "Bank Name"}),
             'bank_document': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
+
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # pop user from kwargs
+        super().__init__(*args, **kwargs)
+
+        if user and not user.is_superuser:
+            self.fields.pop('profit_margin', None)
+            self.fields.pop('is_active', None)  # hide is_active from vendors
+            self.fields.pop('star_rating', None)  # hide is_active from vendors
 
 
 
