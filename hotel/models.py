@@ -143,6 +143,8 @@ class hotel_rooms(models.Model):
     capacity = models.CharField(max_length=100, blank=True)  # e.g., "2 Adults, 1 Child"
     view = models.CharField(max_length=100, blank=True)  # e.g., "Beach View"
     room_amenities = models.ManyToManyField('masters.room_amenity', blank=True)  # Optional: for extra features
+    go_live = models.BooleanField(default=False)
+    
 
     def __str__(self):
         return f" {self.room_type} - ₹{self.price_per_night}"

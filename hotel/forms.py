@@ -30,6 +30,7 @@ class hotel_Form(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': "Description", 'style': "padding: 10px"}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'is_featured': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'go_live': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'is_recommended': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
 
             # GST Fields

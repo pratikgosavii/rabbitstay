@@ -358,6 +358,14 @@
                                 {% endif %}
                             </div>
                             
+                            <div class="mb-4">
+                                <label class="form-label">Go Live:</label>
+                                {{ form.go_live }}
+                                {% if form.go_live.errors %}
+                                    <div class="text-danger">{{ form.go_live.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
                         {% endif %}
 
 

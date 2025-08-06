@@ -194,7 +194,14 @@ def update_hotel(request, hotel_id):
             for img in request.FILES.getlist('image'):
                 HotelImage.objects.create(hotel=instance, image=img)
 
-            return redirect('list_hotel')
+            if request.user.is_superuser:
+                return redirect('list_hotel')
+
+            else:
+                
+                return redirect('view_hotel')
+
+
         
         else:
             print(forms.errors)
@@ -222,7 +229,9 @@ def update_hotel(request, hotel_id):
 @login_required(login_url='login_admin')
 def delete_hotel(request, hotel_id):
 
-    hotel.objects.get(id=hotel_id).delete()
+    hotel_instance = hotel.objects.get(id=hotel_id)
+    hotel_instance.user.delete()
+    hotel_instance.delete()
 
     return HttpResponseRedirect(reverse('list_hotel'))
 

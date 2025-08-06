@@ -944,19 +944,26 @@ def get_home_banner(request):
 
 
 from customer.models import *
+from django.db.models import Max
+
 
 @login_required(login_url='login_admin')
 def list_support_tickets(request):
-    data = SupportTicket.objects.all().order_by('-created_at')
+    data = SupportTicket.objects.annotate(
+        last_msg_time=Max('messages__created_at')
+    ).order_by('-created_at')
     return render(request, 'support_chat.html', {'data': data})
-
 
 
 @login_required(login_url='login_admin')
 def ticket_detail(request, ticket_id):
     ticket = get_object_or_404(SupportTicket, id=ticket_id)
     messages = ticket.messages.all().order_by('created_at')
-    data = SupportTicket.objects.all().order_by('-created_at')
+
+    # Annotate all tickets with their last message time
+    data = SupportTicket.objects.annotate(
+        last_msg_time=Max('messages__created_at')
+    ).order_by('-created_at')
 
     if request.method == "POST":
         msg = request.POST.get('message')
@@ -968,5 +975,5 @@ def ticket_detail(request, ticket_id):
         'ticket': ticket,
         'messages': messages,
         'data': data,
-        'active_id': ticket.id  # ✅ This enables active highlighting in template
+        'active_id': ticket.id
     })

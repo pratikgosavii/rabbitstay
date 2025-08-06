@@ -199,6 +199,12 @@ img{ max-width:100%;}
                                 {{ ticket.subject }}
                                 <span class="chat_date">{{ ticket.created_at|date:"M d" }}</span>
                             </h5>
+
+                             {% if ticket.last_msg_time %}
+                    <small><i class="fa fa-clock"></i> Last msg: {{ ticket.last_msg_time|date:"M d, H:i A" }}</small><br>
+                {% endif %}
+
+                
                             <p>{{ ticket.description|truncatewords:10 }}</p>
                             <a href="{% url 'ticket_detail' ticket.id %}" style="color:green; margin-right:20px;"> View Chat</a>
                             <a href="{% url 'update_hotel_bookings' ticket.booking.id %}"> View Booking</a>

@@ -31,6 +31,7 @@ class HotelBooking(models.Model):
     check_in = models.DateField()
     check_out = models.DateField()
     guest_count = models.PositiveIntegerField()
+    child_count = models.PositiveIntegerField()
 
     is_for_self = models.BooleanField(default=True)
     first_name = models.CharField(max_length=100, blank=True, null=True)

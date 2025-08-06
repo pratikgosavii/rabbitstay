@@ -102,6 +102,7 @@
                                                 <th>Ammenities</th>
                                                 <th>Featured</th>
                                                 <th>Is Active</th>
+                                                <th>Go Live</th>
                                                 <th>Created At</th>
                                                 <th>Image</th>
                                                 <th>Room</th>
@@ -125,6 +126,11 @@
                                                 </td>
                                                 <td>{{ hotel.is_featured|yesno:"Yes,No" }}</td>
                                                 <td> {% if hotel.is_active %}
+    <span class="text-success">&#10004;</span>  {# ✅ check mark #}
+  {% else %}
+    <span class="text-danger">&#10006;</span>   {# ❌ cross mark #}
+  {% endif %}</td>
+                                                <td> {% if hotel.go_live %}
     <span class="text-success">&#10004;</span>  {# ✅ check mark #}
   {% else %}
     <span class="text-danger">&#10006;</span>   {# ❌ cross mark #}

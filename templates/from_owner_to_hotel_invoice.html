@@ -37,6 +37,7 @@
       <div>Check-in: <strong>{{ booking.check_in }}</strong></div>
       <div>Check-out: <strong>{{ booking.check_out }}</strong></div>
       <div>Total Guests: <strong>{{ booking.guest_count }}</strong></div>
+      <div>Total Childs: <strong>{{ booking.child_count }}</strong></div>
     </div>
     <div class="col-md-6 text-end">
       <div>Booking ID: <strong>{{ booking.id }}</strong></div>
@@ -52,7 +53,7 @@
   <div class="section-title">Room Details</div>
   <p>
     <strong>1 x {{ booking.room.name }}</strong><br>
-    {{ booking.guest_count }} Guests | Room Only<br>
+    {{ booking.guest_count }} Guests | {{ booking.child_count }} Childs | Guests Room Only<br>
     <strong>Inclusions:</strong> {{ booking.special_request|default:"Standard Room" }}<br>
     <strong>Cancellation Policy:</strong> This is a non-refundable, non-amendable tariff. Cancellations/no-shows will be charged 100%.
   </p>
