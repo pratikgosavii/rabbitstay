@@ -24,7 +24,7 @@ class HotelBookingViewSet(viewsets.ModelViewSet):
             room = booking.room
             check_in = booking.check_in
             check_out = booking.check_out
-            quantity = booking.room_quantity  # new field
+            quantity = booking.no_of_rooms  # ✅ using correct field
 
             total_days = (check_out - check_in).days
             dates = [check_in + timedelta(days=i) for i in range(total_days)]
@@ -42,9 +42,8 @@ class HotelBookingViewSet(viewsets.ModelViewSet):
                     raise ValidationError(f"Only {avail.available_count} rooms available on {avail.date}.")
                 avail.available_count -= quantity
                 avail.save()
-   
+
     def get_queryset(self):
-        # Return bookings only for the logged-in user
         return HotelBooking.objects.filter(user=self.request.user)
 
 

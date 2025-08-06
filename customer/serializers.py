@@ -143,6 +143,7 @@ class HotelBookingSerializer(serializers.ModelSerializer):
         room = data.get('room')
         check_in = data.get('check_in')
         check_out = data.get('check_out')
+        quantity = data.get('no_of_rooms', 1)  # ✅ get number of rooms requested
 
         if not room or not check_in or not check_out:
             raise serializers.ValidationError("Room, check-in, and check-out are required.")
@@ -162,13 +163,17 @@ class HotelBookingSerializer(serializers.ModelSerializer):
             date__range=(check_in, check_out - timedelta(days=1))
         )
 
-        found_dates = {a.date for a in availabilities if a.available_count >= 1}
-        missing = required_dates - found_dates
-        if missing:
-            missing_str = ", ".join(str(d) for d in sorted(missing))
-            raise serializers.ValidationError(f"Room not available on: {missing_str}")
+        availability_map = {a.date: a.available_count for a in availabilities}
+        missing_dates = [
+            d for d in required_dates if availability_map.get(d, 0) < quantity
+        ]
+
+        if missing_dates:
+            missing_str = ", ".join(str(d) for d in sorted(missing_dates))
+            raise serializers.ValidationError(f"Only limited rooms available on: {missing_str}")
 
         return data
+
 
         
 

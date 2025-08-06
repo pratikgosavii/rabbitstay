@@ -40,6 +40,7 @@ class HotelBooking(models.Model):
     email = models.EmailField(blank=True, null=True)
     special_request = models.TextField(blank=True, null=True)
 
+    no_of_rooms = models.IntegerField(default=1)
      # Financial fields
     base_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text="Room rate * nights")
     tax_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text="Service Tax or Other")
