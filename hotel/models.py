@@ -37,6 +37,8 @@ class hotel(models.Model):
     is_recommended = models.BooleanField(default=False)
     description = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
+    go_live = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     # ✅ Legal & Tax Info
@@ -143,7 +145,6 @@ class hotel_rooms(models.Model):
     capacity = models.CharField(max_length=100, blank=True)  # e.g., "2 Adults, 1 Child"
     view = models.CharField(max_length=100, blank=True)  # e.g., "Beach View"
     room_amenities = models.ManyToManyField('masters.room_amenity', blank=True)  # Optional: for extra features
-    go_live = models.BooleanField(default=False)
     
 
     def __str__(self):
