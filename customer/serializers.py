@@ -33,7 +33,7 @@ class HotelRoomSerializer(serializers.ModelSerializer):
     hotel_details = serializers.SerializerMethodField()  # to avoid recursive nesting issues
     room_type_name = serializers.CharField(source='room_type.name', read_only=True)
     images = HotelRoomImageSerializer(many=True, read_only=True)  # room images
-    amenity_details = amenity_serializer(source = "room_amenities")
+    room_amenity_details = amenity_serializer(source = "room_amenities")
 
     class Meta:
         model = hotel_rooms
@@ -42,7 +42,7 @@ class HotelRoomSerializer(serializers.ModelSerializer):
             'refundable', 'meals_included', 'capacity', 'view', 'bed_type',
             'images', 'hotel_details'
         ]
-        read_only_fields = ['hotel_details', 'booking_id', 'amenity_details']
+        read_only_fields = ['hotel_details', 'booking_id', 'room_amenity_details']
 
     def get_hotel_details(self, obj):
         # avoid full hotel -> rooms -> hotel recursion
