@@ -5,101 +5,88 @@ from django.db import models
 
 class hotel(models.Model):
     
-     name = django_filters.CharFilter(
-        field_name='name',
-        lookup_expr='icontains',
-        label='Hotel Name'
+    HOTEL_CATEGORY_CHOICES = [
+        ('Budget', 'Budget'),
+        ('Mid_range', 'Mid-range'),
+        ('Premium', 'Premium'),
+        ('Boutique', 'Boutique'),
+        # Add more as needed
+    ]
+
+    hotel_id = models.CharField(max_length=20, unique=True, blank=True, null=True)
+
+    user = models.OneToOneField("users.User", on_delete=models.CASCADE, null=True, blank=True, related_name ="hotel")
+    name = models.CharField(max_length=255)
+    
+    category = models.CharField(max_length=50, choices=HOTEL_CATEGORY_CHOICES, default='Budget')
+    property_type = models.ForeignKey("masters.property_type", on_delete=models.CASCADE, null=True, blank=True)
+    no_of_rooms = models.IntegerField()
+
+    amenities = models.ManyToManyField("masters.amenity", blank=True)
+    address = models.TextField()
+    city = models.ForeignKey("masters.city", on_delete=models.CASCADE, null=True, blank=True)
+    landmark = models.TextField(null=True, blank=True)
+
+    pincode = models.IntegerField()
+    star_rating = models.IntegerField(null=True, blank=True)
+    overall_rating = models.DecimalField(max_digits=2, decimal_places=1, null=True, blank=True)
+    main_image = models.ImageField(upload_to='hotels/', null=True, blank=True)
+    profit_margin = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+
+    is_featured = models.BooleanField(default=False)
+    is_recommended = models.BooleanField(default=False)
+    description = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+    go_live = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # ✅ Legal & Tax Info
+    gst_number = models.CharField(
+        max_length=15,
+        help_text="GST Number (15 characters, e.g., 29ABCDE1234F2Z5)",
+        null=True,
+        blank=True
+    )
+    gst_certificate = models.FileField(
+        upload_to='hotel_docs/gst_certificates/',
+        null=True,
+        blank=True,
+        help_text="Upload GST Certificate (PDF/Image)"
+    )
+    pan_number = models.CharField(
+        max_length=10,
+        null=True,
+        blank=True,
+        help_text="PAN Card Number (optional)"
     )
 
-    hotel_id = django_filters.CharFilter(
-        lookup_expr='icontains',
-        label='Hotel ID'
+    # ✅ Bank Details
+    account_holder_name = models.CharField(max_length=255, null=True, blank=True)
+    account_number = models.CharField(max_length=30, null=True, blank=True)
+    ifsc_code = models.CharField(max_length=15, null=True, blank=True)
+    bank_name = models.CharField(max_length=255, null=True, blank=True)
+    bank_document = models.FileField(
+        upload_to='hotel_docs/bank_docs/',
+        null=True,
+        blank=True,
+        help_text="Upload Cancelled Cheque or Bank Passbook (Image/PDF)"
     )
 
-    user = django_filters.ModelChoiceFilter(
-        queryset=User.objects.all(),
-        label='User'
-    )
 
-    category = django_filters.ChoiceFilter(
-        choices=hotel.HOTEL_CATEGORY_CHOICES,
-        label='Category'
-    )
+    def save(self, *args, **kwargs):
+    # First save to get ID
+        if not self.hotel_id:
+            super().save(*args, **kwargs)  # Save once to get ID
+            self.hotel_id = f"RS-{self.id:03d}"
+            super().save(update_fields=["hotel_id"])  # Save only hotel_id
+        else:
+            super().save(*args, **kwargs)
 
-    property_type = django_filters.ModelChoiceFilter(
-        queryset=property_type.objects.all(),
-        label='Property Type'
-    )
 
-    city = django_filters.ModelChoiceFilter(
-        queryset=city.objects.all(),
-        label='City'
-    )
 
-    amenities = django_filters.ModelMultipleChoiceFilter(
-        field_name='amenities',
-        queryset=amenity.objects.all(),
-        conjoined=True,
-        label='Amenities'
-    )
-
-    pincode = django_filters.NumberFilter(
-        field_name='pincode',
-        label='Pincode'
-    )
-
-    star_rating = django_filters.NumberFilter(
-        field_name='star_rating',
-        label='Star Rating'
-    )
-
-    overall_rating = django_filters.NumberFilter(
-        field_name='overall_rating',
-        label='Overall Rating'
-    )
-
-    is_featured = django_filters.BooleanFilter(
-        field_name='is_featured',
-        label='Is Featured'
-    )
-
-    is_recommended = django_filters.BooleanFilter(
-        field_name='is_recommended',
-        label='Is Recommended'
-    )
-
-    is_active = django_filters.BooleanFilter(
-        field_name='is_active',
-        label='Is Active'
-    )
-
-    go_live = django_filters.BooleanFilter(
-        field_name='go_live',
-        label='Go Live'
-    )
-
-    class Meta:
-        model = hotel
-        fields = [
-            'name', 'hotel_id', 'user', 'category', 'property_type',
-            'city', 'amenities', 'pincode', 'star_rating',
-            'overall_rating', 'is_featured', 'is_recommended',
-            'is_active', 'go_live'
-        ]
-
-    def __init__(self, *args, **kwargs):
-        request = kwargs.pop('request', None)
-        super().__init__(*args, **kwargs)
-
-        # Hide user filter for non-admins
-        if request and not request.user.is_superuser:
-            self.filters.pop('user', None)
-
-        # Add Bootstrap class to fields
-        for field in self.form.fields.values():
-            if not isinstance(field.widget, (forms.CheckboxInput, forms.RadioSelect)):
-                field.widget.attrs.update({'class': 'form-control'})
-                
+    def __str__(self):
+        return self.name
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
