@@ -64,7 +64,7 @@ from .filters import HotelRoomFilter
 
 
 class HotelListAPIView(generics.ListAPIView):
-    queryset = hotel.objects.all()
+    queryset = hotel.objects.filter(go_live = True, is_active = True)
     serializer_class = HotelSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = HotelFilter
