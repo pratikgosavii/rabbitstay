@@ -63,11 +63,19 @@ from .filters import HotelRoomFilter
 
 
 class HotelListAPIView(generics.ListAPIView):
-    queryset = hotel.objects.filter(go_live = True, is_active = True)
     serializer_class = HotelSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = HotelFilter
 
+    def get_queryset(self):
+        return hotel.objects.annotate(
+            room_count=Count('rooms')
+        ).filter(
+            go_live=True,
+            is_active=True,
+            room_count__gt=0
+        )
+    
     def get_filterset_kwargs(self):
         kwargs = super().get_filterset_kwargs()
         kwargs['request'] = self.request
