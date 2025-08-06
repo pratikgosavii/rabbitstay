@@ -225,13 +225,21 @@ def update_hotel(request, hotel_id):
         return render(request, 'add_hotel.html', context)
 
         
+from django.shortcuts import get_object_or_404
+from django.db import transaction
 
 @login_required(login_url='login_admin')
 def delete_hotel(request, hotel_id):
 
-    hotel_instance = hotel.objects.get(id=hotel_id)
-    hotel_instance.user.delete()
-    hotel_instance.delete()
+    hotel_instance = get_object_or_404(hotel, id=hotel_id)
+
+    try:
+        with transaction.atomic():
+            hotel_instance.user.delete()  # Delete related user
+            hotel_instance.delete()      # Delete hotel
+    except Exception as e:
+        # Optionally: log or show error
+        print("Error deleting hotel:", e)
 
     return HttpResponseRedirect(reverse('list_hotel'))
 
