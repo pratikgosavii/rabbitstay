@@ -9,6 +9,8 @@ from django import forms
 
     
 class HotelFilter(django_filters.FilterSet):
+    
+    
     name = django_filters.CharFilter(
         field_name='name',
         lookup_expr='icontains',
@@ -30,6 +32,11 @@ class HotelFilter(django_filters.FilterSet):
         label='Category'
     )
 
+    property_type = django_filters.ModelChoiceFilter(
+        queryset=property_type.objects.all(),
+        label='Property Type'
+    )
+
     city = django_filters.ModelChoiceFilter(
         queryset=city.objects.all(),
         label='City'
@@ -38,32 +45,66 @@ class HotelFilter(django_filters.FilterSet):
     amenities = django_filters.ModelMultipleChoiceFilter(
         field_name='amenities',
         queryset=amenity.objects.all(),
-        to_field_name='id',
         conjoined=True,
         label='Amenities'
+    )
+
+    pincode = django_filters.NumberFilter(
+        field_name='pincode',
+        label='Pincode'
+    )
+
+    star_rating = django_filters.NumberFilter(
+        field_name='star_rating',
+        label='Star Rating'
+    )
+
+    overall_rating = django_filters.NumberFilter(
+        field_name='overall_rating',
+        label='Overall Rating'
+    )
+
+    is_featured = django_filters.BooleanFilter(
+        field_name='is_featured',
+        label='Is Featured'
+    )
+
+    is_recommended = django_filters.BooleanFilter(
+        field_name='is_recommended',
+        label='Is Recommended'
+    )
+
+    is_active = django_filters.BooleanFilter(
+        field_name='is_active',
+        label='Is Active'
+    )
+
+    go_live = django_filters.BooleanFilter(
+        field_name='go_live',
+        label='Go Live'
     )
 
     class Meta:
         model = hotel
         fields = [
-            'name', 'hotel_id', 'user', 'category',
-            'city', 'amenities'
+            'name', 'hotel_id', 'user', 'category', 'property_type',
+            'city', 'amenities', 'pincode', 'star_rating',
+            'overall_rating', 'is_featured', 'is_recommended',
+            'is_active', 'go_live'
         ]
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
 
-        # Restrict 'user' field for non-superusers
+        # Hide user filter for non-admins
         if request and not request.user.is_superuser:
             self.filters.pop('user', None)
 
-        # Apply 'form-control' to all visible fields
+        # Add Bootstrap class to fields
         for field in self.form.fields.values():
             if not isinstance(field.widget, (forms.CheckboxInput, forms.RadioSelect)):
                 field.widget.attrs.update({'class': 'form-control'})
-
-
   
 
 
