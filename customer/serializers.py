@@ -27,13 +27,13 @@ class HotelRoomImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'image']
 
 
-from masters.serializers import amenity_serializer
+from masters.serializers import room_amenity_serializer
 
 class HotelRoomSerializer(serializers.ModelSerializer):
     hotel_details = serializers.SerializerMethodField()  # to avoid recursive nesting issues
     room_type_name = serializers.CharField(source='room_type.name', read_only=True)
     images = HotelRoomImageSerializer(many=True, read_only=True)  # room images
-    room_amenity_details = amenity_serializer(source = "room_amenities")
+    room_amenity_details = room_amenity_serializer(source = "room_amenities", many=True)
 
     class Meta:
         model = hotel_rooms
