@@ -201,6 +201,14 @@
                         </div>
 
                         <div class="mb-4">
+                            <label class="form-label">Description:</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
                             <label class="form-label">Pincode:</label>
                             {{ form.pincode }}
                             {% if form.pincode.errors %}
