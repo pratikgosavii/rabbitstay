@@ -83,3 +83,37 @@ class UserForm(forms.ModelForm):
             user.save()
             self.save_m2m()
         return user
+
+
+        from django import forms
+from django.contrib.auth.forms import PasswordChangeForm
+
+class EmailChangeForm(forms.Form):
+    current_password = forms.CharField(widget=forms.PasswordInput)
+    new_email = forms.EmailField()
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+
+    def clean_current_password(self):
+        password = self.cleaned_data['current_password']
+        if not self.user.check_password(password):
+            raise forms.ValidationError("Incorrect password.")
+        return password
+
+    def clean_new_email(self):
+        email = self.cleaned_data['new_email']
+        if User.objects.filter(email=email).exclude(pk=self.user.pk).exists():
+            raise forms.ValidationError("This email is already in use.")
+        return email
+
+
+class ProfileEditForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=30, required=False)
+    last_name = forms.CharField(max_length=30, required=False)
+    profile_photo = forms.ImageField(required=False)
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'profile_photo']

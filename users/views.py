@@ -652,6 +652,7 @@ def delete_custom_user(request, user_id):
     return render(request, 'confirm_delete.html', {'user': user})
 
 
+@user_passes_test(lambda u: u.is_superuser)
 def list_custom_user(request):
     
     users = User.objects.filter(
@@ -699,3 +700,102 @@ class UserProfileViewSet(viewsets.ViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+
+
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.template.loader import render_to_string
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.conf import settings
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+
+from .forms import EmailChangeForm
+
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            messages.success(request, "Password changed successfully.")
+            return redirect('user_profile')
+    else:
+        form = PasswordChangeForm(user=request.user)
+    return render(request, 'change_password.html', {'form': form})
+
+
+def change_email_request(request):
+    if request.method == 'POST':
+        form = EmailChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            new_email = form.cleaned_data['new_email']
+            uid = urlsafe_base64_encode(force_bytes(request.user.pk))
+            token = default_token_generator.make_token(request.user)
+            link = request.build_absolute_uri(
+                f"/users/verify-email/{uid}/{token}/?email={new_email}"
+            )
+            send_mail(
+                subject="Confirm your new email address",
+                message=f"Click to confirm your new email: {link}",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[new_email],
+            )
+
+            user_instance = request.user
+            user_instance.email_verified = False
+            user_instance.save()
+
+
+            messages.success(request, "A verification email has been sent to your new address.")
+            return redirect('user_profile')
+    else:
+        form = EmailChangeForm(user=request.user)
+    return render(request, 'change_email.html', {'form': form})
+
+
+
+
+def verify_email_change(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+        new_email = request.GET.get('email')
+
+        if default_token_generator.check_token(user, token):
+            user.email = new_email
+            user.email_verified = True
+            user.save()
+            messages.success(request, "Your email address has been updated.")
+        else:
+            messages.error(request, "Invalid or expired link.")
+
+    except (User.DoesNotExist, ValueError, TypeError):
+        messages.error(request, "Something went wrong.")
+    
+    return redirect('user_profile')
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def user_profile(request):
+    return render(request, 'profile.html', {'user': request.user})
+
+    
+@login_required
+def edit_user_profile(request):
+    if request.method == 'POST':
+        form = ProfileEditForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile updated successfully.')
+            return redirect('user_profile')
+    else:
+        form = ProfileEditForm(instance=request.user)
+    return render(request, 'edit_profile.html', {'form': form})

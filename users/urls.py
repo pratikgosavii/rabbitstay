@@ -16,6 +16,12 @@ urlpatterns = [
     path('login-admin/', login_admin, name='login_admin'),
     path('login-vendor/', login_vendor, name='login_vendor'),
     path('login-staff/', login_staff, name='login_staff'),
+   
+    path('user-profile/', user_profile, name='user_profile'),
+    path('edit-user-profile/', edit_user_profile, name='edit_user_profile'),
+    path('change-password/', change_password, name='change_password'),
+    path('change-email/', change_email_request, name='change_email'),
+    path('verify-email/<uidb64>/<token>/', verify_email_change, name='verify_email_change'),
 
     path('vendor-request/', vendor_request, name='vendor_request'),
 

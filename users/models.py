@@ -31,6 +31,8 @@ class User(AbstractUser):
     mobile = models.CharField(max_length=15, unique=True)
     email = models.EmailField(unique=True)  # Email is optional
 
+    email_verified = models.BooleanField(default=False)
+
     username = None  # Remove username field
 
     USERNAME_FIELD = 'mobile'  # Set mobile as the login field
