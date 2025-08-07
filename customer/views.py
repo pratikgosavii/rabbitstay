@@ -42,7 +42,8 @@ class HotelBookingViewSet(viewsets.ModelViewSet):
             if insufficient:
                 date_str = ", ".join(str(d) for d in insufficient)
                 raise ValidationError(f"Only limited rooms available on: {date_str}")
-
+            print("quantity")
+            print(quantity)
             # Deduct room availability
             for avail in availabilities:
                 print("quantity")
