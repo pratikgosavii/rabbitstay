@@ -160,7 +160,7 @@
                                                         <td>{{ booking.booking_id }}</td>
                                                         <td>{{ booking.hotel.name }}</td>
                                                         <td>{{ booking.room.room_type }}</td>
-                                                        <td>{{ booking.room.room_quantity }}</td>
+                                                        <td>{{ booking.no_of_rooms }}</td>
                                                         <td>{{ booking.user.name|default:"Guest" }}</td>
                                                         <td>
                                                             {% if booking.status == "confirmed" %}
