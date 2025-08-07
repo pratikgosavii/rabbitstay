@@ -24,22 +24,27 @@ class HotelBookingViewSet(viewsets.ModelViewSet):
             room = booking.room
             check_in = booking.check_in
             check_out = booking.check_out
-            quantity = booking.no_of_rooms  # ✅ using correct field
+            quantity = booking.no_of_rooms
 
             total_days = (check_out - check_in).days
-            dates = [check_in + timedelta(days=i) for i in range(total_days)]
+            booking_dates = [check_in + timedelta(days=i) for i in range(total_days)]
 
             availabilities = RoomAvailability.objects.select_for_update().filter(
                 room=room,
-                date__in=dates
+                date__in=booking_dates
             )
 
             if availabilities.count() != total_days:
                 raise ValidationError("Some dates are missing availability records.")
 
+            # Check availability before deducting
+            insufficient = [a.date for a in availabilities if a.available_count < quantity]
+            if insufficient:
+                date_str = ", ".join(str(d) for d in insufficient)
+                raise ValidationError(f"Only limited rooms available on: {date_str}")
+
+            # Deduct room availability
             for avail in availabilities:
-                if avail.available_count < quantity:
-                    raise ValidationError(f"Only {avail.available_count} rooms available on {avail.date}.")
                 avail.available_count -= quantity
                 avail.save()
 

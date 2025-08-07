@@ -127,7 +127,7 @@ class HotelBookingSerializer(serializers.ModelSerializer):
         queryset=hotel.objects.all(), write_only=True
     )
 
-    # Read-only nested output fields
+    # Read-only nested output
     room_details = HotelRoomSerializer(source='room', read_only=True)
     hotel_details = HotelSerializer(source='hotel', read_only=True)
 
@@ -146,7 +146,7 @@ class HotelBookingSerializer(serializers.ModelSerializer):
         room = data.get('room')
         check_in = data.get('check_in')
         check_out = data.get('check_out')
-        quantity = data.get('no_of_rooms', 1)  # ✅ get number of rooms requested
+        quantity = data.get('no_of_rooms', 1)
 
         if not room or not check_in or not check_out:
             raise serializers.ValidationError("Room, check-in, and check-out are required.")
@@ -157,23 +157,23 @@ class HotelBookingSerializer(serializers.ModelSerializer):
         if check_in >= check_out:
             raise serializers.ValidationError("Check-out must be after check-in.")
 
-        # Room availability check
         num_days = (check_out - check_in).days
-        required_dates = {check_in + timedelta(days=i) for i in range(num_days)}
+        booking_dates = [check_in + timedelta(days=i) for i in range(num_days)]
 
         availabilities = RoomAvailability.objects.filter(
             room=room,
-            date__range=(check_in, check_out - timedelta(days=1))
+            date__in=booking_dates
         )
 
         availability_map = {a.date: a.available_count for a in availabilities}
-        missing_dates = [
-            d for d in required_dates if availability_map.get(d, 0) < quantity
+
+        insufficient_dates = [
+            d for d in booking_dates if availability_map.get(d, 0) < quantity
         ]
 
-        if missing_dates:
-            missing_str = ", ".join(str(d) for d in sorted(missing_dates))
-            raise serializers.ValidationError(f"Only limited rooms available on: {missing_str}")
+        if insufficient_dates:
+            dates_str = ", ".join(str(d) for d in insufficient_dates)
+            raise serializers.ValidationError(f"Only limited rooms available on: {dates_str}")
 
         return data
 
