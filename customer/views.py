@@ -13,14 +13,20 @@ from rest_framework.exceptions import ValidationError
 from django.db import transaction
 from datetime import timedelta
 
+import uuid
 
 class HotelBookingViewSet(viewsets.ModelViewSet):
     queryset = HotelBooking.objects.all()
     serializer_class = HotelBookingSerializer
 
     def perform_create(self, serializer):
+        request_id = uuid.uuid4()
+        print(f"🚨 perform_create() called for booking — ID: {request_id}")
+
         with transaction.atomic():
             booking = serializer.save(user=self.request.user)
+            print(f"➡️  Booking saved: {booking.pk}, Rooms: {booking.no_of_rooms}")
+
             room = booking.room
             check_in = booking.check_in
             check_out = booking.check_out
@@ -34,22 +40,21 @@ class HotelBookingViewSet(viewsets.ModelViewSet):
                 date__in=booking_dates
             )
 
+            print(f"Found {availabilities.count()} availability rows")
+
             if availabilities.count() != total_days:
                 raise ValidationError("Some dates are missing availability records.")
 
-            # Check availability before deducting
             insufficient = [a.date for a in availabilities if a.available_count < quantity]
             if insufficient:
                 date_str = ", ".join(str(d) for d in insufficient)
                 raise ValidationError(f"Only limited rooms available on: {date_str}")
-            print("quantity")
-            print(quantity)
-            # Deduct room availability
+
             for avail in availabilities:
-                print("quantity")
-                print(quantity)
+                print(f"⛔ Deducting 1 room from: {avail.date}, Before: {avail.available_count}")
                 avail.available_count -= quantity
                 avail.save()
+                print(f"✅ New availability on {avail.date}: {avail.available_count}")
 
     def get_queryset(self):
         return HotelBooking.objects.filter(user=self.request.user)
