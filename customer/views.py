@@ -246,10 +246,6 @@ class CancelBookingAPIView(APIView):
         except HotelBooking.DoesNotExist:
             return Response({'error': 'Booking not found or unauthorized'}, status=404)
 
-        # ✅ Check if room is currently rentable (active)
-        # if not booking.room.refundable:
-        #     return Response({'error': 'Cancellation is not allowed as the room is not currently rentable'}, status=400)
-
         if booking.status == 'cancelled':
             return Response({'message': 'Booking already cancelled'}, status=400)
 
@@ -259,11 +255,20 @@ class CancelBookingAPIView(APIView):
         if now > checkin_datetime - timedelta(hours=24):
             return Response({'error': 'Cannot cancel less than 24 hours before check-in (9 AM)'}, status=400)
 
+        # ✅ Restore room availability manually
+        current_date = booking.check_in
+        while current_date < booking.check_out:
+            avail, _ = RoomAvailability.objects.get_or_create(room=booking.room, date=current_date)
+            avail.available_count += booking.no_of_rooms
+            avail.save()
+            current_date += timedelta(days=1)
+
         booking.status = 'cancelled'
         booking.save()
 
-        return Response({'message': 'Booking cancelled successfully'}, status=200)
-
+        return Response({'message': 'Booking cancelled and availability restored successfully'}, status=200)
+    
+    
 
 
 from rest_framework import viewsets, permissions
