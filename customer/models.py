@@ -23,8 +23,6 @@ class HotelBooking(models.Model):
     hotel = models.ForeignKey("hotel.hotel", on_delete=models.CASCADE)
     room = models.ForeignKey("hotel.hotel_rooms", on_delete=models.CASCADE)
 
-    room_quantity = models.PositiveIntegerField(default=1)
-
     room_price_per_night = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
 
@@ -82,7 +80,8 @@ class HotelBooking(models.Model):
                         # Use stored price if already present, else fetch from room
             room_price = self.room_price_per_night or self.room.price_per_night
             nights = (self.check_out - self.check_in).days or 1
-            base = room_price * nights
+            base = room_price * nights * self.no_of_rooms
+            
 
 
             # Determine GST Rate
