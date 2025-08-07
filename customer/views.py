@@ -45,6 +45,8 @@ class HotelBookingViewSet(viewsets.ModelViewSet):
 
             # Deduct room availability
             for avail in availabilities:
+                print("quantity")
+                print(quantity)
                 avail.available_count -= quantity
                 avail.save()
 
