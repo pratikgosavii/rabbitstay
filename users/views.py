@@ -783,7 +783,7 @@ def verify_email_change(request, uidb64, token):
     return redirect('user_profile')
 
 
-@user_passes_test(lambda u: u.is_superuser)
+@login_required
 def user_profile(request):
     return render(request, 'profile.html', {'user': request.user})
 
