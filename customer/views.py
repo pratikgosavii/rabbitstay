@@ -132,16 +132,15 @@ from datetime import datetime
 class AvailableRoomsAPIView(generics.ListAPIView):
     serializer_class = HotelRoomSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_class = HotelRoomFilter  # your existing filterset
+    filterset_class = HotelRoomFilter
 
     def get_queryset(self):
         from_date_str = self.request.query_params.get('from_date')
         to_date_str = self.request.query_params.get('to_date')
-
         hotel_id = self.request.query_params.get('hotel_id')
+
         if not hotel_id:
             raise ValidationError("'hotel_id' is required.")
-
 
         if not from_date_str or not to_date_str:
             raise ValidationError("Both 'from_date' and 'to_date' are required.")
@@ -158,12 +157,14 @@ class AvailableRoomsAPIView(generics.ListAPIView):
 
         total_days = (to_date - from_date).days + 1
 
+        # ✅ Only check availability for rooms of the given hotel
         availability_qs = RoomAvailability.objects.filter(
-            date__range = (from_date, to_date - timedelta(days=1)),
+            room__hotel_id=hotel_id,
+            date__gte=from_date,
+            date__lte=to_date,
             available_count__gt=0
         )
 
-        # Rooms that are available on all dates in range
         available_room_ids = (
             availability_qs.values('room')
             .annotate(available_days=Count('date', distinct=True))
@@ -171,10 +172,9 @@ class AvailableRoomsAPIView(generics.ListAPIView):
             .values_list('room', flat=True)
         )
 
-        # Start with rooms available on all dates
-        qs = hotel_rooms.objects.filter(id__in=available_room_ids, hotel_id=hotel_id)
+        qs = hotel_rooms.objects.filter(id__in=available_room_ids)
 
-        # Now apply your existing filterset filtering for other fields
+        # Apply other filters
         filterset = HotelRoomFilter(self.request.GET, queryset=qs)
         return filterset.qs
     
