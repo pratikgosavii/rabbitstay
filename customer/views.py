@@ -159,8 +159,7 @@ class AvailableRoomsAPIView(generics.ListAPIView):
         total_days = (to_date - from_date).days + 1
 
         availability_qs = RoomAvailability.objects.filter(
-            date__gte=from_date,
-            date__lte=to_date,
+            date__range = (from_date, to_date - timedelta(days=1)),
             available_count__gt=0
         )
 
