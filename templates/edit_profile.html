@@ -39,6 +39,21 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="last_name" class="form-label">Mobile</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Enter your mobile"
+                                value="{{ mobile|default:'' }}"
+                                name="mobile"
+                                pattern="^\d{10}$"
+                                maxlength="10"
+                                title="Enter a 10-digit mobile number"
+                                required
+                            />
+                        </div>
+
+                        <div class="mb-3">
                             <label for="profile_photo" class="form-label">Profile Photo</label>
                             <input type="file" class="form-control" name="profile_photo" id="profile_photo">
                         </div>

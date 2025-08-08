@@ -55,12 +55,15 @@
                             </div><!-- end card -->
                         </div><!-- end col -->
 
+                        {% if request.user.is_superuser %}
                         <div class="col-xl-3 col-md-6">
                             <!-- card -->
                             <div class="card card-h-100">
                                 <!-- card body -->
                                 <div class="card-body">
                                     <div class="d-flex align-items-center">
+
+
                                         <div class="flex-grow-1">
                                             <span class="text-muted mb-3 lh-1 d-block text-truncate">Hotels</span>
                                             <h4 class="mb-3">
@@ -74,10 +77,13 @@
                                         <div class="flex-shrink-0 text-end dash-widget">
                                             <div id="mini-chart2" data-colors='["#0088CC; !important ;", "#F0D28C"]' class="apex-charts"></div>
                                         </div>
+
+                                        
                                     </div>
                                 </div><!-- end card body -->
                             </div><!-- end card -->
                         </div><!-- end col-->
+                        {% endif %}
 
                         <div class="col-xl-3 col-md-6">
                             <!-- card -->
@@ -102,6 +108,8 @@
                                 </div><!-- end card body -->
                             </div><!-- end card -->
                         </div><!-- end col -->
+                        
+                        {% if request.user.is_superuser %}
 
                         <div class="col-xl-3 col-md-6">
                             <!-- card -->
@@ -126,7 +134,12 @@
                                 </div><!-- end card body -->
                             </div><!-- end card -->
                         </div><!-- end col -->
+
+                        {% endif %}
+
                     </div><!-- end row-->
+
+
 
                     <div class="row">
                         <div class="col-xl-8">
@@ -178,7 +191,7 @@
                             <!-- end col -->
                         </div>
                         <!-- end row-->
-
+                        {% if request.user.is_superuser %}
                         <div class="col-xl-4">
                             <!-- card -->
                             <div class="card">
@@ -229,6 +242,9 @@
                         </div>
                         <!-- end col -->
                     </div>
+
+                    {% endif %}
+
                     <!-- end row-->
 
                    

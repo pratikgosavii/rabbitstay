@@ -24,8 +24,6 @@
                 </li>
 
 
-
-                {% if request.user.is_superuser %}
                 <li>
                     <a href="{% url 'dashboard' %}">
                         <i data-feather="home"></i>
@@ -33,6 +31,9 @@
                         <span>Admin Dashboard</span>
                     </a>
                 </li>
+                
+                {% if request.user.is_superuser %}
+               
 
                 <li>
                     <a href="javascript: void(0);" class="has-arrow">

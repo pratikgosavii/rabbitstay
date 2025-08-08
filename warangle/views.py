@@ -66,16 +66,35 @@ def get_monthly_booking_data():
 
 @login_required(login_url='login_admin')
 def dashboard(request):
-    bookings_count = HotelBooking.objects.count()
-    hotels_count = hotel.objects.count()
-    city_count = city.objects.count()
-    total_collection = HotelBooking.objects.filter(status="completed").aggregate(total=Sum('total_amount'))['total'] or 0
 
-    result = get_booking_percent_by_city()
+    if request.user.is_superuser:
+       
+       
+        bookings_count = HotelBooking.objects.count()
+        hotels_count = hotel.objects.count()
+        city_count = city.objects.count()
+        total_collection = HotelBooking.objects.filter(status="completed").aggregate(total=Sum('total_amount'))['total'] or 0
 
-    monthly_data = get_monthly_booking_data()
-    months = list(monthly_data.keys())
-    bookings = list(monthly_data.values())
+        result = get_booking_percent_by_city()
+
+        monthly_data = get_monthly_booking_data()
+        months = list(monthly_data.keys())
+        bookings = list(monthly_data.values())
+
+
+    else:
+
+        hotels_count = None
+        city_count = None
+        result = None
+
+        bookings_count = HotelBooking.objects.filter(hotel__user = request.user).count()
+        total_collection = HotelBooking.objects.filter(hotel__user = request.user, status="completed").aggregate(total=Sum('total_amount'))['total'] or 0
+
+        monthly_data = get_monthly_booking_data()
+        months = list(monthly_data.keys())
+        bookings = list(monthly_data.values())
+
 
     print(months)
     print(bookings)

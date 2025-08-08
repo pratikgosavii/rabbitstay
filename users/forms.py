@@ -113,7 +113,8 @@ class ProfileEditForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30, required=False)
     last_name = forms.CharField(max_length=30, required=False)
     profile_photo = forms.ImageField(required=False)
+    mobile = forms.CharField(max_length=15, required=False)
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'profile_photo']
+        fields = ['first_name', 'last_name', 'profile_photo', 'mobile']

@@ -217,13 +217,41 @@
                         </div>
 
 
-                        <div class="mb-4">
-                            <label class="form-label">Amenities:</label>
-                            {{ form.amenities }}
-                            {% if form.amenities.errors %}
-                                <div class="text-danger">{{ form.amenities.errors.0 }}</div>
-                            {% endif %}
-                        </div>
+                        <div class="dropdown mb-4">
+  <label class="form-label d-block">Amenities:</label>
+
+  <button
+    class="btn btn-outline-secondary dropdown-toggle w-100 text-start"
+    type="button"
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
+  >
+    Select Amenities
+  </button>
+
+{% with selected_amenities=form.amenities.value %}
+  {% if selected_amenities %}
+    <ul class="dropdown-menu p-2 w-100" style="max-height: 200px; overflow-y: auto">
+      {% for amenity in form.fields.amenities.queryset %}
+        <li>
+          <label class="form-check-label w-100">
+            <input
+              class="form-check-input me-2 amenity-checkbox"
+              type="checkbox"
+              name="amenities"
+              value="{{ amenity.id }}"
+              {% if amenity.id in selected_amenities or amenity.id|stringformat:"s" in selected_amenities %}checked{% endif %}
+            />
+            {{ amenity.name }}
+          </label>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+</div>
+
 
                         <hr>
                                             
@@ -432,11 +460,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    $(document).ready(function () {
-        $('#id_amenities').select2({
-            placeholder: "Select amenities",
-            allowClear: true
-        });
-    });
+  
 </script>
 {% endblock extra_js %}
