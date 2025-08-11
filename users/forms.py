@@ -53,11 +53,19 @@ from django.contrib.auth.models import Group
 from users.models import User  # adjust if needed
 
 
+from django import forms
+from django.contrib.auth.models import Group
+
+
 
 class UserForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
-    
-    group = forms.ModelMultipleChoiceField(
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        required=False,
+        help_text="Leave blank to keep the current password"
+    )
+
+    groups = forms.ModelMultipleChoiceField(
         queryset=Group.objects.all(),
         required=True,
         widget=forms.CheckboxSelectMultiple
@@ -65,8 +73,7 @@ class UserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'mobile', 'email', 'password', 'group', 'is_active']
-
+        fields = ['first_name', 'last_name', 'mobile', 'email', 'password', 'groups', 'is_active']
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
@@ -74,18 +81,26 @@ class UserForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
-        
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.set_password(self.cleaned_data['password'])
+        password = self.cleaned_data.get('password')
+
+        if password:
+            user.set_password(password)
+        elif user.pk:
+            old_user = User.objects.get(pk=user.pk)
+            user.password = old_user.password
+
         if commit:
             user.save()
             self.save_m2m()
         return user
 
 
-        from django import forms
+
+
+      
 from django.contrib.auth.forms import PasswordChangeForm
 
 class EmailChangeForm(forms.Form):

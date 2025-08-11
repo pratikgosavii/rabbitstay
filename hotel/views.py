@@ -774,38 +774,12 @@ def update_hotel_availability(request):
             count = request.POST.get(field_name)
 
             if count is not None and count != '':
-                new_count = int(count)
-
-                # Check for existing confirmed bookings on that day for this room
-                existing_bookings = HotelBooking.objects.filter(
-                    hotel=hotel_obj,
-                    room=room,
-                    status='confirmed',
-                    check_in__lte=selected_date_obj,
-                    check_out__gte=selected_date_obj
-                ).count()
-
-                print('-----------------')
-                print(existing_bookings)
-                print(hotel_obj)
-                print(room)
-                print(selected_date_obj)
-                print('-----------------')
-
-
-                if new_count < existing_bookings:
-                    messages.error(
-                        request,
-                        f"Cannot set availability for {room.room_type} on {selected_date} "
-                        f"to {new_count} — {existing_bookings} confirmed booking(s) exist."
-                    )
-                    continue  # Skip saving this room
-
+                
                 # Save/update room availability
                 RoomAvailability.objects.update_or_create(
                     room=room,
                     date=selected_date_obj,
-                    defaults={'available_count': new_count}
+                    defaults={'available_count': count}
                 )
 
         messages.success(request, f"Availability updated for {selected_date}")

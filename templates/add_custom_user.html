@@ -88,10 +88,13 @@
             </div>
             <div class="mb-3">
                 {{ form.password.label_tag }} {{ form.password }}
+                <small class="form-text text-muted">Leave blank to keep the current password</small>
             </div>
+
             <div class="mb-3">
-                {{ form.group.label_tag }} {{ form.group }}
+                {{ form.groups.label_tag }} {{ form.groups }}
             </div>
+
           
             <div class="mb-3">
                 {{ form.is_active.label_tag }} {{ form.is_active }}
