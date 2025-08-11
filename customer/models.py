@@ -83,9 +83,8 @@ class HotelBooking(models.Model):
             base = room_price * nights * self.no_of_rooms
             
 
-
             # Determine GST Rate
-            gst_percent = Decimal('0.12') if base < 7500 else Decimal('0.18')
+            gst_percent = Decimal('0.12') if room_price < 7500 else Decimal('0.18')
             gst = base * gst_percent
             subtotal = base + gst
 
