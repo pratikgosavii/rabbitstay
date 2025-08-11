@@ -5,19 +5,50 @@
 
 {% block left_sidebar %}
 
+{% block extra_css %}
+
+
+<style>
+
+.has-arrow{
+    color : white !important;
+}
+
+#sidebar-menu ul li a svg{
+    color :  white !important;
+}
+
+.mm-active .active {
+    color: var(--bs-teal) !important;
+}
+
+.nonnm {
+    color: white !important;
+}
+
+.mm-active>a {
+   color : var(--bs-secondary-text-emphasis) !important;
+}
+
+
+</style>
+
+
+{% endblock extra_css %}
+
 
 {% if request.user.is_authenticated %}
 
        <!-- ========== Left Sidebar Start ========== -->
 <div class="vertical-menu">
     <div data-simplebar class="h-100">
-        <div id="sidebar-menu">
+        <div id="sidebar-menu" style="background-color: rgb(63, 171, 225);">
             <ul class="metismenu list-unstyled" id="side-menu">
 
                 <!-- ===== Admin Section (Black) ===== -->
 
                 <li>
-                    <a href="{% url 'user_profile' %}">
+                    <a href="{% url 'user_profile' %}" class="nonnm">
                         <i data-feather="user"></i>
                         <span>User Profile</span>
                     </a>
@@ -25,7 +56,7 @@
 
 
                 <li>
-                    <a href="{% url 'dashboard' %}">
+                    <a href="{% url 'dashboard' %}" class="nonnm" >
                         <i data-feather="home"></i>
                         <span class="badge rounded-pill text-success float-end">9+</span>
                         <span>Admin Dashboard</span>
@@ -202,7 +233,7 @@
                 {% if request.user|has_group:'Staff' or request.user.is_superuser or request.user.is_service_provider %}
 
                 <li>
-                    <a href="{% url 'list_hotel_earning' %}">
+                    <a href="{% url 'list_hotel_earning' %}"  class="has-arrow">
                         <i data-feather="dollar-sign"></i>
                         <span>Earnings</span>
                     </a>
