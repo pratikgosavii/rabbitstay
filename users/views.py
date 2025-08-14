@@ -481,6 +481,11 @@ def login_vendor(request):
     return render(request, 'vendorLogin.html', {'form': form})
 
 
+from django.contrib.auth import views as auth_views
+
+class MyPasswordResetView(auth_views.PasswordResetView):
+    def get_email_subject(self):
+        return "Reset Your Password"  # Static subject here
 
 def login_staff(request):
    

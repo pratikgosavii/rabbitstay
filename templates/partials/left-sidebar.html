@@ -31,6 +31,20 @@
 }
 
 
+#sidebar-menu ul li ul.sub-menu li a {
+    padding: .425rem 1.5rem .425rem 3.5rem;
+    font-size: .825rem;
+    color: white !important;
+}
+
+#sidebar-menu ul li ul.sub-menu li a:hover {
+    color: #545a6d !important;
+}
+
+#sidebar-menu ul li a:hover {
+    color: #545a6d !important;
+}
+
 </style>
 
 
@@ -272,14 +286,16 @@
                 <div style="margin: 100% 0 0 35%; align-content: center">
                     <form method="POST" action="{% url 'logout' %}">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-primary" style="background-color: #0088CC;">Logout</button>
+                        <button type="submit" class="btn btn-primary" style="background-color: white !important;
+    color: black;">Logout</button>
                     </form>
                 </div>
                 {% elif request.user.is_service_provider %}
                     <div style="margin: 100% 0 0 35%; align-content: center">
                         <form method="POST" action="{% url 'vendor_logout' %}">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-primary" style="background-color: #0088CC;">Logout</button>
+                            <button type="submit" class="btn btn-primary" style="background-color: white !important;
+    color: black;">Logout</button>
                         </form>
                     </div>
                 
@@ -287,7 +303,8 @@
                     <div style="margin: 100% 0 0 35%; align-content: center">
                         <form method="POST" action="{% url 'login_staff' %}">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-primary" style="background-color: #0088CC;">Logout</button>
+                            <button type="submit" class="btn btn-primary" style="background-color: white !important;
+    color: black;">Logout</button>
                         </form>
                     </div>
                 {% endif %}

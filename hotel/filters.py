@@ -154,16 +154,24 @@ class HotelBookingFilter(django_filters.FilterSet):
         widget=forms.Select(attrs={'class': 'form-select'})
     )
 
-
+    booking_id = django_filters.CharFilter(
+        field_name='booking_id',
+        lookup_expr='icontains',
+        label='Booking ID',
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
 
     check_in = django_filters.DateFilter(
         field_name='check_in',
         lookup_expr='gte',
+        label='Check-in Date ',
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
     )
     check_out = django_filters.DateFilter(
         field_name='check_out',
         lookup_expr='lte',
+        label='Check-out Date ',
+
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
     )
 

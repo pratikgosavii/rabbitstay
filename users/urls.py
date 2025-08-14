@@ -3,6 +3,10 @@ from django.urls import path
 from .views import *
 
 
+from django.urls import path
+from django.contrib.auth import views as auth_views
+
+
 from rest_framework.routers import DefaultRouter
 
 
@@ -16,6 +20,45 @@ urlpatterns = [
     path('login-admin/', login_admin, name='login_admin'),
     path('login-vendor/', login_vendor, name='login_vendor'),
     path('login-staff/', login_staff, name='login_staff'),
+
+    path('reset/<uidb64>/<token>/',
+         auth_views.PasswordResetConfirmView.as_view(
+             template_name='password_reset_confirm.html'
+         ),
+         name='password_reset_confirm'),
+
+    path('reset/done/',
+         auth_views.PasswordResetCompleteView.as_view(
+             template_name='password_reset_complete.html'
+         ),
+         name='password_reset_complete'),
+         
+    path('password-reset/', 
+     MyPasswordResetView.as_view(
+         template_name='password_reset.html',
+         email_template_name='password_reset_email.html',
+     ), 
+     name='password_reset'),
+    # Step 2: Link sent confirmation
+    path('password-reset/done/', 
+         auth_views.PasswordResetDoneView.as_view(
+             template_name='password_reset_done.html'
+         ), 
+         name='password_reset_done'),
+
+    # Step 3: Reset form via link
+    path('reset/<uidb64>/<token>/', 
+         auth_views.PasswordResetConfirmView.as_view(
+             template_name='password_reset_confirm.html'
+         ), 
+         name='password_reset_confirm'),
+
+    # Step 4: Reset complete
+    path('reset/done/', 
+         auth_views.PasswordResetCompleteView.as_view(
+             template_name='password_reset_complete.html'
+         ), 
+         name='password_reset_complete'),
    
     path('user-profile/', user_profile, name='user_profile'),
     path('edit-user-profile/', edit_user_profile, name='edit_user_profile'),
