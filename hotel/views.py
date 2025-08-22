@@ -442,10 +442,47 @@ def list_hotel_rooms(request):
 
 
 
+from customer.models import *
+
+import openpyxl
+
+def export_bookings_to_excel(queryset):
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "Hotel Bookings"
+
+    # Header row
+    headers = ["Booking ID", "Hotel", "Room", "Room Count", "User", "Status",
+               "Check-In", "Check-Out", "Guests", "Childs", "Name", "Phone", "Email"]
+    sheet.append(headers)
+
+    # Data rows
+    for booking in queryset:
+        sheet.append([
+            booking.booking_id,
+            booking.hotel.name if booking.hotel else "",
+            str(booking.room.room_type) if booking.room.room_type else "",
+            booking.no_of_rooms,
+            booking.user.first_name if booking.user else "Guest",
+            booking.status,
+            booking.check_in.strftime("%Y-%m-%d"),
+            booking.check_out.strftime("%Y-%m-%d"),
+            booking.guest_count,
+            booking.child_count,
+            booking.phone_number,
+            booking.email,
+        ])
+
+    # Response
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response["Content-Disposition"] = 'attachment; filename="hotel_bookings.xlsx"'
+    workbook.save(response)
+    return response
    
 
 
-from customer.models import *
 
 @login_required(login_url='login_admin')
 def list_hotel_bookings(request):
@@ -454,6 +491,10 @@ def list_hotel_bookings(request):
     filterset = HotelBookingFilter(request.GET, queryset=queryset, request = request)
     filtered_bookings = filterset.qs
 
+    # ✅ Check if "export" is requested
+    if "export" in request.GET:
+        return export_bookings_to_excel(filtered_bookings)
+    
     paginator = Paginator(filtered_bookings, 30)  # Show 10 hotels per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -602,6 +643,71 @@ def update_hotel_bookings(request, booking_id):
 from django.db.models import Sum
 
 from .filters import *
+import openpyxl
+from openpyxl.utils import get_column_letter
+
+
+def export_earning_to_excel(bookings):
+    # Create workbook & sheet
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Hotel Earnings"
+
+    # Header row
+    headers = [
+        "Booking ID", "Hotel", "Room", "Guest Name", "Phone", "Email",
+        "Check In", "Check Out", "Nights", "No of Rooms",
+        "Base Amount", "GST", "TCS", "TDS", "Commission", "Commission GST",
+        "Total Amount", "Hotel Earning", "Status", "Created At"
+    ]
+    ws.append(headers)
+
+    # Data rows
+    for booking in bookings:
+        nights = (booking.check_out - booking.check_in).days or 1
+        ws.append([
+            booking.booking_id,
+            booking.hotel.name if booking.hotel else "",
+            booking.room.room_type.name if booking.room and booking.room.room_type else "",
+            f"{booking.first_name} {booking.last_name}",
+            booking.phone_number,
+            booking.email,
+            booking.check_in.strftime("%d-%m-%Y"),
+            booking.check_out.strftime("%d-%m-%Y"),
+            nights,
+            booking.no_of_rooms,
+            float(booking.base_amount),
+            float(booking.gst_amount),
+            float(booking.tcs_amount),
+            float(booking.tds_amount),
+            float(booking.commission_amount),
+            float(booking.commission_gst),
+            float(booking.total_amount),
+            float(booking.hotel_earning),
+            booking.get_status_display(),
+            booking.created_at.strftime("%d-%m-%Y %H:%M"),
+        ])
+
+    # Adjust column width
+    for col in ws.columns:
+        max_length = 0
+        col_letter = get_column_letter(col[0].column)
+        for cell in col:
+            try:
+                if cell.value:
+                    max_length = max(max_length, len(str(cell.value)))
+            except:
+                pass
+        ws.column_dimensions[col_letter].width = max_length + 2
+
+    # Prepare response
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = 'attachment; filename="hotel_earnings.xlsx"'
+    wb.save(response)
+    return response
+
 
 @login_required(login_url='login_admin')
 def list_hotel_earning(request):
@@ -610,7 +716,8 @@ def list_hotel_earning(request):
 
     filterset = HotelBookingFilter(request.GET, queryset=queryset, request = request)
     filtered_bookings = filterset.qs
-
+    if "export" in request.GET:
+        return export_earning_to_excel(filtered_bookings)
     total_earning = filtered_bookings.aggregate(total=Sum('hotel_earning'))['total'] or 0
 
     context = {

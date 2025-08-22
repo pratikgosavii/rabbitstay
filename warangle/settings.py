@@ -64,6 +64,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000", 
     "http://localhost:8081", # React frontend
+    "https://rabbit-stay-d121a.web.app",
     "http://localhost:5173"
 ]
 
