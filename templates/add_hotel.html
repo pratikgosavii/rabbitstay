@@ -239,8 +239,10 @@
             type="checkbox"
             name="amenities"
             value="{{ amenity.id }}"
-            {% if selected_amenities and (amenity.id in selected_amenities or amenity.id|stringformat:"s" in selected_amenities) %}
-              checked
+            {% if selected_amenities %}
+              {% if amenity.id in selected_amenities or amenity.id|stringformat:"s" in selected_amenities %}
+                checked
+              {% endif %}
             {% endif %}
           />
           {{ amenity.name }}
@@ -249,6 +251,7 @@
     {% endfor %}
   </ul>
 {% endwith %}
+
 
 
 </div>
