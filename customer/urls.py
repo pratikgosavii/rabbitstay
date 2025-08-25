@@ -21,6 +21,11 @@ router.register(r'favourite-hotels', FavouriteHotelViewSet, basename='favouriteh
 urlpatterns = [
 
 
+    path('cancelltation-policy/', cancelltation_policy, name='cancelltation_policy'),
+    path('guest-policy/', guest_policy, name='guest_policy'),
+    path('privacy-policy/', privacy_policy, name='privacy_policy'),
+    path('terms-condition/', terms_condition, name='terms_condition'),
+
     path('hotels/', HotelListAPIView.as_view(), name='hotel-list'),
     path('hotels/<int:hotel_id>/', HotelDetailAPIView.as_view(), name='hotel-detail'),
 

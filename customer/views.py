@@ -75,6 +75,33 @@ from hotel.models import hotel, hotel_rooms
 from .filters import HotelRoomFilter
 
 
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+
+@csrf_exempt
+def cancelltation_policy(request):
+
+    return render(request, 'cancelltation_policy.html')
+
+
+@csrf_exempt
+def guest_policy(request):
+
+    return render(request, 'guest_policy.html')
+
+
+@csrf_exempt
+def privacy_policy(request):
+
+    return render(request, 'privacy_policy.html')
+
+@csrf_exempt
+def terms_condition(request):
+
+    return render(request, 'terms_condition.html')
+
+
+
 class HotelListAPIView(generics.ListAPIView):
     serializer_class = HotelSerializer
     filter_backends = [DjangoFilterBackend]
