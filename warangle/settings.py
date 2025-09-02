@@ -67,8 +67,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
      "https://rabbit-stay-d121a.web.app",
     "https://rabbitstaybackend.pythonanywhere.com",
-    "https://rabbitstays.com/",
-    "https://rabbitstay.com/"
+    "https://rabbitstay.com",
+    "https://rabbitstays.com",
 ]
 
 
