@@ -181,7 +181,7 @@ EMAIL_HOST = 'smtp.gmail.com'  # or your email provider
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'Rabbitstay221@gmail.com'
-EMAIL_HOST_PASSWORD = 'alfvyjjihsmhlzfw'  # use App Password if using Gmail
+EMAIL_HOST_PASSWORD = 'qxacifguvstguift'  # use App Password if using Gmail
 
 
 
