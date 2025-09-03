@@ -845,9 +845,9 @@ def generate_invoice_pdf(request, booking_id):
     email = EmailMessage(
         subject=subject,
         body='Hi, attached pdf for invoice',
-        from_email='rabbitstay1@gmail.com',
+        from_email='Rabbitstay221@gmail.com',
         # to=[booking.hotel.user.email],
-        to=['rushabgupta00@gmail.com'],
+        to=[booking.hotel.user],
     )
     email.attach(f"invoice_{booking.id}.pdf", pdf_bytes, 'application/pdf')
     email.send()

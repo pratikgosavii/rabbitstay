@@ -317,12 +317,12 @@ def vendor_request(request):
 from django.core.mail import send_mail
 from django.http import HttpResponse
 
-def send_test_email(request, subject, body):
+def send_test_email(request, subject, body, user_instance):
     send_mail(
         subject=subject,
         message=body,
-        from_email='rabbitstay1@gmail.com',
-        recipient_list=['pratikgosavi654@gmail.com'],
+        from_email='Rabbitstay221@gmail.com',
+        recipient_list=[user_instance.email],  # send to user email
         fail_silently=False,
     )
     return HttpResponse("Email sent successfully!")
@@ -342,7 +342,7 @@ def activate_vendor_request(request, user_id):
 
     msg =  'Hi, Your account is activated login and completed your profile' + str(hotel_instance.id)
 
-    send_test_email(request, 'Your account is actiated', msg)
+    send_test_email(request, 'Your account is actiated', msg, user_instance)
 
     return redirect('vendor_request')
 
