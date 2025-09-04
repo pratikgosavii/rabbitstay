@@ -144,6 +144,7 @@
                                                 <th>Room Count</th>
                                                 <th>User</th>
                                                 <th>Status</th>
+                                                <th>Payment Status</th>
                                                 <th>Check-In</th>
                                                 <th>Check-Out</th>
                                                 <th>Guests</th>
@@ -179,6 +180,19 @@
                                                                 <span class="badge badge-completed">Completed</span>
                                                             {% else %}
                                                                 <span class="badge badge-default">{{ booking.status }}</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% if booking.payment_status == "pending" %}
+                                                                <span class="badge badge-confirmed">Pending</span>
+                                                            {% elif booking.payment_status == "paid" %}
+                                                                <span class="badge badge-checked-in">paid</span>
+                                                            {% elif booking.payment_status == "cancelled" %}
+                                                                <span class="badge badge-cancelled">Cancelled</span>
+                                                            {% elif booking.payment_status == "completed" %}
+                                                                <span class="badge badge-completed">Completed</span>
+                                                            {% else %}
+                                                                <span class="badge badge-default">{{ booking.payment_status }}</span>
                                                             {% endif %}
                                                         </td>
 
