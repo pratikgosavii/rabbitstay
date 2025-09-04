@@ -37,6 +37,7 @@ urlpatterns = [
     path('available-hotels/', AvailableHotelsAPIView.as_view(), name='available-hotels'),
 
     path('cancel-booking/<int:booking_id>/', CancelBookingAPIView.as_view(), name='cancel_booking'),
+    path('booking/webhook/', razorpay_booking_webhook, name='razorpay_booking_webhook'),
 
 ]  + router.urls
 

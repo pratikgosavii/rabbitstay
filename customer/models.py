@@ -53,7 +53,34 @@ class HotelBooking(models.Model):
 
     hotel_earning = models.DecimalField(max_digits=10, decimal_places=2, default=5.00)
 
+
+    payment_type = models.CharField(
+    max_length=10,
+    choices=[("cash", "Cash at Hotel"), ("online", "Online (Razorpay)")],
+    blank=True,
+    null=True
+    )
+
+    payment_status = models.CharField(
+        max_length=15,
+        choices=[
+            ("pending", "Pending"),
+            ("paid", "Paid"),
+            ("failed", "Failed"),
+            ("refunded", "Refunded"),
+        ],
+       default="pending"
+    )
+
+    payment_id = models.CharField(max_length=100, blank=True, null=True, help_text="Razorpay Payment ID")
+    order_id = models.CharField(max_length=100, blank=True, null=True, help_text="Razorpay Order ID")
+    transaction_id = models.CharField(max_length=100, blank=True, null=True, help_text="Reference ID for reconciliation")
+
+    paid_at = models.DateTimeField(blank=True, null=True)
+
+
     created_at = models.DateTimeField(auto_now_add=True)
+    
 
     def save(self, *args, **kwargs):
 
@@ -154,3 +181,42 @@ class favouritehotel(models.Model):
 
     class Meta:
         unique_together = ('user', 'hotel') 
+
+
+
+
+class PaymentTransaction(models.Model):
+    PAYMENT_STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('paid', 'Paid'),
+        ('failed', 'Failed'),
+        ('refunded', 'Refunded'),
+    ]
+
+    PAYMENT_METHOD_CHOICES = [
+        ('online', 'Online'),
+        ('cash', 'Cash'),
+    ]
+
+    booking = models.ForeignKey("HotelBooking", on_delete=models.CASCADE, related_name="transactions")
+
+    # Razorpay IDs
+    razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
+    razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
+    razorpay_signature = models.TextField(blank=True, null=True)
+
+    # General payment fields
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=10, default="INR")
+    status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES)
+    method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES)
+
+    # Extra info
+    response_payload = models.JSONField(blank=True, null=True)  # store full webhook/order response
+    remarks = models.TextField(blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Txn {self.razorpay_payment_id or self.id} - {self.status} - {self.amount}"

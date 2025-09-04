@@ -65,7 +65,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000", 
     "http://localhost:8081", # React frontend
     "http://localhost:5173",
-     "https://rabbit-stay-d121a.web.app",
+    "https://rabbit-stay-d121a.web.app",
     "https://rabbitstaybackend.pythonanywhere.com",
     "https://rabbitstay.com",
     "https://rabbitstays.com",
@@ -97,6 +97,16 @@ from firebase_admin import credentials, initialize_app
 firebase_key_path = os.path.join(BASE_DIR, 'warangle', 'firebase_key.json')
 cred = credentials.Certificate(firebase_key_path)
 initialize_app(cred)
+
+
+
+RAZORPAY_KEY_ID = 'rzp_test_R5XV4nQlMkdVy8'
+RAZORPAY_KEY_SECRET = 'Hf5dz8SL9EW72SfHwpq1e540'
+RAZORPAY_WEBHOOK_SECRET='s8f7s9df87s9df87s9df87s9df87s9df8'
+
+STREAM_API_KEY = "c7wwttj85hg7"
+STREAM_API_SECRET = "cgptvrzsttwj9vcebwy25k7y6aqkd6nxh56gkwxhsj3djs989g7k5wraprep926d"
+
 
 
 
