@@ -427,8 +427,8 @@ def razorpay_booking_webhook(request):
     # ✅ Extract booking_id from Razorpay notes
     notes = payment_entity.get("notes", {})
     print('--------------------notes-----------')
-    booking_code = notes.get("booking_id")  # "RS-BK0167"
-    booking_id = booking_code.split("-BK")[-1] if booking_code else None
+    booking_id = notes.get("booking_id")  # "RS-BK0167"
+   
 
     try:
         booking = HotelBooking.objects.get(id=booking_id)
