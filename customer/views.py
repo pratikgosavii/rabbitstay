@@ -501,25 +501,25 @@ def razorpay_booking_webhook(request):
         booking.save()
         print('----------7---------------')
 
-        txn, created = PaymentTransaction.objects.get_or_create(
-            booking=booking,
-            razorpay_payment_id=payment_id,
-            defaults={
-                "razorpay_order_id": order_id,
-                "amount": amount,
-                "currency": currency,
-                "status": mapped_status,
-                "response_payload": event,
-            },
-        )
-        print('----------8---------------')
+        # txn, created = PaymentTransaction.objects.get_or_create(
+        #     booking=booking,
+        #     razorpay_payment_id=payment_id,
+        #     defaults={
+        #         "razorpay_order_id": order_id,
+        #         "amount": amount,
+        #         "currency": currency,
+        #         "status": mapped_status,
+        #         "response_payload": event,
+        #     },
+        # )
+        # print('----------8---------------')
 
-        if not created:
-            print('----------9---------------')
+        # if not created:
+        #     print('----------9---------------')
 
-            txn.status = mapped_status
-            txn.response_payload = event
-            txn.save()
+        #     txn.status = mapped_status
+        #     txn.response_payload = event
+        #     txn.save()
 
     print(f"✅ Webhook processed: Booking {booking_id} → {mapped_status}")
     return Response({"status": "ok"})
