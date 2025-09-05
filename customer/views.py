@@ -413,12 +413,16 @@ def razorpay_booking_webhook(request):
 
     print(event)
     payment_entity = event.get("payload", {}).get("payment", {}).get("entity", {})
-
+    
     order_id = payment_entity.get("order_id")
+
     payment_id = payment_entity.get("id")
-    amount = payment_entity.get("amount") / 100  # Razorpay sends paise → convert to INR
+    amount_paise = payment_entity.get("amount")   # Razorpay sends in paise
+    amount = (amount_paise / 100) if amount_paise else 0
     currency = payment_entity.get("currency", "INR")
     status = payment_entity.get("status")
+
+
 
     # ✅ Extract booking_id from Razorpay notes
     notes = payment_entity.get("notes", {})
