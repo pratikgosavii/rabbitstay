@@ -431,7 +431,7 @@ def razorpay_booking_webhook(request):
    
 
     try:
-        booking = HotelBooking.objects.get(id=booking_id)
+        booking = HotelBooking.objects.get(booking_id=booking_id)
     except HotelBooking.DoesNotExist:
         logger.error(f"HotelBooking {booking_id} not found")
         return Response({"error": "Booking not found"}, status=404)
