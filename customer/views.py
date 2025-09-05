@@ -15,6 +15,9 @@ from datetime import timedelta
 
 import uuid
 
+import razorpay
+from django.conf import settings
+
 class HotelBookingViewSet(viewsets.ModelViewSet):
     queryset = HotelBooking.objects.all()
     serializer_class = HotelBookingSerializer
@@ -27,6 +30,7 @@ class HotelBookingViewSet(viewsets.ModelViewSet):
             booking = serializer.save(user=self.request.user)
             print(f"➡️  Booking saved: {booking.pk}, Rooms: {booking.no_of_rooms}")
 
+            # --- Room availability handling (your existing logic) ---
             room = booking.room
             check_in = booking.check_in
             check_out = booking.check_out
@@ -40,8 +44,6 @@ class HotelBookingViewSet(viewsets.ModelViewSet):
                 date__in=booking_dates
             )
 
-            print(f"Found {availabilities.count()} availability rows")
-
             if availabilities.count() != total_days:
                 raise ValidationError("Some dates are missing availability records.")
 
@@ -51,10 +53,30 @@ class HotelBookingViewSet(viewsets.ModelViewSet):
                 raise ValidationError(f"Only limited rooms available on: {date_str}")
 
             for avail in availabilities:
-                print(f"⛔ Deducting 1 room from: {avail.date}, Before: {avail.available_count}")
                 avail.available_count -= quantity
                 avail.save()
-                print(f"✅ New availability on {avail.date}: {avail.available_count}")
+
+            # --- ✅ Create Razorpay order here ---
+            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+            amount = booking.total_amount  # use your booking amount
+            order_data = {
+                "amount": int(amount * 100),  # in paise
+                "currency": "INR",
+                "receipt": f"booking_{booking.id}",
+                "payment_capture": 1,  # 👈 auto capture payment
+                "notes": {             # 👈 custom metadata
+                    "booking_id": str(booking.id),
+                    "user_id": str(self.request.user.id),
+                }
+            }
+
+            order = client.order.create(order_data)
+
+            # Save order_id in booking
+            booking.order_id = order["id"]
+            booking.save()
+            print(f"✅ Razorpay order created: {order['id']} for booking {booking.id}")
 
     def get_queryset(self):
         return HotelBooking.objects.filter(user=self.request.user)
