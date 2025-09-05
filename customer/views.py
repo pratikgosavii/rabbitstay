@@ -414,7 +414,7 @@ logger = logging.getLogger(__name__)
 def razorpay_booking_webhook(request):
     webhook_body = request.body.decode("utf-8")
     received_sig = request.headers.get("X-Razorpay-Signature")
-    logger.info("🔔 Razorpay webhook received")
+    print("🔔 Razorpay webhook received")
 
     # ✅ Verify webhook secret is present
     if not settings.RAZORPAY_WEBHOOK_SECRET:
@@ -434,11 +434,11 @@ def razorpay_booking_webhook(request):
     # ✅ Parse event
     event = json.loads(webhook_body)
     event_type = event.get("event")
-    logger.info(f"📢 Event received: {event_type}")
+    print(f"📢 Event received: {event_type}")
 
     # ⚠️ Handle downtime / non-payment events
     if event_type.startswith("payment.downtime"):
-        logger.info(f"⚠️ Razorpay downtime event: {event_type} → {event}")
+        print(f"⚠️ Razorpay downtime event: {event_type} → {event}")
         return Response({"status": "ignored", "event": event_type})
 
     # ✅ Only process payment-related events
@@ -448,7 +448,7 @@ def razorpay_booking_webhook(request):
         "payment.failed",
         "payment.refunded",
     ]:
-        logger.info(f"ℹ️ Unhandled event type: {event_type}")
+        print(f"ℹ️ Unhandled event type: {event_type}")
         return Response({"status": "ignored", "event": event_type})
 
     # ✅ Extract payment entity
@@ -465,7 +465,7 @@ def razorpay_booking_webhook(request):
     notes = payment_entity.get("notes", {}) or {}
     booking_id = notes.get("booking_id")  # e.g., "RS-BK0180"
 
-    logger.info(f"📌 Notes received: {notes}")
+    print(f"📌 Notes received: {notes}")
 
     if not booking_id:
         logger.error("Booking ID missing in Razorpay notes")
@@ -513,5 +513,5 @@ def razorpay_booking_webhook(request):
             txn.response_payload = event
             txn.save()
 
-    logger.info(f"✅ Webhook processed: Booking {booking_id} → {mapped_status}")
+    print(f"✅ Webhook processed: Booking {booking_id} → {mapped_status}")
     return Response({"status": "ok"})
