@@ -7,3 +7,4 @@ from .models import *
 
 admin.site.register(HotelBooking)
 admin.site.register(SupportTicket)
+admin.site.register(PaymentTransaction)
