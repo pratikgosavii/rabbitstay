@@ -461,7 +461,8 @@ def razorpay_booking_webhook(request):
     booking_id = notes.get("booking_id")  # e.g., "RS-BK0180"
     print(f"📌 Notes received: {notes}")
     print('----------2---------------')
-
+    print('statussssssssssssssssssss')
+    print(status)
     if not booking_id:
         logger.error("Booking ID missing in Razorpay notes")
         return Response({"error": "Booking ID missing"}, status=400)
