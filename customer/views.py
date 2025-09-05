@@ -408,14 +408,13 @@ from .models import HotelBooking, PaymentTransaction
 
 logger = logging.getLogger(__name__)
 
-@api_view(['POST'])
+
+@api_view(["POST"])
 @permission_classes([AllowAny])
 def razorpay_booking_webhook(request):
     webhook_body = request.body.decode("utf-8")
     received_sig = request.headers.get("X-Razorpay-Signature")
-    print('--------------------body-------------')
-
-    print(webhook_body)
+    logger.info("🔔 Razorpay webhook received")
 
     # ✅ Verify webhook secret is present
     if not settings.RAZORPAY_WEBHOOK_SECRET:
@@ -425,41 +424,48 @@ def razorpay_booking_webhook(request):
     # ✅ Verify Razorpay signature
     try:
         client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-        client.utility.verify_webhook_signature(webhook_body, received_sig, settings.RAZORPAY_WEBHOOK_SECRET)
+        client.utility.verify_webhook_signature(
+            webhook_body, received_sig, settings.RAZORPAY_WEBHOOK_SECRET
+        )
     except razorpay.errors.SignatureVerificationError:
         logger.warning("Invalid Razorpay webhook signature")
         return Response({"error": "Invalid signature"}, status=400)
 
+    # ✅ Parse event
     event = json.loads(webhook_body)
-    print('--------------------body- json------------')
+    event_type = event.get("event")
+    logger.info(f"📢 Event received: {event_type}")
 
-    print(event)
+    # ⚠️ Handle downtime / non-payment events
+    if event_type.startswith("payment.downtime"):
+        logger.info(f"⚠️ Razorpay downtime event: {event_type} → {event}")
+        return Response({"status": "ignored", "event": event_type})
+
+    # ✅ Only process payment-related events
+    if event_type not in [
+        "payment.captured",
+        "payment.authorized",
+        "payment.failed",
+        "payment.refunded",
+    ]:
+        logger.info(f"ℹ️ Unhandled event type: {event_type}")
+        return Response({"status": "ignored", "event": event_type})
+
+    # ✅ Extract payment entity
     payment_entity = event.get("payload", {}).get("payment", {}).get("entity", {})
-    
-    order_id = payment_entity.get("order_id")
 
+    order_id = payment_entity.get("order_id")
     payment_id = payment_entity.get("id")
-    amount_paise = payment_entity.get("amount")   # Razorpay sends in paise
+    amount_paise = payment_entity.get("amount")
     amount = (amount_paise / 100) if amount_paise else 0
     currency = payment_entity.get("currency", "INR")
     status = payment_entity.get("status")
 
+    # ✅ Extract booking_id from notes
+    notes = payment_entity.get("notes", {}) or {}
+    booking_id = notes.get("booking_id")  # e.g., "RS-BK0180"
 
-
-    # ✅ Extract booking_id from Razorpay notes
-    notes = payment_entity.get("notes", {})
-    print('--------------------notes-----------')
-    booking_id = notes.get("booking_id")  # "RS-BK0167"
-   
-
-    try:
-        booking = HotelBooking.objects.get(booking_id=booking_id)
-    except HotelBooking.DoesNotExist:
-        logger.error(f"HotelBooking {booking_id} not found")
-        return Response({"error": "Booking not found"}, status=404)
-    print(notes)
-    print(booking_id)
-
+    logger.info(f"📌 Notes received: {notes}")
 
     if not booking_id:
         logger.error("Booking ID missing in Razorpay notes")
@@ -471,7 +477,7 @@ def razorpay_booking_webhook(request):
         logger.error(f"HotelBooking {booking_id} not found")
         return Response({"error": "Booking not found"}, status=404)
 
-    # ✅ Map Razorpay status → our system
+    # ✅ Map Razorpay status → internal status
     status_map = {
         "captured": "paid",
         "authorized": "pending",
@@ -481,8 +487,8 @@ def razorpay_booking_webhook(request):
     }
     mapped_status = status_map.get(status, "pending")
 
+    # ✅ Update booking + log transaction atomically
     with transaction.atomic():
-        # Update HotelBooking payment fields
         booking.payment_id = payment_id
         booking.order_id = order_id
         booking.payment_status = mapped_status
@@ -491,7 +497,6 @@ def razorpay_booking_webhook(request):
             booking.paid_at = timezone.now()
         booking.save()
 
-        # Log / create PaymentTransaction
         txn, created = PaymentTransaction.objects.get_or_create(
             booking=booking,
             razorpay_payment_id=payment_id,
@@ -501,12 +506,12 @@ def razorpay_booking_webhook(request):
                 "currency": currency,
                 "status": mapped_status,
                 "response_payload": event,
-            }
+            },
         )
         if not created:
             txn.status = mapped_status
             txn.response_payload = event
             txn.save()
 
-    logger.info(f"Webhook processed: Booking {booking_id} → {mapped_status}")
+    logger.info(f"✅ Webhook processed: Booking {booking_id} → {mapped_status}")
     return Response({"status": "ok"})
