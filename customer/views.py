@@ -423,21 +423,32 @@ def razorpay_booking_webhook(request):
     status = payment_entity.get("status")
 
 
-    print('--------------------notes-----------')
+
+    # ✅ Extract booking_id from Razorpay notes
     notes = payment_entity.get("notes", {})
-    booking_id = notes.get("booking_id") if isinstance(notes, dict) else None
+    print('--------------------notes-----------')
+    booking_code = notes.get("booking_id")  # "RS-BK0167"
+    booking_id = booking_code.split("-BK")[-1] if booking_code else None
+
+    try:
+        booking = HotelBooking.objects.get(id=booking_id)
+    except HotelBooking.DoesNotExist:
+        logger.error(f"HotelBooking {booking_id} not found")
+        return Response({"error": "Booking not found"}, status=404)
+    print(notes)
+    print(booking_id)
+
 
     if not booking_id:
         logger.error("Booking ID missing in Razorpay notes")
         return Response({"error": "Booking ID missing"}, status=400)
 
     try:
-        booking = HotelBooking.objects.get(id=int(booking_id))
-    except (ValueError, HotelBooking.DoesNotExist):
+        booking = HotelBooking.objects.get(booking_id=booking_id)
+    except HotelBooking.DoesNotExist:
         logger.error(f"HotelBooking {booking_id} not found")
         return Response({"error": "Booking not found"}, status=404)
-       
-       
+
     # ✅ Map Razorpay status → our system
     status_map = {
         "captured": "paid",
