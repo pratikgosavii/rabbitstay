@@ -445,6 +445,7 @@ def razorpay_booking_webhook(request):
     ]:
         # Ignore downtime + other events
         return Response({"status": "ignored", "event": event_type})
+    print('----------1---------------')
 
     # ✅ Extract payment entity
     payment_entity = event.get("payload", {}).get("payment", {}).get("entity", {})
@@ -459,16 +460,18 @@ def razorpay_booking_webhook(request):
     notes = payment_entity.get("notes", {}) or {}
     booking_id = notes.get("booking_id")  # e.g., "RS-BK0180"
     print(f"📌 Notes received: {notes}")
+    print('----------2---------------')
 
     if not booking_id:
         logger.error("Booking ID missing in Razorpay notes")
         return Response({"error": "Booking ID missing"}, status=400)
 
     try:
-        booking = HotelBooking.objects.get(booking_id=booking_id)
+        booking = HotelBooking.objects.get(id=booking_id)
     except HotelBooking.DoesNotExist:
         logger.error(f"HotelBooking {booking_id} not found")
         return Response({"error": "Booking not found"}, status=404)
+    print('----------3---------------')
 
     # ✅ Map Razorpay status → internal status
     status_map = {
@@ -480,15 +483,22 @@ def razorpay_booking_webhook(request):
     }
     mapped_status = status_map.get(status, "pending")
 
+    print('----------4---------------')
+
     # ✅ Update booking + log transaction atomically
     with transaction.atomic():
+        print('----------5---------------')
+
         booking.payment_id = payment_id
         booking.order_id = order_id
         booking.payment_status = mapped_status
         booking.payment_type = "online"
         if mapped_status == "paid":
+            print('----------6---------------')
+
             booking.paid_at = timezone.now()
         booking.save()
+        print('----------7---------------')
 
         txn, created = PaymentTransaction.objects.get_or_create(
             booking=booking,
@@ -501,7 +511,11 @@ def razorpay_booking_webhook(request):
                 "response_payload": event,
             },
         )
+        print('----------8---------------')
+
         if not created:
+            print('----------9---------------')
+
             txn.status = mapped_status
             txn.response_payload = event
             txn.save()
