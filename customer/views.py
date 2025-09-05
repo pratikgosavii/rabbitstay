@@ -436,24 +436,18 @@ def razorpay_booking_webhook(request):
     event_type = event.get("event")
     print(f"📢 Event received: {event_type}")
 
-    # ⚠️ Handle downtime / non-payment events
-    if event_type.startswith("payment.downtime"):
-        print(f"⚠️ Razorpay downtime event: {event_type} → {event}")
-        return Response({"status": "ignored", "event": event_type})
-
-    # ✅ Only process payment-related events
+    # ✅ Only handle booking-related payment events
     if event_type not in [
         "payment.captured",
         "payment.authorized",
         "payment.failed",
         "payment.refunded",
     ]:
-        print(f"ℹ️ Unhandled event type: {event_type}")
+        # Ignore downtime + other events
         return Response({"status": "ignored", "event": event_type})
 
     # ✅ Extract payment entity
     payment_entity = event.get("payload", {}).get("payment", {}).get("entity", {})
-
     order_id = payment_entity.get("order_id")
     payment_id = payment_entity.get("id")
     amount_paise = payment_entity.get("amount")
@@ -464,7 +458,6 @@ def razorpay_booking_webhook(request):
     # ✅ Extract booking_id from notes
     notes = payment_entity.get("notes", {}) or {}
     booking_id = notes.get("booking_id")  # e.g., "RS-BK0180"
-
     print(f"📌 Notes received: {notes}")
 
     if not booking_id:
@@ -492,7 +485,7 @@ def razorpay_booking_webhook(request):
         booking.payment_id = payment_id
         booking.order_id = order_id
         booking.payment_status = mapped_status
-        booking.payment_type = "online"  # since webhook means online
+        booking.payment_type = "online"
         if mapped_status == "paid":
             booking.paid_at = timezone.now()
         booking.save()
