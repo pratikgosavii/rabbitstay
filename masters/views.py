@@ -924,6 +924,12 @@ def list_home_banner(request):
 
     return render(request, 'list_home_banner.html', {'data' : data})
 
+def list_payments(request):
+
+    data = PaymentTransaction.objects.all()
+
+    return render(request, 'list_payments.html', {'data' : data})
+
 
 def delete_home_banner(request, home_banner_id):
 

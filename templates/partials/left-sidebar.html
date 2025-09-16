@@ -252,21 +252,15 @@
                         <span>Earnings</span>
                     </a>
                 </li>
-
                 <li>
-                    <a href="javascript: void(0);" class="has-arrow">
-                        <i data-feather="credit-card"></i>
+                    <a href="{% url 'list_payments' %}"  class="has-arrow">
+                        <i data-feather="dollar-sign"></i>
                         <span>Payments</span>
                     </a>
-                    <ul class="sub-menu">
-                        <li><a href="#">Recent Payments</a></li>
-                        <li><a href="#">Initiate Refunds</a></li>
-                        <li><a href="#">Refunds</a></li>
-                        <li><a href="#">Payment Reports</a></li>
-                    </ul>
                 </li>
 
-                <li>
+               
+                {% comment %} <li>
                     <a href="javascript: void(0);" class="has-arrow">
                         <i data-feather="bar-chart-2"></i>
                         <span>Reports</span>
@@ -277,7 +271,7 @@
                         <li><a href="#">Refunds</a></li>
                         <li><a href="#">Payment Reports</a></li>
                     </ul>
-                </li>
+                </li> {% endcomment %}
                 {% endif %}
 
                 <!-- ===== Logout ===== -->
