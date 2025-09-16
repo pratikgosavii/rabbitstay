@@ -72,7 +72,7 @@
                                         </thead>
                                         <tbody>
                                             {% if data %}
-                                                {% for txn in transactions %}
+                                                {% for txn in data %}
                                                 <tr>
                                                     <td>{{ forloop.counter }}</td>
                                                     <td>#{{ txn.booking.id }}</td>
