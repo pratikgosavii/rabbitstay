@@ -247,17 +247,18 @@
                 {% if request.user|has_group:'Staff' or request.user.is_superuser or request.user.is_service_provider %}
 
                 <li>
-                    <a href="{% url 'list_hotel_earning' %}"  class="has-arrow">
+                    <a href="{% url 'list_hotel_earning' %}">
                         <i data-feather="dollar-sign"></i>
                         <span>Earnings</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'list_payments' %}"  class="has-arrow">
+                    <a href="{% url 'list_payments' %}">
                         <i data-feather="dollar-sign"></i>
                         <span>Payments</span>
                     </a>
                 </li>
+
 
                
                 {% comment %} <li>
