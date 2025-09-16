@@ -67,7 +67,6 @@
                                                 <th>Status</th>
                                                 <th>Razorpay Payment ID</th>
                                                 <th>Created At</th>
-                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -83,17 +82,7 @@
                                                     </td>
                                                     <td>{{ txn.razorpay_payment_id|default:"N/A" }}</td>
                                                     <td>{{ txn.created_at|date:"d M Y H:i" }}</td>
-                                                    <td>
-                                                        <a href="{% url 'view_payment_transaction' txn.id %}" 
-                                                           class="btn btn-sm btn-outline-info">
-                                                           <i class="bi bi-eye"></i> View
-                                                        </a>
-                                                        <a href="{% url 'delete_payment_transaction' txn.id %}" 
-                                                           class="btn btn-sm btn-outline-danger"
-                                                           onclick="return confirm('Are you sure you want to delete this transaction?');">
-                                                           <i class="bi bi-trash"></i> Delete
-                                                        </a>
-                                                    </td>
+                                                   
                                                 </tr>
                                                 {% endfor %}
                                             {% else %}
