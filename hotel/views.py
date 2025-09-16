@@ -638,6 +638,23 @@ def update_hotel_bookings(request, booking_id):
         return render(request, 'update_hotel_bookings.html', context)
 
 
+@login_required(login_url='login_admin')
+def view_hotel_bookings(request, booking_id):
+
+   
+    instance = HotelBooking.objects.get(id = booking_id)
+    
+
+
+    form = HotelBookingStatusForm(instance = instance, user=request.user)
+
+    context = {
+    
+        'form' : form
+    }
+    return render(request, 'view_hotel_bookings.html', context)
+
+
 
 
 from django.db.models import Sum
