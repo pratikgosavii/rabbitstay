@@ -857,7 +857,8 @@ def generate_invoice_pdf(request, booking_id):
         return HttpResponse(f"PDF generation failed: {response.text}", status=400)
 
     pdf_bytes = response.content
-
+    print('------------------------')
+    print(booking.hotel.user.email)
     # Compose email
     email = EmailMessage(
         subject=subject,
