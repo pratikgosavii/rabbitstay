@@ -729,7 +729,7 @@ def export_earning_to_excel(bookings):
 @login_required(login_url='login_admin')
 def list_hotel_earning(request):
     
-    queryset = HotelBooking.objects.all() if request.user.is_superuser else HotelBooking.objects.filter(hotel__user=request.user)
+    queryset = HotelBooking.objects.all().order_by('-id') if request.user.is_superuser else HotelBooking.objects.filter(hotel__user=request.user).order_by('-id')
 
     filterset = HotelBookingFilter(request.GET, queryset=queryset, request = request)
     filtered_bookings = filterset.qs
@@ -824,7 +824,8 @@ import requests
 
 def generate_invoice_pdf(request, booking_id):
     booking = get_object_or_404(HotelBooking, id=booking_id)
-
+    print('------------------------')
+    print(booking.hotel.user.email)
     # Generate base64 logo for the template
     with open(os.path.join(settings.BASE_DIR, 'static/images/rabitlogo.png'), 'rb') as img_file:
         logo_base64 = base64.b64encode(img_file.read()).decode('utf-8')

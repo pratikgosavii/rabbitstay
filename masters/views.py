@@ -178,7 +178,7 @@ def delete_coupon(request, coupon_id):
 @login_required(login_url='login_admin')
 def list_coupon(request):
 
-    data = coupon.objects.all()
+    data = coupon.objects.all().order_by('-id')
     context = {
         'data': data
     }
@@ -189,7 +189,7 @@ from django.http import JsonResponse
 from .filters import *
 
 class get_coupon(ListAPIView):
-    queryset = coupon.objects.all()
+    queryset = coupon.objects.all().order_by('-id')
     serializer_class = coupon_serializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = '__all__'  # enables filtering on all fields
@@ -263,7 +263,7 @@ def delete_event(request, event_id):
 @login_required(login_url='login_admin')
 def list_event(request):
 
-    data = event.objects.all()
+    data = event.objects.all().order_by('-id')
     context = {
         'data': data
     }
@@ -273,7 +273,7 @@ def list_event(request):
 from django.http import JsonResponse
 
 class get_event(ListAPIView):
-    queryset = event.objects.all()
+    queryset = event.objects.all().order_by('-id')
     serializer_class = event_serializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = EventFilter  # enables filtering on all fields
@@ -341,7 +341,7 @@ def update_testimonials(request, testimonials_id):
 
 def list_testimonials(request):
 
-    data = testimonials.objects.all()
+    data = testimonials.objects.all().order_by('-id')
 
     return render(request, 'list_testimonials.html', {'data' : data})
 
@@ -358,7 +358,7 @@ from django.views import View
 
 
 class get_testimonials(ListAPIView):
-    queryset = testimonials.objects.all()
+    queryset = testimonials.objects.all().order_by('-id')
     serializer_class = testimonials_serializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = '__all__'  # enables filtering on all fields
@@ -422,7 +422,7 @@ def update_city(request, city_id):
 
 def list_city(request):
 
-    data = city.objects.all()
+    data = city.objects.all().order_by('-id')
 
     return render(request, 'list_city.html', {'data' : data})
 
@@ -439,7 +439,7 @@ from django.views import View
 
 
 class get_city(ListAPIView):
-    queryset = city.objects.all()
+    queryset = city.objects.all().order_by('-id')
     serializer_class = city_serializer
 
 
@@ -502,7 +502,7 @@ def update_amenity(request, amenity_id):
 
 def list_amenity(request):
 
-    data = amenity.objects.all()
+    data = amenity.objects.all().order_by('-id')
 
     return render(request, 'list_amenity.html', {'data' : data})
 
@@ -582,7 +582,7 @@ def update_property_type(request, property_type_id):
 
 def list_property_type(request):
 
-    data = property_type.objects.all()
+    data = property_type.objects.all().order_by('-id')
 
     return render(request, 'list_property_type.html', {'data' : data})
 
@@ -599,7 +599,7 @@ from django.views import View
 
 
 class get_property_type(ListAPIView):
-    queryset = property_type.objects.all()
+    queryset = property_type.objects.all().order_by('-id')
     serializer_class = property_type_serializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = '__all__'  # enables filtering on all fields
@@ -662,7 +662,7 @@ def update_room_amenity(request, room_amenity_id):
 
 def list_room_amenity(request):
 
-    data = room_amenity.objects.all()
+    data = room_amenity.objects.all().order_by('-id')
 
     return render(request, 'list_room_amenity.html', {'data' : data})
 
@@ -679,7 +679,7 @@ from django.views import View
 
 
 class get_room_amenity(ListAPIView):
-    queryset = room_amenity.objects.all()
+    queryset = room_amenity.objects.all().order_by('-id')
     serializer_class = room_amenity_serializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = '__all__'  # enables filtering on all fields
@@ -742,7 +742,7 @@ def update_room_type(request, room_type_id):
 
 def list_room_type(request):
 
-    data = room_type.objects.all()
+    data = room_type.objects.all().order_by('-id')
 
     return render(request, 'list_room_type.html', {'data' : data})
 
@@ -759,7 +759,7 @@ from django.views import View
 
 
 class get_room_type(ListAPIView):
-    queryset = room_type.objects.all()
+    queryset = room_type.objects.all().order_by('-id')
     serializer_class = room_type_serializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = '__all__'  # enables filtering on all fields
@@ -830,7 +830,7 @@ def update_customer_address(request, customer_address_id):
 
 def list_customer_address(request):
 
-    data = customer_address.objects.all()
+    data = customer_address.objects.all().order_by('-id')
 
     return render(request, 'list_customer_address.html', {'data' : data})
 
@@ -847,7 +847,7 @@ from django.views import View
 
 
 class get_customer_address(ListAPIView):
-    queryset = customer_address.objects.all()
+    queryset = customer_address.objects.all().order_by('-id')
     serializer_class = customer_address_serializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = '__all__'  # enables filtering on all fields
@@ -920,13 +920,13 @@ def update_home_banner(request, home_banner_id):
 
 def list_home_banner(request):
 
-    data = home_banner.objects.all()
+    data = home_banner.objects.all().order_by('-id')
 
     return render(request, 'list_home_banner.html', {'data' : data})
 
 def list_payments(request):
 
-    data = PaymentTransaction.objects.all()
+    data = PaymentTransaction.objects.all().order_by('-id')
 
     return render(request, 'list_payments.html', {'data' : data})
 

@@ -145,7 +145,7 @@ class HotelListAPIView(generics.ListAPIView):
 
 
 class HotelDetailAPIView(generics.RetrieveAPIView):
-    queryset = hotel.objects.all()
+    queryset = hotel.objects.all().order_by('-id')
     serializer_class = HotelSerializer  # this one includes rooms and images
     lookup_url_kwarg = 'hotel_id'
 
@@ -163,7 +163,7 @@ class HotelRoomListAPIView(generics.ListAPIView):
 
 
 class HotelRoomDetailAPIView(generics.RetrieveAPIView):
-    queryset = hotel_rooms.objects.all()
+    queryset = hotel_rooms.objects.all().order_by('-id')
     serializer_class = HotelRoomSerializer
     lookup_url_kwarg = 'room_id'  # matches your URL param
 
@@ -373,7 +373,7 @@ class TicketMessageViewSet(viewsets.ViewSet):
 
 
 class FavouriteHotelViewSet(viewsets.ModelViewSet):
-    queryset = favouritehotel.objects.all()
+    queryset = favouritehotel.objects.all().order_by('-id')
     serializer_class = FavouriteHotelSerializer
     permission_classes = [permissions.IsAuthenticated]
 
