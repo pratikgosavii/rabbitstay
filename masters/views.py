@@ -931,7 +931,8 @@ def list_payments(request):
         data = PaymentTransaction.objects.all().order_by('-id')
     else:
 
-        data = PaymentTransaction.objects.filter(booking__hote__user = request.user).order_by('-id')
+
+        data = PaymentTransaction.objects.filter(booking__hotel__user = request.user).order_by('-id')
 
 
     return render(request, 'list_payments.html', {'data' : data})
