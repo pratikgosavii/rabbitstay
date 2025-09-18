@@ -41,7 +41,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 #                 'form': forms
 #             }
 #             return render(request, 'add_doctor.html', context)
-    
+
 #     else:
 
 #         forms = doctor_Form()
@@ -55,21 +55,21 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # from django.views.decorators.csrf import csrf_exempt
 
 # @login_required(login_url='login_admin')
-# @csrf_exempt 
+# @csrf_exempt
 # def add_doctor_json(request):
 
 #     if request.method == 'POST':
 #         form = doctor_Form(request.POST, request.FILES)
-        
+
 #         if form.is_valid():
 #             form.save()
 #             return JsonResponse({'status': 'success', 'message': 'Doctor added successfully'}, status=201)
 #         else:
 #             return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
-    
+
 #     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
-        
+
 
 # @login_required(login_url='login_admin')
 # def update_doctor(request, doctor_id):
@@ -95,7 +95,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 #             return redirect('list_doctor')
 #         else:
 #             print(forms.errors)
-    
+
 #     else:
 
 #         instance = doctor.objects.get(id=doctor_id)
@@ -106,7 +106,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 #         }
 #         return render(request, 'add_doctor.html', context)
 
-        
+
 
 from django.http import JsonResponse
 
@@ -128,7 +128,7 @@ def add_coupon(request):
                 'form': forms
             }
             return render(request, 'add_coupon.html', context)
-    
+
     else:
 
         forms = coupon_Form()
@@ -138,7 +138,7 @@ def add_coupon(request):
         }
         return render(request, 'add_coupon.html', context)
 
-        
+
 
 @login_required(login_url='login_admin')
 def update_coupon(request, coupon_id):
@@ -154,7 +154,7 @@ def update_coupon(request, coupon_id):
             return redirect('list_coupon')
         else:
             print(forms.errors)
-    
+
     else:
 
         instance = coupon.objects.get(id=coupon_id)
@@ -165,7 +165,7 @@ def update_coupon(request, coupon_id):
         }
         return render(request, 'add_coupon.html', context)
 
-        
+
 
 @login_required(login_url='login_admin')
 def delete_coupon(request, coupon_id):
@@ -213,7 +213,7 @@ def add_event(request):
                 'form': forms
             }
             return render(request, 'add_event.html', context)
-    
+
     else:
 
         forms = event_Form()
@@ -223,7 +223,7 @@ def add_event(request):
         }
         return render(request, 'add_event.html', context)
 
-        
+
 
 @login_required(login_url='login_admin')
 def update_event(request, event_id):
@@ -239,7 +239,7 @@ def update_event(request, event_id):
             return redirect('list_event')
         else:
             print(forms.errors)
-    
+
     else:
 
         instance = event.objects.get(id=event_id)
@@ -250,7 +250,7 @@ def update_event(request, event_id):
         }
         return render(request, 'add_event.html', context)
 
-        
+
 
 @login_required(login_url='login_admin')
 def delete_event(request, event_id):
@@ -284,7 +284,7 @@ class get_event(ListAPIView):
 
 
 def add_testimonials(request):
-    
+
     if request.method == "POST":
 
         forms = testimonials_Form(request.POST, request.FILES)
@@ -298,17 +298,17 @@ def add_testimonials(request):
                 'form': forms
             }
             return render(request, 'add_testimonials.html', context)
-    
+
     else:
 
         # create first row using admin then editing only
 
-        
+
 
         return render(request, 'add_testimonials.html', { 'form' : testimonials_Form()})
 
 def update_testimonials(request, testimonials_id):
-    
+
     instance = testimonials.objects.get(id = testimonials_id)
 
     if request.method == "POST":
@@ -325,17 +325,17 @@ def update_testimonials(request, testimonials_id):
             }
             return render(request, 'add_testimonials.html', context)
 
-    
+
     else:
 
         # create first row using admin then editing only
 
         forms = testimonials_Form(instance=instance)
-                
+
         context = {
             'form': forms
         }
-        
+
         return render(request, 'add_testimonials.html', context)
 
 
@@ -365,7 +365,7 @@ class get_testimonials(ListAPIView):
 
 
 def add_city(request):
-    
+
     if request.method == "POST":
 
         forms = city_Form(request.POST, request.FILES)
@@ -379,17 +379,17 @@ def add_city(request):
                 'form': forms
             }
             return render(request, 'add_city.html', context)
-    
+
     else:
 
         # create first row using admin then editing only
 
-        
+
 
         return render(request, 'add_city.html', { 'form' : city_Form()})
 
 def update_city(request, city_id):
-    
+
     instance = city.objects.get(id = city_id)
 
     if request.method == "POST":
@@ -406,17 +406,17 @@ def update_city(request, city_id):
             }
             return render(request, 'add_city.html', context)
 
-    
+
     else:
 
         # create first row using admin then editing only
 
         forms = city_Form(instance=instance)
-                
+
         context = {
             'form': forms
         }
-        
+
         return render(request, 'add_city.html', context)
 
 
@@ -445,7 +445,7 @@ class get_city(ListAPIView):
 
 
 def add_amenity(request):
-    
+
     if request.method == "POST":
 
         forms = amenity_Form(request.POST, request.FILES)
@@ -465,12 +465,12 @@ def add_amenity(request):
 
         # create first row using admin then editing only
 
-        
+
 
         return render(request, 'add_amenity.html', { 'form' : amenity_Form()})
 
 def update_amenity(request, amenity_id):
-    
+
     instance = amenity.objects.get(id = amenity_id)
 
     if request.method == "POST":
@@ -486,13 +486,13 @@ def update_amenity(request, amenity_id):
                 'form': forms
             }
             return render(request, 'add_amenity.html', context)
-    
+
     else:
 
         # create first row using admin then editing only
 
         forms = amenity_Form(instance=instance)
-        
+
         context = {
                 'form': forms
             }
@@ -525,7 +525,7 @@ class get_amenity(ListAPIView):
     filterset_fields = '__all__'  # enables filtering on all fields
 
 def add_property_type(request):
-    
+
     if request.method == "POST":
 
         forms = property_type_Form(request.POST, request.FILES)
@@ -545,12 +545,12 @@ def add_property_type(request):
 
         # create first row using admin then editing only
 
-        
+
 
         return render(request, 'add_property_type.html', { 'form' : property_type_Form()})
 
 def update_property_type(request, property_type_id):
-    
+
     instance = property_type.objects.get(id = property_type_id)
 
     if request.method == "POST":
@@ -566,13 +566,13 @@ def update_property_type(request, property_type_id):
                 'form': forms
             }
             return render(request, 'add_property_type.html', context)
-    
+
     else:
 
         # create first row using admin then editing only
 
         forms = property_type_Form(instance=instance)
-        
+
         context = {
                 'form': forms
             }
@@ -605,7 +605,7 @@ class get_property_type(ListAPIView):
     filterset_fields = '__all__'  # enables filtering on all fields
 
 def add_room_amenity(request):
-    
+
     if request.method == "POST":
 
         forms = room_amenity_Form(request.POST, request.FILES)
@@ -625,12 +625,12 @@ def add_room_amenity(request):
 
         # create first row using admin then editing only
 
-        
+
 
         return render(request, 'add_room_amenity.html', { 'form' : room_amenity_Form()})
 
 def update_room_amenity(request, room_amenity_id):
-    
+
     instance = room_amenity.objects.get(id = room_amenity_id)
 
     if request.method == "POST":
@@ -646,13 +646,13 @@ def update_room_amenity(request, room_amenity_id):
                 'form': forms
             }
             return render(request, 'add_room_amenity.html', context)
-    
+
     else:
 
         # create first row using admin then editing only
 
         forms = room_amenity_Form(instance=instance)
-        
+
         context = {
                 'form': forms
             }
@@ -685,7 +685,7 @@ class get_room_amenity(ListAPIView):
     filterset_fields = '__all__'  # enables filtering on all fields
 
 def add_room_type(request):
-    
+
     if request.method == "POST":
 
         forms = room_type_Form(request.POST, request.FILES)
@@ -705,12 +705,12 @@ def add_room_type(request):
 
         # create first row using admin then editing only
 
-        
+
 
         return render(request, 'add_room_type.html', { 'form' : room_type_Form()})
 
 def update_room_type(request, room_type_id):
-    
+
     instance = room_type.objects.get(id = room_type_id)
 
     if request.method == "POST":
@@ -726,13 +726,13 @@ def update_room_type(request, room_type_id):
                 'form': forms
             }
             return render(request, 'add_room_type.html', context)
-    
+
     else:
 
         # create first row using admin then editing only
 
         forms = room_type_Form(instance=instance)
-        
+
         context = {
                 'form': forms
             }
@@ -774,7 +774,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
- 
+
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.parsers import JSONParser
@@ -794,11 +794,11 @@ class customer_address_ViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-        
-        
+
+
 
 def update_customer_address(request, customer_address_id):
-    
+
     instance = customer_address.objects.get(id = customer_address_id)
 
     if request.method == "POST":
@@ -814,13 +814,13 @@ def update_customer_address(request, customer_address_id):
                 'form': forms
             }
             return render(request, 'add_customer_address.html', context)
-    
+
     else:
 
         # create first row using admin then editing only
 
         forms = customer_address_Form(instance=instance)
-        
+
         context = {
                 'form': forms
             }
@@ -858,7 +858,7 @@ class get_customer_address(ListAPIView):
 
 
 def add_home_banner(request):
-    
+
     if request.method == "POST":
 
         forms = home_banner_Form(request.POST, request.FILES)
@@ -873,17 +873,17 @@ def add_home_banner(request):
             }
 
             return render(request, 'add_home_banner.html', context)
-    
+
     else:
 
         # create first row using admin then editing only
 
-        
+
 
         return render(request, 'add_home_banner.html', { 'form' : home_banner_Form()})
 
 def update_home_banner(request, home_banner_id):
-    
+
     instance = home_banner.objects.get(id = home_banner_id)
 
     if request.method == "POST":
@@ -904,13 +904,13 @@ def update_home_banner(request, home_banner_id):
 
             return render(request, 'add_home_banner.html', context)
 
-    
+
     else:
 
         # create first row using admin then editing only
 
         forms = home_banner_Form(instance=instance)
-                
+
         context = {
             'form': forms
         }
@@ -941,7 +941,7 @@ def delete_home_banner(request, home_banner_id):
 from django.views import View
 
 def get_home_banner(request):
-  
+
     filtered_qs = home_bannerFilter(request.GET, queryset=home_banner.objects.all()).qs
 
     serialized_data = HomeBannerSerializer(filtered_qs, many=True, context={'request': request}).data

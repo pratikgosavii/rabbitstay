@@ -73,7 +73,7 @@ def register_hotel(request):
 
                 form = hotel_Form(request.POST, request.FILES, user=request.user)
 
-                
+
 
                 if form.is_valid():
                     hotel = form.save(commit=False)
@@ -110,29 +110,29 @@ def add_hotel(request):
 
     if request.method == 'POST':
 
-        
+
         form = hotel_Form(request.POST, request.FILES, user=request.user)
 
-       
+
         if form.is_valid():
             hotel = form.save(commit=False)
             if not request.user.is_superuser:
                 hotel.user = request.user  # auto-assign vendor user
             hotel.save()
             form.save_m2m()  # Save the many-to-many relationships
-            
+
             for img in request.FILES.getlist('image'):
                 HotelImage.objects.create(hotel=hotel, image=img)
 
             return redirect('list_hotel')
-        
+
         else:
             print(form.errors)
             context = {
                 'form': form
             }
             return render(request, 'add_hotel.html', context)
-        
+
     else:
 
         print(request.user)
@@ -146,8 +146,8 @@ def add_hotel(request):
             print('----------434-----------')
         form = hotel_Form()
 
-        context = { 
-                'form': form, 
+        context = {
+                'form': form,
         }
 
         return render(request, 'add_hotel.html', )
@@ -171,7 +171,7 @@ def view_hotel(request):
         'data': user_hotel # wrapped in a list if template expects iterable
     }
 
-    return render(request, 'view_hotel.html', context)    
+    return render(request, 'view_hotel.html', context)
 
 @login_required(login_url='login_admin')
 def update_hotel(request, hotel_id):
@@ -182,14 +182,14 @@ def update_hotel(request, hotel_id):
 
         instance = hotel.objects.get(id=hotel_id)
         forms = hotel_Form(request.POST, request.FILES, instance=instance, user=request.user)
-        
-        
+
+
         if forms.is_valid():
             hotels = forms.save(commit=False)
             if not request.user.is_superuser:
                 hotels.user = request.user  # auto-assign vendor user
             hotels.save()
-            forms.save_m2m() 
+            forms.save_m2m()
 
             for img in request.FILES.getlist('image'):
                 HotelImage.objects.create(hotel=instance, image=img)
@@ -198,11 +198,11 @@ def update_hotel(request, hotel_id):
                 return redirect('list_hotel')
 
             else:
-                
+
                 return redirect('view_hotel')
 
 
-        
+
         else:
             print(forms.errors)
             context = {
@@ -211,20 +211,20 @@ def update_hotel(request, hotel_id):
 
                 }
             return render(request, 'add_hotel.html', context)
-        
+
     else:
 
         forms = hotel_Form(instance=instance)
 
-        context = { 
-                
-                'form': forms, 
+        context = {
+
+                'form': forms,
                 'existing_images': instance.images.all() if instance else None
         }
 
         return render(request, 'add_hotel.html', context)
 
-        
+
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 
@@ -292,7 +292,7 @@ def add_hotel_rooms(request):
     if request.method == 'POST':
 
         form = hotel_rooms_Form(request.POST, request.FILES)
-        
+
         if form.is_valid():
             instance = form.save(commit=False)
 
@@ -315,21 +315,21 @@ def add_hotel_rooms(request):
 
             return redirect('list_hotel_rooms')
 
-        
+
         else:
             print(form.errors)
             context = {
                 'form': form
             }
             return render(request, 'add_hotel_rooms.html', context)
-        
+
     else:
 
         form = hotel_rooms_Form()
 
         return render(request, 'add_hotel_rooms.html', {'form': form})
 
-        
+
 
 @login_required(login_url='login_admin')
 def update_hotel_rooms(request, hotel_rooms_id):
@@ -366,7 +366,7 @@ def update_hotel_rooms(request, hotel_rooms_id):
         'existing_images': instance.images.all() if instance else None
     }
     return render(request, 'add_hotel_rooms.html', context)
-        
+
 
 
 
@@ -480,13 +480,13 @@ def export_bookings_to_excel(queryset):
     response["Content-Disposition"] = 'attachment; filename="hotel_bookings.xlsx"'
     workbook.save(response)
     return response
-   
+
 
 
 
 @login_required(login_url='login_admin')
 def list_hotel_bookings(request):
-    queryset = HotelBooking.objects.filter(status = "completed").order_by('-id') if request.user.is_superuser else HotelBooking.objects.filter(hotel__user=request.user).order_by('-id')
+    queryset = HotelBooking.objects.all().order_by('-id') if request.user.is_superuser else HotelBooking.objects.filter(hotel__user=request.user).order_by('-id')
 
     filterset = HotelBookingFilter(request.GET, queryset=queryset, request = request)
     filtered_bookings = filterset.qs
@@ -494,7 +494,7 @@ def list_hotel_bookings(request):
     # ✅ Check if "export" is requested
     if "export" in request.GET:
         return export_bookings_to_excel(filtered_bookings)
-    
+
     paginator = Paginator(filtered_bookings, 30)  # Show 10 hotels per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -516,7 +516,7 @@ from datetime import date
 
 @login_required(login_url='login_admin')
 def list_hotel_future_bookings(request):
-    
+
     today = date.today()
 
     base_queryset = HotelBooking.objects.filter(check_in__gt=today)
@@ -585,7 +585,7 @@ from customer.forms import *
 def update_hotel_bookings(request, booking_id):
 
     if request.user.is_superuser:
-        
+
         instance = HotelBooking.objects.get(id = booking_id)
 
     else:
@@ -610,9 +610,9 @@ def update_hotel_bookings(request, booking_id):
 
                 generate_invoice_pdf(request,  updated_booking.id)
 
-                
+
             return redirect('list_hotel_bookings')
-        
+
         else:
 
             print('------12--------------')
@@ -620,19 +620,19 @@ def update_hotel_bookings(request, booking_id):
 
             print(form.errors)
             context = {
-            
+
                 'form' : form
             }
             return render(request, 'update_hotel_bookings.html', context)
 
-    
+
     else:
 
 
         form = HotelBookingStatusForm(instance = instance, user=request.user)
 
         context = {
-        
+
             'form' : form
         }
         return render(request, 'update_hotel_bookings.html', context)
@@ -641,15 +641,15 @@ def update_hotel_bookings(request, booking_id):
 @login_required(login_url='login_admin')
 def view_hotel_bookings(request, booking_id):
 
-   
+
     instance = HotelBooking.objects.get(id = booking_id)
-    
+
 
 
     form = HotelBookingStatusForm(instance = instance, user=request.user)
 
     context = {
-    
+
         'form' : form
     }
     return render(request, 'view_hotel_bookings.html', context)
@@ -728,7 +728,7 @@ def export_earning_to_excel(bookings):
 
 @login_required(login_url='login_admin')
 def list_hotel_earning(request):
-    
+
     queryset = HotelBooking.objects.all() if request.user.is_superuser else HotelBooking.objects.filter(hotel__user=request.user)
 
     filterset = HotelBookingFilter(request.GET, queryset=queryset, request = request)
@@ -801,7 +801,7 @@ import base64
 #         browser.close()
 
 # def generate_invoice_pdf(request, booking_id):
-    
+
 #     booking = get_object_or_404(HotelBooking, id=booking_id)
 
 #     html_file_path = generate_invoice_html(booking, request)
@@ -817,7 +817,7 @@ import base64
 #     os.remove(pdf_file_path)
 
 #     return HttpResponse(pdf_data, content_type='application/pdf')
-   
+
 
 
 import requests
@@ -870,7 +870,7 @@ def generate_invoice_pdf(request, booking_id):
     email.send()
 
     return HttpResponse("Email with PDF sent successfully!")
-    
+
 
 from django.http import JsonResponse
 from django.db.models import Q
@@ -886,7 +886,7 @@ from collections import defaultdict
 @login_required
 def update_hotel_availability(request):
 
-    
+
     hotel_obj = hotel.objects.get(user=request.user)
 
     if request.method == 'POST':
@@ -898,7 +898,7 @@ def update_hotel_availability(request):
             count = request.POST.get(field_name)
 
             if count is not None and count != '':
-                
+
                 # Save/update room availability
                 RoomAvailability.objects.update_or_create(
                     room=room,
@@ -936,7 +936,7 @@ def update_hotel_availability(request):
 
     print(json.dumps(availability_data))
 
-    
+
     context = {
         "rooms": hotel_rooms.objects.filter(hotel=hotel_obj),
         "availability_json": json.dumps(availability_data),
@@ -1014,6 +1014,6 @@ def update_from_to_hotel_availability(request):
 
         return redirect('update_hotel_availability')
 
-    
-    
+
+
     return redirect('update_hotel_availability')
