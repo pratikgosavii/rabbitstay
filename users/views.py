@@ -803,13 +803,39 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from django.db import transaction, IntegrityError
+import firebase_admin
+
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def delete_user(request):
+
     user = request.user
-    user.delete()
-    return Response(
-        {"detail": "Your account has been deleted successfully."},
-        status=status.HTTP_204_NO_CONTENT
-    )
+
+    try:
+        with transaction.atomic():
+            # Delete user from Firebase first
+            if getattr(user, "firebase_uid", None):
+                try:
+                    auth.delete_user(user.firebase_uid)
+                except Exception as e:
+                    raise IntegrityError(f"Firebase deletion failed: {str(e)}")
+
+            # Delete user from Django
+            user.delete()
+
+        return Response(
+            {"detail": "Your account has been deleted successfully."},
+            status=status.HTTP_204_NO_CONTENT
+        )
+
+    except IntegrityError as e:
+        return Response(
+            {"detail": f"Account deletion failed: {str(e)}"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
