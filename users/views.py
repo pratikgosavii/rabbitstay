@@ -138,43 +138,86 @@ from .serializer import *
 
 
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
+from firebase_admin import auth as firebase_auth
+from django.contrib.auth import get_user_model
+
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
+from firebase_admin import auth as firebase_auth
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
+
+
 class LoginAPIView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         id_token = request.data.get("idToken")
+        print('------------------------------------')
+
         if not id_token:
             return Response({"error": "idToken is required"}, status=400)
 
         try:
+            print('-----------------1-------------------')
+
             decoded_token = firebase_auth.verify_id_token(id_token)
             mobile = decoded_token.get("phone_number")
             uid = decoded_token.get("uid")
+            print('-----------------2-------------------')
+            print(mobile)
 
             if not mobile:
                 return Response({"error": "Phone number not found in token"}, status=400)
 
+            # Get or create user
             user, created = User.objects.get_or_create(
                 mobile=mobile,
-                is_customer = True,
+                is_customer=True,
                 defaults={'firebase_uid': uid}
             )
+            print('--------------3----------------------')
 
+            # Ensure active
             if not user.is_active:
                 user.is_active = True
                 user.save()
+                print('-------------31-----------------------')
 
+            # Update firebase UID if changed
             if user.firebase_uid != uid:
                 user.firebase_uid = uid
                 user.save()
+                print('--------------41----------------------')
 
-            # Update optional fields from frontend
-            optional_fields = [
-                "email", "first_name", "last_name"
-            ]
+            print('---------------4---------------------')
+
+            # Optional fields from frontend
+            optional_fields = ["email", "first_name", "last_name"]
+
             for field in optional_fields:
                 if field in request.data:
-                    setattr(user, field, request.data.get(field))
+                    value = request.data.get(field)
+
+                    if field == "email" and value:
+                        # Ensure unique email (skip if already taken)
+                        if User.objects.exclude(id=user.id).filter(email=value).exists():
+                            print(f"Email {value} already in use, skipping update")
+                            continue  # skip updating email
+                    setattr(user, field, value)
 
             user.save()
+            print('------------------5------------------')
 
             # JWT tokens
             refresh = RefreshToken.for_user(user)
@@ -195,8 +238,6 @@ class LoginAPIView(APIView):
         except Exception as e:
             print("Firebase auth error:", e)
             return Response({"error": "Invalid or expired Firebase token."}, status=400)
-        
-
 
 
 from .permissions import *

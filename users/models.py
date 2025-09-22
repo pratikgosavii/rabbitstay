@@ -29,7 +29,12 @@ class User(AbstractUser):
     is_service_provider = models.BooleanField(default=False)
 
     mobile = models.CharField(max_length=15, unique=True)
-    email = models.EmailField(unique=True)  # Email is optional
+    email = models.EmailField(
+        unique=True,
+        null=True,       # allow NULL in database
+        blank=True       # allow empty form field
+    )
+    # Email is optional
 
     email_verified = models.BooleanField(default=False)
 
