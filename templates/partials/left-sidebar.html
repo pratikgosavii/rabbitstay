@@ -220,16 +220,6 @@
                 {% if request.user|has_group:'Staff' or request.user.is_superuser %}
 
 
-                <li>
-                    <a href="javascript: void(0);" class="has-arrow">
-                        <i data-feather="tag"></i>
-                        <span>Coupon</span>
-                    </a>
-                    <ul class="sub-menu">
-                        <li><a href="{% url 'add_coupon' %}">Add Coupon</a></li>
-                        <li><a href="{% url 'list_coupon' %}">Coupon List</a></li>
-                    </ul>
-                </li>
 
                 <li>
                     <a href="javascript: void(0);" class="has-arrow">
