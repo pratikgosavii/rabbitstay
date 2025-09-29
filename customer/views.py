@@ -79,7 +79,7 @@ class HotelBookingViewSet(viewsets.ModelViewSet):
             print(f"✅ Razorpay order created: {order['id']} for booking {booking.id}")
 
     def get_queryset(self):
-        return HotelBooking.objects.filter(payment_status = "paid").order_by('-id')
+        return HotelBooking.objects.filter(payment_status = "paid", user=self.request.user).order_by('-id')
 
 
 
