@@ -19,7 +19,7 @@ import razorpay
 from django.conf import settings
 
 class HotelBookingViewSet(viewsets.ModelViewSet):
-    queryset = HotelBooking.objects.all().order_by("-id")
+    queryset = HotelBooking.objects.filter(payment_status = "paid").order_by("-id")
     serializer_class = HotelBookingSerializer
 
     def perform_create(self, serializer):
