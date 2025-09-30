@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "warangle.middleware.RequestLoggingMiddleware",
     'masters',
     'customer',
     'hotel',
@@ -118,6 +119,7 @@ LOGGING = {
         },
     },
 }
+
 
 
 
