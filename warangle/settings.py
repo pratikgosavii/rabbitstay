@@ -28,8 +28,15 @@ SECRET_KEY = 'django-insecure-t^w1l_qr(&tonib^xf^0_x2qf$ro_=5ia!vb+a+nvujk5j#@%*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [ "vendor.rabbitstay.com",
+    "rabbitstay.com",
+    "www.rabbitstay.com"]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://vendor.rabbitstay.com",
+    "https://rabbitstay.com",
+    "https://www.rabbitstay.com"
+]
 
 # Application definition
 
