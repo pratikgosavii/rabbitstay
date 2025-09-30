@@ -94,6 +94,32 @@ REST_FRAMEWORK = {
 }
 
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "%(asctime)s: %(levelname)s: %(message)s"
+        },
+    },
+    "handlers": {
+        "request_file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": "/var/log/django/requests.log",
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["request_file"],
+            "level": "INFO",
+            "propagate": True,
+        },
+    },
+}
+
+
 
 # # firebase_config.py
 import os
