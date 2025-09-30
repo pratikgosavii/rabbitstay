@@ -11,7 +11,7 @@ from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-router.register(r'hotel-bookings', HotelBookingViewSet)
+router.register(r'hotel-bookings', HotelBookingViewSet, basename='sdfdssdsa')
 
 router.register('tickets', SupportTicketViewSet, basename='tickets')
 router.register('ticket-messages', TicketMessageViewSet, basename='ticket-messages')
