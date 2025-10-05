@@ -502,17 +502,34 @@ def razorpay_booking_webhook(request):
         booking.save()
         print('----------7---------------')
 
-        txn, created = PaymentTransaction.objects.get_or_create(
-            booking=booking,
-            razorpay_payment_id=payment_id,
-            defaults={
-                "razorpay_order_id": order_id,
-                "amount": amount,
-                "currency": currency,
-                "status": mapped_status,
-                "response_payload": event,
-            },
-        )
+        try:
+            txn, created = PaymentTransaction.objects.get_or_create(
+                booking=booking,
+                razorpay_payment_id=payment_id,
+                defaults={
+                    "razorpay_order_id": order_id,
+                    "amount": amount,
+                    "currency": currency,
+                    "status": mapped_status,
+                    "response_payload": event,
+                },
+            )
+        except PaymentTransaction.MultipleObjectsReturned:
+            # Handle duplicate entries
+            txn = PaymentTransaction.objects.filter(
+                booking=booking,
+                razorpay_payment_id=payment_id
+            ).first()
+            created = False
+            print("⚠️ Multiple PaymentTransaction entries found, using the first one.")
+
+        except Exception as e:
+            # Log and raise or handle gracefully
+            print(f"❌ Error while creating or fetching PaymentTransaction: {str(e)}")
+            txn = None
+            created = False
+
+
         print('----------8---------------')
 
         if not created:

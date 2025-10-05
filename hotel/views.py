@@ -486,7 +486,8 @@ def export_bookings_to_excel(queryset):
 
 @login_required(login_url='login_admin')
 def list_hotel_bookings(request):
-    queryset = HotelBooking.objects.filter(payment_status = "paid").order_by('-id') if request.user.is_superuser else HotelBooking.objects.filter(hotel__user=request.user, payment_status = "paid").order_by('-id')
+    # queryset = HotelBooking.objects.filter(payment_status = "paid").order_by('-id') if request.user.is_superuser else HotelBooking.objects.filter(hotel__user=request.user, payment_status = "paid").order_by('-id')
+    queryset = HotelBooking.objects.all().order_by('-id') if request.user.is_superuser else HotelBooking.objects.all().order_by('-id')
 
     filterset = HotelBookingFilter(request.GET, queryset=queryset, request = request)
     filtered_bookings = filterset.qs
