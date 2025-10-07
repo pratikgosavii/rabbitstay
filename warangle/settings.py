@@ -100,7 +100,7 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            "format": "%(asctime)s: %(levelname)s: %(message)s"
+            "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
         },
     },
     "handlers": {
@@ -110,12 +110,23 @@ LOGGING = {
             "filename": "/var/log/django/requests.log",
             "formatter": "verbose",
         },
+        "webhook_file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "/var/log/django/webhook.log",
+            "formatter": "verbose",
+        },
     },
     "loggers": {
         "django.request": {
             "handlers": ["request_file"],
             "level": "INFO",
             "propagate": True,
+        },
+        "razorpay_webhook": {   # 👈 custom logger
+            "handlers": ["webhook_file"],
+            "level": "DEBUG",
+            "propagate": False,
         },
     },
 }

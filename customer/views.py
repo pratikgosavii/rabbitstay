@@ -416,21 +416,42 @@ from django.core.mail import send_mail
 from django.conf import settings
 import traceback
 
+import json
+import traceback
+import logging
+from django.conf import settings
+from django.core.mail import send_mail
+from django.db import transaction
+from django.utils import timezone
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+import razorpay
+from .models import HotelBooking, PaymentTransaction
+
+# ✅ Custom logger (defined in settings.LOGGING)
+logger = logging.getLogger("razorpay_webhook")
+
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def razorpay_booking_webhook(request):
     webhook_body = request.body.decode("utf-8")
     received_sig = request.headers.get("X-Razorpay-Signature")
-    print("🔔 Razorpay webhook received")
+    
+    # Log the raw request and headers
+    logger.info("🔔 Razorpay webhook triggered")
+    logger.debug(f"Headers: {dict(request.headers)}")
+    logger.debug(f"Body: {webhook_body}")
 
-    # Store debug info for email
     debug_logs = []
+
     def log(msg):
-        print(msg)
+        """Unified logging function"""
+        logger.info(msg)
         debug_logs.append(str(msg))
 
     try:
-        # ✅ Verify webhook secret
+        # ✅ Check webhook secret
         if not settings.RAZORPAY_WEBHOOK_SECRET:
             log("❌ Webhook secret missing in settings")
             return Response({"error": "Webhook secret not configured"}, status=500)
@@ -443,15 +464,17 @@ def razorpay_booking_webhook(request):
             )
         except razorpay.errors.SignatureVerificationError:
             log("⚠️ Invalid Razorpay webhook signature")
+            logger.warning(f"Invalid signature. Headers={dict(request.headers)}, Body={webhook_body}")
             send_mail(
                 subject="⚠️ Razorpay Webhook: Invalid Signature",
                 message=f"Invalid signature received.\n\nHeaders:\n{request.headers}\n\nBody:\n{webhook_body}",
                 from_email=settings.EMAIL_HOST_USER,
-                recipient_list=["pratikgosavi654@gmail.com"],  # 👈 change this
+                recipient_list=["pratikgosavi654@gmail.com"],
                 fail_silently=True,
             )
             return Response({"error": "Invalid signature"}, status=400)
 
+        # ✅ Parse event
         event = json.loads(webhook_body)
         event_type = event.get("event")
         log(f"📢 Event received: {event_type}")
@@ -462,9 +485,8 @@ def razorpay_booking_webhook(request):
             "payment.failed",
             "payment.refunded",
         ]:
+            log(f"Ignored event: {event_type}")
             return Response({"status": "ignored", "event": event_type})
-
-        log("----------1---------------")
 
         payment_entity = event.get("payload", {}).get("payment", {}).get("entity", {})
         order_id = payment_entity.get("order_id")
@@ -476,7 +498,8 @@ def razorpay_booking_webhook(request):
 
         notes = payment_entity.get("notes", {}) or {}
         booking_id = notes.get("booking_id")
-        log(f"📌 Notes received: {notes}")
+
+        log(f"📌 Notes: {notes}")
         log(f"💳 Payment status: {status}")
 
         if not booking_id:
@@ -489,8 +512,6 @@ def razorpay_booking_webhook(request):
             log(f"❌ HotelBooking {booking_id} not found")
             return Response({"error": "Booking not found"}, status=404)
 
-        log("----------3---------------")
-
         status_map = {
             "captured": "paid",
             "authorized": "pending",
@@ -500,6 +521,7 @@ def razorpay_booking_webhook(request):
         }
         mapped_status = status_map.get(status, "pending")
 
+        # ✅ Atomic update
         with transaction.atomic():
             booking.payment_id = payment_id
             booking.order_id = order_id
@@ -527,7 +549,7 @@ def razorpay_booking_webhook(request):
 
         log(f"✅ Webhook processed successfully for Booking {booking_id}")
 
-        # ✅ Send email summary
+        # ✅ Email notification
         send_mail(
             subject=f"🧾 Razorpay Webhook Triggered — {event_type}",
             message=f"Razorpay webhook triggered.\n\n"
@@ -536,15 +558,15 @@ def razorpay_booking_webhook(request):
                     f"Logs:\n" + "\n".join(debug_logs) + "\n\n"
                     f"Raw Payload:\n{webhook_body}",
             from_email=settings.EMAIL_HOST_USER,
-            recipient_list=["pratikgosavi654@gmail.com"],  # 👈 change to your mail
+            recipient_list=["pratikgosavi654@gmail.com"],
             fail_silently=True,
         )
 
         return Response({"status": "ok"})
 
     except Exception as e:
-        # Send email even on crash
         err_trace = traceback.format_exc()
+        logger.exception(f"❌ Razorpay Webhook Error: {e}")
         send_mail(
             subject="❌ Razorpay Webhook Error",
             message=f"Error occurred:\n{str(e)}\n\nTraceback:\n{err_trace}\n\nBody:\n{webhook_body}",
@@ -552,4 +574,4 @@ def razorpay_booking_webhook(request):
             recipient_list=["pratikgosavi654@gmail.com"],
             fail_silently=True,
         )
-        raise
+        return Response({"error": str(e)}, status=500)
