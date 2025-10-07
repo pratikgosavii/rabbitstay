@@ -522,14 +522,18 @@ def razorpay_booking_webhook(request):
         mapped_status = status_map.get(status, "pending")
 
         # ✅ Atomic update
+        # ✅ Atomic update
         with transaction.atomic():
-            booking.payment_id = payment_id
-            booking.order_id = order_id
-            booking.payment_status = mapped_status
-            booking.payment_type = "online"
-            if mapped_status == "paid":
-                booking.paid_at = timezone.now()
-            booking.save()
+            # Only update if current booking not already paid
+            if booking.payment_status != "paid" or mapped_status == "paid":
+                booking.payment_id = payment_id
+                booking.order_id = order_id
+                booking.payment_status = mapped_status
+                booking.payment_type = "online"
+                if mapped_status == "paid":
+                    booking.paid_at = timezone.now()
+                booking.save()
+
 
             txn, created = PaymentTransaction.objects.get_or_create(
                 booking=booking,
