@@ -209,7 +209,7 @@ class AvailableRoomsAPIView(generics.ListAPIView):
         # ✅ Only check availability for rooms of the given hotel
         availability_qs = RoomAvailability.objects.filter(
             room__hotel_id=hotel_id,
-            room__hotel_go_live=True,
+            room__hotel__go_live=True,
             date__gte=from_date,
             date__lte=to_date,
             available_count__gt=0
@@ -264,6 +264,7 @@ class AvailableHotelsAPIView(APIView):
 
         availabilities = RoomAvailability.objects.filter(
             room_id__in=room_ids,
+            room__hotel__go_live=True,
             date__range=(check_in, check_out - timedelta(days=1)),
             available_count__gte=1
         ).values('room_id', 'date')
