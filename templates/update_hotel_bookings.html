@@ -147,12 +147,30 @@
                         </div>
 
                         <div class="mb-4">
+                            <label class="form-label">Payment Type:</label>
+                            {{ form.payment_type }}
+                            {% if form.payment_type.errors %}
+                                <div class="text-danger">{{ form.payment_type.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Payment Status:</label>
+                            {{ form.payment_status }}
+                            {% if form.payment_status.errors %}
+                                <div class="text-danger">{{ form.payment_status.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        
+                        <div class="mb-4">
                             <label class="form-label">Status:</label>
                             {{ form.status }}
                             {% if form.status.errors %}
                                 <div class="text-danger">{{ form.status.errors.0 }}</div>
                             {% endif %}
                         </div>
+                        
 
                         <div class="text-center">
                             <input type="submit" class="btn btn-primary custom-button" value="Submit" />
