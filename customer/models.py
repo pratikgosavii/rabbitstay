@@ -35,7 +35,7 @@ class HotelBooking(models.Model):
     first_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
     phone_number = models.CharField(max_length=20)
-    email = models.EmailField(blank=True, null=True)
+    email = models.EmailField()
     special_request = models.TextField(blank=True, null=True)
 
     no_of_rooms = models.IntegerField(default=1)
