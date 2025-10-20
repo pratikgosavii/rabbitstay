@@ -87,41 +87,48 @@ from rest_framework.views import APIView
 
 class HotelBookingRecalculateAPIView(APIView):
     def post(self, request):
-        room_id = request.data.get("room_id")
-        check_in = request.data.get("check_in")
-        check_out = request.data.get("check_out")
-        no_of_rooms = int(request.data.get("no_of_rooms", 1))
+        try:
+            room_id = request.data.get("room_id")
+            check_in = request.data.get("check_in")
+            check_out = request.data.get("check_out")
+            no_of_rooms = int(request.data.get("no_of_rooms", 1))
 
-        room = hotel_rooms.objects.get(id=room_id)
-        price_per_night = room.price_per_night
+            if not room_id or not check_in or not check_out:
+                return Response({"error": "room_id, check_in, check_out are required"}, status=400)
 
-        nights = (date.fromisoformat(check_out) - date.fromisoformat(check_in)).days or 1
-        base = price_per_night * nights * no_of_rooms
+            room = hotel_rooms.objects.get(id=room_id)
+            price_per_night = room.price_per_night
 
-        gst_percent = Decimal('0.05') if price_per_night < 7500 else Decimal('0.12')
-        gst = base * gst_percent
-        subtotal = base + gst
+            nights = (date.fromisoformat(check_out) - date.fromisoformat(check_in)).days or 1
+            base = price_per_night * nights * no_of_rooms
 
-        commission = base * Decimal('0.10')
-        commission_gst = commission * Decimal('0.18')
+            gst_percent = Decimal('0.05') if price_per_night < 7500 else Decimal('0.12')
+            gst = base * gst_percent
+            subtotal = base + gst
 
-        tcs = base * Decimal('0.005')
-        tds = base * Decimal('0.001')
+            commission = base * Decimal('0.10')
+            commission_gst = commission * Decimal('0.18')
 
-        hotel_net = subtotal - commission - commission_gst - tds - tcs
+            tcs = base * Decimal('0.005')
+            tds = base * Decimal('0.001')
 
-        return Response({
-            "nights": nights,
-            "room_price_per_night": price_per_night,
-            "base_amount": base,
-            "gst_amount": gst,
-            "total_amount": subtotal,
-            "commission_amount": commission,
-            "commission_gst": commission_gst,
-            "tds_amount": tds,
-            "tcs_amount": tcs,
-            "hotel_earning": hotel_net
-        })
+            hotel_net = subtotal - commission - commission_gst - tds - tcs
+
+            return Response({
+                "nights": nights,
+                "room_price_per_night": price_per_night,
+                "base_amount": base,
+                "gst_amount": gst,
+                "total_amount": subtotal,
+                "commission_amount": commission,
+                "commission_gst": commission_gst,
+                "tds_amount": tds,
+                "tcs_amount": tcs,
+                "hotel_earning": hotel_net
+            })
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=400)
     
 
 

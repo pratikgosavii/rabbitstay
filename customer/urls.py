@@ -26,7 +26,7 @@ urlpatterns = [
     path('privacy-policy/', privacy_policy, name='privacy_policy'),
     path('terms-condition/', terms_condition, name='terms_condition'),
 
-    path('hotel-prebooking-bookings/', HotelBookingRecalculateAPIView.as_view(), name='hotel-list'),
+    path('hotel-prebooking-bookings/', HotelBookingRecalculateAPIView.as_view(), name='HotelBookingRecalculateAPIView'),
 
     path('hotels/', HotelListAPIView.as_view(), name='hotel-list'),
     path('hotels/<int:hotel_id>/', HotelDetailAPIView.as_view(), name='hotel-detail'),
