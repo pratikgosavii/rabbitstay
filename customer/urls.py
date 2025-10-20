@@ -12,6 +12,7 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register(r'hotel-bookings', HotelBookingViewSet, basename='sdfdssdsa')
+router.register(r'hotel-prebooking-bookings', HotelBookingRecalculateAPIView, basename='HotelBookingRecalculateAPIView')
 
 router.register('tickets', SupportTicketViewSet, basename='tickets')
 router.register('ticket-messages', TicketMessageViewSet, basename='ticket-messages')

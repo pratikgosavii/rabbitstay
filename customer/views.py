@@ -83,6 +83,47 @@ class HotelBookingViewSet(viewsets.ModelViewSet):
 
 
 
+from rest_framework.views import APIView
+
+class HotelBookingRecalculateAPIView(APIView):
+    def post(self, request):
+        room_id = request.data.get("room_id")
+        check_in = request.data.get("check_in")
+        check_out = request.data.get("check_out")
+        no_of_rooms = int(request.data.get("no_of_rooms", 1))
+
+        room = hotel_rooms.objects.get(id=room_id)
+        price_per_night = room.price_per_night
+
+        nights = (date.fromisoformat(check_out) - date.fromisoformat(check_in)).days or 1
+        base = price_per_night * nights * no_of_rooms
+
+        gst_percent = Decimal('0.05') if price_per_night < 7500 else Decimal('0.12')
+        gst = base * gst_percent
+        subtotal = base + gst
+
+        commission = base * Decimal('0.10')
+        commission_gst = commission * Decimal('0.18')
+
+        tcs = base * Decimal('0.005')
+        tds = base * Decimal('0.001')
+
+        hotel_net = subtotal - commission - commission_gst - tds - tcs
+
+        return Response({
+            "nights": nights,
+            "room_price_per_night": price_per_night,
+            "base_amount": base,
+            "gst_amount": gst,
+            "total_amount": subtotal,
+            "commission_amount": commission,
+            "commission_gst": commission_gst,
+            "tds_amount": tds,
+            "tcs_amount": tcs,
+            "hotel_earning": hotel_net
+        })
+    
+
 
 # views.py
 from rest_framework.views import APIView
