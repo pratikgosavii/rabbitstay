@@ -12,7 +12,6 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register(r'hotel-bookings', HotelBookingViewSet, basename='sdfdssdsa')
-router.register(r'hotel-prebooking-bookings', HotelBookingRecalculateAPIView, basename='HotelBookingRecalculateAPIView')
 
 router.register('tickets', SupportTicketViewSet, basename='tickets')
 router.register('ticket-messages', TicketMessageViewSet, basename='ticket-messages')
@@ -26,6 +25,8 @@ urlpatterns = [
     path('guest-policy/', guest_policy, name='guest_policy'),
     path('privacy-policy/', privacy_policy, name='privacy_policy'),
     path('terms-condition/', terms_condition, name='terms_condition'),
+
+    path('hotel-prebooking-bookings/', HotelBookingRecalculateAPIView.as_view(), name='hotel-list'),
 
     path('hotels/', HotelListAPIView.as_view(), name='hotel-list'),
     path('hotels/<int:hotel_id>/', HotelDetailAPIView.as_view(), name='hotel-detail'),
