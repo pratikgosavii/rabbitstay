@@ -106,13 +106,9 @@ class HotelBookingRecalculateAPIView(APIView):
             gst = base * gst_percent
             subtotal = base + gst
 
-            commission = base * Decimal('0.10')
-            commission_gst = commission * Decimal('0.18')
-
             tcs = base * Decimal('0.005')
             tds = base * Decimal('0.001')
 
-            hotel_net = subtotal - commission - commission_gst - tds - tcs
 
             return Response({
                 "nights": nights,
@@ -120,11 +116,8 @@ class HotelBookingRecalculateAPIView(APIView):
                 "base_amount": base,
                 "gst_amount": gst,
                 "total_amount": subtotal,
-                "commission_amount": commission,
-                "commission_gst": commission_gst,
                 "tds_amount": tds,
                 "tcs_amount": tcs,
-                "hotel_earning": hotel_net
             })
 
         except Exception as e:

@@ -36,3 +36,4 @@ logs/
 firebase_key.json
 ping
 *.bak
+logs/
